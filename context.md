@@ -47,6 +47,44 @@ nevado-trek-backend/
 - Devuelve `200 OK` con array vacío si no hay tours
 - Devuelve `500 Internal Server Error` en caso de errores
 
+### 2. GET /tours/:tourId - Endpoint Público de Tour Individual
+
+**Descripción**: Endpoint que permite obtener un tour específico por su ID.
+
+**Características**:
+- Filtra para devolver solo tours con `isActive: true`
+- Devuelve datos bilingües (español e inglés)
+- Validación de parámetros de URL
+- Manejo apropiado de errores HTTP
+- Devuelve `404 Not Found` si el tour no existe o no está activo
+
+### 3. POST /admin/tours - Endpoint de Administración para Crear Tours
+
+**Descripción**: Endpoint protegido que permite a administradores crear nuevos tours.
+
+**Características**:
+- Requiere autenticación con header `X-Admin-Secret-Key`
+- Valida estructura bilingüe de campos de texto
+- Asegura campo `isActive` con valor por defecto
+- Añade marcas de tiempo de creación
+- Devuelve `201 Created` en caso de éxito
+- Devuelve `400 Bad Request` para datos inválidos
+- Devuelve `401 Unauthorized` si la autenticación falla
+
+### 4. PUT /admin/tours/:tourId - Endpoint de Administración para Actualizar Tours
+
+**Descripción**: Endpoint protegido que permite a administradores actualizar tours existentes.
+
+**Características**:
+- Requiere autenticación con header `X-Admin-Secret-Key`
+- Valida estructura bilingüe de campos de texto actualizados
+- Actualiza marca de tiempo de modificación
+- Validación para impedir cambios de ID
+- Devuelve `200 OK` en caso de éxito
+- Devuelve `400 Bad Request` para datos inválidos
+- Devuelve `401 Unauthorized` si la autenticación falla
+- Devuelve `404 Not Found` si el tour no existe
+
 **URL**: 
 - Local: `http://localhost:5001/[project-id]/us-central1/getTours`
 - Producción: `https://[project-id].cloudfunctions.net/getTours`

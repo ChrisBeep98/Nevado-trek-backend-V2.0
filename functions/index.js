@@ -123,6 +123,65 @@ const getToursList = async (req, res) => {
   }
 };
 
+/**
+ * Obtiene un tour específico por su ID.
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con el tour específico.
+ */
+const getTourById = async (req, res) => {
+  // Verificamos que sea una solicitud GET
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  try {
+    // Extraemos el tourId de la URL (asumiendo que se configura como
+    // /tours/{tourId})
+    const tourId = req.params.tourId || req.path.split("/")[1]; // This is a
+    // simplification
+    // For a real implementation with proper routing, the tourId would come
+    // from a proper route parameter
+
+    if (!tourId) {
+      return res.status(400).send({
+        message: "Bad Request: tourId is required in the URL path",
+      });
+    }
+
+    // Obtenemos el tour de Firestore
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(tourId);
+    const docSnapshot = await tourRef.get();
+
+    if (!docSnapshot.exists) {
+      return res.status(404).send({
+        message: "Tour not found",
+      });
+    }
+
+    const tourData = docSnapshot.data();
+
+    // Solo devolvemos el tour si está activo
+    if (!tourData.isActive) {
+      return res.status(404).send({
+        message: "Tour not found",
+      });
+    }
+
+    // Devolvemos el tour con su ID
+    return res.status(200).json({
+      tourId: docSnapshot.id,
+      ...tourData,
+    });
+  } catch (error) {
+    console.error("Error al obtener el tour por ID:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
+
 
 // -----------------------------------------------------------
 // Sección de Endpoints de Administración
@@ -131,7 +190,142 @@ const getToursList = async (req, res) => {
 // A continuación implementaremos las funciones de gestión para
 // el panel de control. [cite: 213, 218]
 
-// ... (Aquí irá la primera función de admin: createTour)
+/**
+ * Crea un nuevo tour.
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta de creación del tour.
+ */
+const adminCreateTour = async (req, res) => {
+  // Verificamos que sea una solicitud POST
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Obtenemos el cuerpo de la solicitud
+    const tourData = req.body;
+
+    // Validamos que el tour tenga los campos necesarios
+    // La estructura debe incluir campos bilingües {es: "...", en: "..."}
+    if (!tourData.name || !tourData.name.es || !tourData.name.en) {
+      return res.status(400).send({
+        message: "Bad Request: Tour must include a name object " +
+                 "with both 'es' and 'en' properties",
+      });
+    }
+
+    // Aseguramos que el campo isActive esté presente (por defecto true)
+    if (tourData.isActive === undefined) {
+      tourData.isActive = true;
+    }
+
+    // Añadimos marca de tiempo de creación
+    tourData.createdAt = admin.firestore.FieldValue.serverTimestamp();
+    tourData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+    // Creamos el tour en Firestore
+    const toursRef = db.collection(CONSTANTS.COLLECTIONS.TOURS);
+    const docRef = await toursRef.add(tourData);
+
+    // Devolvemos el ID del tour recién creado
+    return res.status(201).json({
+      success: true,
+      tourId: docRef.id,
+      message: "Tour created successfully",
+    });
+  } catch (error) {
+    console.error("Error al crear el tour:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
+
+/**
+ * Actualiza un tour existente.
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta de actualización del tour.
+ */
+const adminUpdateTour = async (req, res) => {
+  // Verificamos que sea una solicitud PUT
+  if (req.method !== "PUT") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraemos el tourId de la URL (asumiendo que se configura como
+    // /admin/tours/{tourId})
+    // /admin/tours/{tourId}
+    const tourId = req.params.tourId || req.path.split("/")[3];
+
+    if (!tourId) {
+      return res.status(400).send({
+        message: "Bad Request: tourId is required in the URL path",
+      });
+    }
+
+    // Obtenemos los datos actualizados del cuerpo de la solicitud
+    const updatedData = req.body;
+
+    // Validamos que no se esté intentando cambiar el ID del tour
+    if (updatedData.id || updatedData.tourId) {
+      return res.status(400).send({
+        message: "Bad Request: Cannot update tour ID",
+      });
+    }
+
+    // Si se proporciona un nombre, aseguramos que tenga la estructura bilingüe
+    if (updatedData.name) {
+      if (!updatedData.name.es || !updatedData.name.en) {
+        return res.status(400).send({
+          message: "Bad Request: Name must include both 'es' and 'en' " +
+                   "properties",
+        });
+      }
+    }
+
+    // Añadimos marca de tiempo de actualización
+    updatedData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
+
+    // Actualizamos el tour en Firestore
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(tourId);
+    const docSnapshot = await tourRef.get();
+
+    if (!docSnapshot.exists) {
+      return res.status(404).send({
+        message: "Tour not found",
+      });
+    }
+
+    await tourRef.update(updatedData);
+
+    // Devolvemos confirmación de actualización exitosa
+    return res.status(200).json({
+      success: true,
+      tourId: tourId,
+      message: "Tour updated successfully",
+    });
+  } catch (error) {
+    console.error("Error al actualizar el tour:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
 
 // -----------------------------------------------------------
 // Exportación
@@ -141,7 +335,9 @@ const getToursList = async (req, res) => {
 // El nombre de la URL será /tours (ej: /api/getTours)
 module.exports = {
   getTours: functions.https.onRequest(getToursList),
+  getTourById: functions.https.onRequest(getTourById),
+  adminCreateTour: functions.https.onRequest(adminCreateTour),
+  adminUpdateTour: functions.https.onRequest(adminUpdateTour),
   // Más funciones se agregarán aquí. Por ejemplo:
-  // adminTours: functions.https.onRequest(adminTourManagement)
   // createBooking: functions.https.onRequest(createBookingFlow)
 };
