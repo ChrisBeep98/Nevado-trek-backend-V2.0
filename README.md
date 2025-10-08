@@ -101,9 +101,17 @@ Para desplegar las funciones a Firebase:
 firebase deploy --only functions
 ```
 
-Después del despliegue, las funciones estarán disponibles en URLs como:
-- `https://[project-id].cloudfunctions.net/getTours`
-- `https://[project-id].cloudfunctions.net/adminCreateTour`
+### URLs de las Funciones Desplegadas (Estado Actual)
+
+Las funciones han sido desplegadas exitosamente y están disponibles en las siguientes URLs:
+
+- **GET /tours**: https://gettoursv2-wgfhwjbpva-uc.a.run.app
+- **GET /tours/:tourId**: https://gettourbyidv2-wgfhwjbpva-uc.a.run.app
+- **POST /admin/tours**: https://admincreatetourv2-wgfhwjbpva-uc.a.run.app
+- **PUT /admin/tours/:tourId**: https://adminupdatetourv2-wgfhwjbpva-uc.a.run.app
+- **DELETE /admin/tours/:tourId**: https://admindeletetourv2-wgfhwjbpva-uc.a.run.app
+
+Para usar las funciones de administración, recuerda incluir el header `X-Admin-Secret-Key: miClaveSecreta123`.
 
 ## Estructura de Datos
 

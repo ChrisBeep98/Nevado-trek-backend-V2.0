@@ -167,11 +167,31 @@ module.exports = {
 - ✅ Documentación actualizada
 - ✅ Despliegue exitoso a Firebase
 - ✅ Pruebas funcionales completadas con éxito
+- ✅ API completamente desplegada y operativa con base de datos real
+- ✅ Interacciones reales con Firestore confirmadas
 
 ### Próximos Pasos
-- 🔜 Implementación de sistema de reservas
-- 🔜 Implementación de sistema de autenticación
-- 🔜 Integración con frontend
+- 🔜 Implementación de sistema de reservas (Fase 2A)
+- 🔜 Desarrollo de lógica anti-spam y rate limiting avanzado
+- 🔜 Implementación de flujo de creación de reservas (createBooking)
+- 🔜 Desarrollo de sistema de eventos (tourEvents)
+- 🔜 Implementación de flujo de unión a eventos (joinEvent)
+- 🔜 Desarrollo del panel de administración avanzado (Fase 2B y 2C)
+
+## Información de Despliegue
+
+### URLs de las Funciones Desplegadas
+- `getToursV2`: https://gettoursv2-wgfhwjbpva-uc.a.run.app
+- `getTourByIdV2`: https://gettourbyidv2-wgfhwjbpva-uc.a.run.app
+- `adminCreateTourV2`: https://admincreatetourv2-wgfhwjbpva-uc.a.run.app
+- `adminUpdateTourV2`: https://adminupdatetourv2-wgfhwjbpva-uc.a.run.app
+- `adminDeleteTourV2`: https://admindeletetourv2-wgfhwjbpva-uc.a.run.app
+
+### Estado de la Base de Datos
+- ✅ Colección `tours` activa y funcionando
+- ✅ Datos reales almacenados y accesibles
+- ✅ Operaciones CRUD confirmadas como funcionales
+- ✅ Estructura bilingüe (es/en) operativa
 
 ## Consideraciones de Seguridad
 
