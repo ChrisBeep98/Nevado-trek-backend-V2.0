@@ -30,6 +30,12 @@ Complete reservation system for adventure tour management with:
 - **History Logging**: Complete audit trail of all status changes
 - **Customer Management**: Full contact information with special notes
 
+### 5. Event Management & Calendar
+- **Calendar View**: Admin calendar view with filtering by date range, tour, type, and status
+- **Event Types**: Private (individual booking origin) and public (joinable by multiple customers) events
+- **Event Statuses**: active, full, completed, cancelled
+- **Capacity Management**: Real-time capacity tracking for events
+
 ## Business Rules
 
 ### Tour Rules

@@ -1451,6 +1451,152 @@ const adminUpdateBookingStatus = async (req, res) => {
   }
 };
 
+/**
+ * Obtiene la lista de eventos con capacidades de filtrado para vista de calendario
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con la lista de eventos filtrados.
+ */
+const adminGetEventsCalendar = async (req, res) => {
+  // Verificamos que sea una solicitud GET
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraemos los parámetros de consulta para filtrado y paginación
+    const {
+      tourId,
+      startDateFrom,
+      startDateTo,
+      type, // 'private' or 'public'
+      status, // 'active', 'full', 'completed', 'cancelled'
+      limit: limitParam,
+      offset: offsetParam,
+    } = req.query;
+
+    // Inicializamos la consulta base
+    let eventsQuery = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS);
+
+    // Aplicamos los filtros según los parámetros recibidos
+    if (tourId) {
+      eventsQuery = eventsQuery.where("tourId", "==", tourId);
+    }
+
+    if (type) {
+      // Validar que el tipo sea válido
+      if ([CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, CONSTANTS.STATUS.EVENT_TYPE_PUBLIC].includes(type)) {
+        eventsQuery = eventsQuery.where("type", "==", type);
+      }
+    }
+
+    if (status) {
+      eventsQuery = eventsQuery.where("status", "==", status);
+    }
+
+    // Filtrar por rango de fechas
+    if (startDateFrom) {
+      const from = new Date(startDateFrom);
+      if (!isNaN(from.getTime())) {
+        eventsQuery = eventsQuery.where("startDate", ">=", admin.firestore.Timestamp.fromDate(from));
+      }
+    }
+
+    if (startDateTo) {
+      // Ajustamos para que cubra toda la fecha final (hasta el final del día)
+      const to = new Date(startDateTo);
+      to.setDate(to.getDate() + 1); // Agregamos un día
+      if (!isNaN(to.getTime())) {
+        eventsQuery = eventsQuery.where("startDate", "<", admin.firestore.Timestamp.fromDate(to));
+      }
+    }
+
+    // Aplicar paginación si se proporciona
+    let limit = 50; // Límite por defecto
+    if (limitParam && !isNaN(parseInt(limitParam))) {
+      limit = parseInt(limitParam);
+      // Establecer un límite máximo para prevenir consultas muy pesadas
+      limit = Math.min(limit, 200);
+    }
+
+    eventsQuery = eventsQuery.limit(limit);
+
+    // Aplicar offset si se proporciona (usando startAfter)
+    if (offsetParam && !isNaN(parseInt(offsetParam)) && parseInt(offsetParam) > 0) {
+      const offset = parseInt(offsetParam);
+      // Para usar startAfter, necesitamos el documento en la posición offset-1
+      const offsetQuery = eventsQuery.limit(offset);
+      const offsetSnapshot = await offsetQuery.get();
+
+      if (!offsetSnapshot.empty && offsetSnapshot.docs.length === offset) {
+        const lastDoc = offsetSnapshot.docs[offset - 1];
+        eventsQuery = eventsQuery.startAfter(lastDoc);
+      }
+    }
+
+    // Ejecutamos la consulta
+    const snapshot = await eventsQuery.get();
+
+    if (snapshot.empty) {
+      // No hay eventos que coincidan con los filtros
+      return res.status(200).json({
+        events: [],
+        count: 0,
+        pagination: {
+          limit: limit,
+          offset: offsetParam ? parseInt(offsetParam) : 0,
+          hasMore: false,
+        },
+      });
+    }
+
+    // Mapeamos los documentos de Firestore a un array de objetos JSON
+    const events = snapshot.docs.map((doc) => {
+      const eventData = doc.data();
+      return {
+        eventId: doc.id,
+        ...eventData,
+        // Convertir timestamps a strings para mejor manejo en el frontend
+        startDate: eventData.startDate ? eventData.startDate.toDate().toISOString() : null,
+        endDate: eventData.endDate ? eventData.endDate.toDate().toISOString() : null,
+        createdAt: eventData.createdAt ? eventData.createdAt.toDate().toISOString() : null,
+        updatedAt: eventData.updatedAt ? eventData.updatedAt.toDate().toISOString() : null,
+      };
+    });
+
+    // Determinamos si hay más resultados para paginación
+    let hasMore = false;
+    if (events.length === limit) {
+      // Verificamos si hay un documento adicional para indicar si hay más resultados
+      const nextQuery = eventsQuery.limit(1);
+      const nextSnapshot = await nextQuery.get();
+      hasMore = !nextSnapshot.empty;
+    }
+
+    // Devolvemos la lista de eventos con información de paginación
+    return res.status(200).json({
+      events: events,
+      count: events.length,
+      pagination: {
+        limit: limit,
+        offset: offsetParam ? parseInt(offsetParam) : 0,
+        hasMore: hasMore,
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener la lista de eventos:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1465,6 +1611,7 @@ module.exports = {
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
   adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatus), // Nuevo endpoint
+  adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),

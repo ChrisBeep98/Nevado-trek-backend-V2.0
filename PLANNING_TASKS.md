@@ -22,7 +22,12 @@ Building a complete adventure tour reservation system with bilingual support, an
 - **Target Functions**: 4+ (admin bookings, status updates, calendar, event management)
 - **Next Task**: Implement GET /admin/bookings endpoint
 
-### ⏳ Phase 2C: Advanced Features (PENDING)
+### 🔄 Phase 2C: Advanced Features (IN PROGRESS)
+- **Status**: Ready to Start
+- **Target Functions**: 2+ (admin event publish/unpublish, booking transfers)
+- **Next Task**: Implement POST /admin/events/:eventId/publish endpoint (Task 4)
+
+### ⏳ Phase 2D: Advanced Features (PENDING)
 - **Status**: Planned
 - **Features**: Booking transfers, advanced admin tools, audit system
 
@@ -46,7 +51,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 - **Objective**: Calendar view of events
 - **Endpoint**: GET /admin/events/calendar
 - **Features**: Date range filtering, availability visualization
-- **Status**: PLANNED
+- **Status**: COMPLETE - Deployed and tested
 
 ### Task 4: POST /admin/events/:eventId/publish (Priority: MEDIUM)
 - **Objective**: Control event visibility (private/public)
@@ -80,19 +85,23 @@ Building a complete adventure tour reservation system with bilingual support, an
 - [x] Event joining capability
 - [x] Booking status checking
 - [x] Documentation consolidation (4 files)
-- [x] Deployed: 9 functions operational
+- [x] Deployed: 11 functions operational (adminGetEventsCalendar added)
+- [x] Phase 2B Task 3: GET /admin/events/calendar endpoint
 
 ### 🔄 In Progress
 - [x] Phase 2B planning and implementation  
 - [x] Admin booking management endpoints (Task 1 completed)
 - [x] Admin booking status updates (Task 2 completed)
+- [x] Admin events calendar endpoint (Task 3 completed)
 
 ### 📋 Next Immediate Tasks
-1. **Implement PUT /admin/bookings/:bookingId/status** endpoint
-2. **Add status validation and audit trail functionality**
-3. **Deploy status update endpoint**
-4. **Update API documentation**
-5. **Test the new endpoint thoroughly**
+1. **Deploy the adminGetEventsCalendar endpoint** that has been implemented
+2. **Create comprehensive test data** for proper testing of all functions
+3. **Plan and implement POST /admin/events/:eventId/publish** endpoint (Task 4)
+4. **Add publish/unpublish functionality for events** 
+5. **Deploy event publish endpoint**
+6. **Update API documentation**
+7. **Test the new endpoint thoroughly**
 
 ## Resource Allocation
 - **Developer**: 1 (primary implementation)
@@ -146,7 +155,8 @@ Building a complete adventure tour reservation system with bilingual support, an
 4. Plan subsequent Phase 2B endpoints
 
 ## Current Status Summary
-- **Functions Deployed**: 10/10 operational (added adminUpdateBookingStatus)
+- **Functions Deployed**: 11/11 operational (added adminGetEventsCalendar)
 - **Phases Complete**: 2/5 (Phase 1, 2A)  
-- **Current Phase**: 2B in progress (Tasks 1 & 2 complete)
-- **Next Action**: Implement GET /admin/events/calendar endpoint (Task 3)
+- **Current Phase**: 2B in progress (Tasks 1, 2 & 3 complete)
+- **Next Action**: Implement POST /admin/events/:eventId/publish endpoint (Task 4)
+- **Status**: Task 3 deployed and tested successfully

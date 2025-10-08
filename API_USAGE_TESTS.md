@@ -212,6 +212,56 @@
   }
   ```
 
+### Admin Event Endpoints (Phase 2B)
+
+#### 10. GET /adminGetEventsCalendar
+- **URL**: https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsCalendar
+- **Method**: GET
+- **Description**: List all events with filtering capabilities for calendar view
+- **Authentication**: `X-Admin-Secret-Key` header required
+- **Query Parameters**:
+  - `tourId` (optional) - Filter by tour ID
+  - `startDateFrom` (optional) - Filter by event start date from (ISO date string)
+  - `startDateTo` (optional) - Filter by event start date to (ISO date string)
+  - `type` (optional) - Filter by event type ('private' or 'public')
+  - `status` (optional) - Filter by event status ('active', 'full', 'completed', 'cancelled')
+  - `limit` (optional) - Number of results per page (default: 50, max: 200)
+  - `offset` (optional) - Number of results to skip (for pagination)
+- **Response**: `200 OK` with paginated list of events
+- **Example Request**:
+  ```bash
+  curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+    "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsCalendar?startDateFrom=2025-01-01&limit=20"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "events": [
+      {
+        "eventId": "string",
+        "tourId": "string",
+        "tourName": "string",
+        "startDate": "ISO date string",
+        "endDate": "ISO date string",
+        "maxCapacity": "number",
+        "bookedSlots": "number",
+        "type": "private",
+        "status": "active",
+        "totalBookings": "number",
+        "createdAt": "ISO date string",
+        "updatedAt": "ISO date string"
+      }
+    ],
+    "count": 1,
+    "pagination": {
+      "limit": 20,
+      "offset": 0,
+      "hasMore": false
+    }
+  }
+  ```
+- **Deployment Status**: ✅ Deployed and fully functional
+
 ## Error Handling & Response Format
 
 ### Standard Error Format
