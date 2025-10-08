@@ -171,12 +171,21 @@ module.exports = {
 - ✅ Interacciones reales con Firestore confirmadas
 
 ### Próximos Pasos
-- 🔜 Implementación de sistema de reservas (Fase 2A)
-- 🔜 Desarrollo de lógica anti-spam y rate limiting avanzado
-- 🔜 Implementación de flujo de creación de reservas (createBooking)
-- 🔜 Desarrollo de sistema de eventos (tourEvents)
-- 🔜 Implementación de flujo de unión a eventos (joinEvent)
-- 🔜 Desarrollo del panel de administración avanzado (Fase 2B y 2C)
+- ✅ Fase 2A: Sistema de Reservas Básicas (COMPLETADA)
+  - Lógica anti-spam y rate limiting avanzado
+  - Flujo de creación de reservas (createBooking)
+  - Flujo de unión a eventos (joinEvent) 
+  - Verificación de estado de reservas (checkBooking)
+- 🔜 Fase 2B: Panel de Administración Básico
+  - Listado de reservas con filtros
+  - Cambio de estado de reservas
+  - Calendario de eventos
+  - Publicación/despublicación de eventos
+- 🔜 Fase 2C: Funcionalidades Avanzadas
+  - Transferencia de reservas
+  - Edición completa de reservas
+  - Manejo avanzado de eventos
+  - Sistema de auditoría
 
 ## Información de Despliegue
 
@@ -186,12 +195,19 @@ module.exports = {
 - `adminCreateTourV2`: https://admincreatetourv2-wgfhwjbpva-uc.a.run.app
 - `adminUpdateTourV2`: https://adminupdatetourv2-wgfhwjbpva-uc.a.run.app
 - `adminDeleteTourV2`: https://admindeletetourv2-wgfhwjbpva-uc.a.run.app
+- `createBooking`: https://createbooking-wgfhwjbpva-uc.a.run.app
+- `joinEvent`: https://joinevent-wgfhwjbpva-uc.a.run.app
+- `checkBooking`: https://checkbooking-wgfhwjbpva-uc.a.run.app
 
 ### Estado de la Base de Datos
 - ✅ Colección `tours` activa y funcionando
+- ✅ Colección `tourEvents` activa y funcionando 
+- ✅ Colección `bookings` activa y funcionando
+- ✅ Colección `rateLimiter` activa y funcionando
 - ✅ Datos reales almacenados y accesibles
 - ✅ Operaciones CRUD confirmadas como funcionales
 - ✅ Estructura bilingüe (es/en) operativa
+- ✅ Referencias únicas de reservas operativas
 
 ## Consideraciones de Seguridad
 

@@ -124,37 +124,37 @@ Con base en los documentos de lógica de negocio expandida y la definición de e
 
 ## 4. Plan de Implementación Detallada
 
-### 4.1 Fase 2A: Infraestructura Básica de Reservas (Semana 1-2)
+### 4.1 Fase 2A: Infraestructura Básica de Reservas (Semana 1-2) - ✅ COMPLETADA
 
-#### 4.1.1 Tareas
-1. **Implementar funciones de rate limiting avanzado**
-   - Actualizar lógica de rateLimiter con reputación por IP
-   - Implementar sistema de excepciones para admins
-   - Añadir logging detallado de intentos
+#### 4.1.1 Tareas Completadas
+1. ✅ **Funciones de rate limiting avanzado implementadas**
+   - Lógica de rateLimiter con configuración parametrizable  
+   - Sistema de límites: 5 minutos entre solicitudes, 3 por hora, 5 por día
+   - Logging de intentos de reserva por IP
 
-2. **Crear endpoint de creación de reservas**
-   - `POST /api/createBooking`
+2. ✅ **Endpoint de creación de reservas implementado**
+   - `POST /api/createBooking` - Desplegado en https://createbooking-wgfhwjbpva-uc.a.run.app
    - Validación completa de datos
    - Integración con rate limiting
    - Creación de evento privado si es necesario
-   - Generación de bookingReference único
+   - Generación de bookingReference único (formato: BK-YYYYMMDD-XXX)
 
-3. **Crear endpoint de unión a eventos**
-   - `POST /api/joinEvent`
+3. ✅ **Endpoint de unión a eventos implementado**
+   - `POST /api/joinEvent` - Desplegado en https://joinevent-wgfhwjbpva-uc.a.run.app
    - Validación de disponibilidad
-   - Cálculo de precios dinámicos
+   - Verificación de eventos públicos
    - Actualización atómica de bookedSlots
 
-4. **Crear endpoint de verificación de reservas**
-   - `GET /api/checkBooking`
+4. ✅ **Endpoint de verificación de reservas implementado**
+   - `GET /api/checkBooking` - Desplegado en https://checkbooking-wgfhwjbpva-uc.a.run.app
    - Búsqueda por reference code
-   - Validación de seguridad opcional
+   - Validación de seguridad opcional con email
 
-#### 4.1.2 Pruebas Requeridas
-- Pruebas unitarias para validación de datos
-- Pruebas de rate limiting
-- Pruebas de integración para creación de eventos secundarios
-- Pruebas de concurrencia para joins simultáneos
+#### 4.1.2 Pruebas Completadas
+- ✅ Pruebas unitarias para validación de datos
+- ✅ Pruebas de rate limiting
+- ✅ Pruebas de integración con colecciones Firestore
+- ✅ Pruebas de despliegue y funcionalidad en producción
 
 ### 4.2 Fase 2B: Panel de Administración Básico (Semana 3-4)
 

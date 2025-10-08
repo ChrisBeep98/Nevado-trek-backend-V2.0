@@ -29,6 +29,27 @@ Backend para el sistema de gestión de tours Nevado Trek, construido con Firebas
    - Actualiza solo los campos proporcionados
    - Respuesta: `200 OK` en éxito o `400/401/404` en errores
 
+### Endpoints de Reservas (Fase 2A Completada)
+
+5. **POST /api/createBooking** - Crea una nueva reserva
+   - Recibe datos de reserva: `tourId`, `startDate`, `customer`, `pax`
+   - Verifica limitación de frecuencia por IP
+   - Genera referencias únicas de reserva (BK-YYYYMMDD-XXX)
+   - Verifica disponibilidad y crea eventos privados si es necesario
+   - Respuesta: `201 Created` con datos de la reserva
+
+6. **POST /api/joinEvent** - Se une a un evento público existente
+   - Requiere `eventId` existente y visible públicamente
+   - Verifica disponibilidad y limitación de frecuencia
+   - Actualiza cupos disponibles del evento
+   - Respuesta: `201 Created` con confirmación de unión
+
+7. **GET /api/checkBooking** - Verifica el estado de una reserva
+   - Requiere parámetro `reference` en la URL
+   - Opcional: parámetro `email` para verificación adicional
+   - Devuelve información detallada de la reserva
+   - Respuesta: `200 OK` con datos de reserva o `404 Not Found`
+
 ## Requisitos del Sistema
 
 - Node.js v22 o superior
