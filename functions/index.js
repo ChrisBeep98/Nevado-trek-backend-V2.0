@@ -48,10 +48,19 @@ const CONSTANTS = {
     EVENT_TYPE_PUBLIC: "public", // Evento visible en el calendario
     // [cite: 123]
     BOOKING_PENDING: "pending", // Estado inicial de la reserva [cite: 149, 155]
+    BOOKING_CONFIRMED: "confirmed",
+    BOOKING_PAID: "paid",
+    BOOKING_CANCELLED: "cancelled",
+    BOOKING_CANCELLED_BY_ADMIN: "cancelled_by_admin",
   },
 
   // Tiempo mínimo entre reservas de la misma IP (Anti-spam)
-  RATE_LIMIT_SECONDS: 10, // Ejemplo: 10 segundos
+  RATE_LIMIT_SECONDS: 300, // 5 minutos entre reservas por IP
+  MAX_BOOKINGS_PER_HOUR: 3, // Máximo 3 reservas por hora por IP
+  MAX_BOOKINGS_PER_DAY: 5, // Máximo 5 reservas por día por IP
+
+  // Nombres para los índices de búsqueda
+  BOOKING_REFERENCE_PREFIX: "BK-",
 };
 
 /**
@@ -66,6 +75,136 @@ const isAdminRequest = (req) => {
   return secretKey === CONSTANTS.ADMIN_SECRET_KEY;
 };
 
+/**
+ * Obtiene la IP del cliente, manejando cabeceras de proxy
+ * @param {functions.https.Request} req - La solicitud HTTP
+ * @return {string} La dirección IP del cliente
+ */
+const getClientIP = (req) => {
+  // Prioridad: X-Forwarded-For > X-Real-IP > req.ip
+  return req.headers["x-forwarded-for"] ||
+         req.headers["x-real-ip"] ||
+         req.ip;
+};
+
+/**
+ * Verifica si una IP ha superado las limitaciones de tasa
+ * @param {string} clientIP - Dirección IP del cliente
+ * @return {Promise<boolean>} - true si está permitido, false si está bloqueado
+ */
+const isRateLimited = async (clientIP) => {
+  if (!clientIP) {
+    console.warn(
+        "No se pudo obtener la IP del cliente para verificación de rate limiting",
+    );
+    return false; // Permitir si no hay IP (no debería pasar en producción)
+  }
+
+  try {
+    // Obtener referencias a la colección de rate limiting
+    const rateLimiterRef = db.collection(CONSTANTS.COLLECTIONS.RATE_LIMITER);
+    const now = new Date();
+
+    // Verificar si el registro existe para esta IP
+    const docRef = rateLimiterRef.doc(clientIP);
+    const docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      // Primera solicitud de esta IP, permitir
+      return false;
+    }
+
+    const rateData = docSnapshot.data();
+    const lastBookingTime = rateData.lastBookingTimestamp ?
+      rateData.lastBookingTimestamp.toDate() : new Date(0);
+    const bookingsThisHour = rateData.bookingsThisHour || 0;
+    const bookingsThisDay = rateData.bookingsThisDay || 0;
+
+    // Verificar límite de tiempo entre reservas
+    const timeSinceLastBooking = now.getTime() - lastBookingTime.getTime();
+    if (timeSinceLastBooking < CONSTANTS.RATE_LIMIT_SECONDS * 1000) {
+      return true; // Bloqueado por frecuencia de solicitud
+    }
+
+    // Verificar límite de reservas por hora
+    if (bookingsThisHour >= CONSTANTS.MAX_BOOKINGS_PER_HOUR) {
+      return true; // Bloqueado por límite de frecuencia por hora
+    }
+
+    // Verificar límite de reservas por día
+    if (bookingsThisDay >= CONSTANTS.MAX_BOOKINGS_PER_DAY) {
+      return true; // Bloqueado por límite de frecuencia por día
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error al verificar rate limiting:", error);
+    // En caso de error, permitir la solicitud para no interrumpir el servicio
+    return false;
+  }
+};
+
+/**
+ * Registra una nueva reserva para propósitos de rate limiting
+ * @param {string} clientIP - Dirección IP del cliente
+ * @return {Promise<void>}
+ */
+const recordBookingAttempt = async (clientIP) => {
+  if (!clientIP) {
+    return; // No registrar si no hay IP
+  }
+
+  try {
+    const rateLimiterRef = db.collection(CONSTANTS.COLLECTIONS.RATE_LIMITER);
+    const docRef = rateLimiterRef.doc(clientIP);
+    const now = admin.firestore.FieldValue.serverTimestamp();
+
+    // Usar una transacción para actualizar de forma segura
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
+      const currentData = doc.exists ? doc.data() : {};
+
+      transaction.set(docRef, {
+        lastBookingTimestamp: now,
+        bookingsThisHour: (currentData.bookingsThisHour || 0) + 1,
+        bookingsThisDay: (currentData.bookingsThisDay || 0) + 1,
+        updatedAt: now,
+        ip: clientIP, // Para consultas futuras
+      }, {merge: true});
+    });
+  } catch (error) {
+    console.error("Error al registrar intento de reserva:", error);
+  }
+};
+
+/**
+ * Limpia los registros antiguos de rate limiting para liberar espacio
+ * @return {Promise<void>}
+ */
+// eslint-disable-next-line no-unused-vars
+const cleanupRateLimiting = async () => {
+  try {
+    // Esto podría ser implementado como una Cloud Function programada
+    // o como parte de las operaciones de mantenimiento, pero para
+    // simplicidad lo dejamos como función auxiliar
+  } catch (error) {
+    console.error("Error en limpieza de rate limiting:", error);
+  }
+};
+
+/**
+ * Genera un código de referencia único para una reserva
+ * @return {string} Código de referencia en formato BK-YYYYMMDD-XXX
+ */
+const generateBookingReference = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const datePart = `${year}${month}${day}`;
+  const randomPart = String(Math.floor(Math.random() * 900) + 100).padStart(3, "0");
+  return `${CONSTANTS.BOOKING_REFERENCE_PREFIX}${datePart}-${randomPart}`;
+};
 
 // -----------------------------------------------------------
 // Sección de Endpoints Públicos (Lectura de Datos)
@@ -406,6 +545,604 @@ const adminDeleteTour = async (req, res) => {
   }
 };
 
+/**
+ * Se une a un evento público existente
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con la información de la unión al evento.
+ */
+const joinEvent = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  try {
+    // Obtener IP del cliente para rate limiting
+    const clientIP = getClientIP(req);
+
+    // Verificar rate limiting
+    const isLimited = await isRateLimited(clientIP);
+    if (isLimited) {
+      return res.status(403).send({
+        error: {
+          code: "RATE_LIMIT_EXCEEDED",
+          message: "Demasiadas solicitudes desde esta dirección IP. Intente de nuevo más tarde.",
+          details: "Rate limit exceeded",
+        },
+      });
+    }
+
+    // Validar datos de entrada
+    const bookingData = req.body;
+
+    // Validar campos requeridos
+    if (!bookingData.eventId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El eventId es obligatorio",
+          details: "eventId is required",
+        },
+      });
+    }
+
+    if (!bookingData.customer || !bookingData.customer.fullName ||
+        !bookingData.customer.documentId || !bookingData.customer.phone ||
+        !bookingData.customer.email) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La información del cliente es incompleta",
+          details: "fullName, documentId, phone, and email are required in customer object",
+        },
+      });
+    }
+
+    if (!bookingData.pax || bookingData.pax <= 0) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El número de participantes debe ser un número positivo",
+          details: "pax must be a positive number",
+        },
+      });
+    }
+
+    // Verificar que el evento exista y sea público
+    const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+    const eventDoc = await eventRef.get();
+
+    if (!eventDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento no encontrado",
+          details: "The specified event does not exist",
+        },
+      });
+    }
+
+    const event = eventDoc.data();
+
+    // Solo permitir unirse a eventos públicos
+    if (event.type !== CONSTANTS.STATUS.EVENT_TYPE_PUBLIC) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento no disponible para unirse",
+          details: "The specified event is not public",
+        },
+      });
+    }
+
+    if (event.status !== "active") {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento no disponible",
+          details: "The specified event is not active",
+        },
+      });
+    }
+
+    // Verificar capacidad disponible
+    const newBookedSlots = event.bookedSlots + bookingData.pax;
+    if (newBookedSlots > event.maxCapacity) {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida para este evento",
+          details: "Not enough capacity available for the requested number of participants",
+        },
+      });
+    }
+
+    // Obtener información del tour asociado
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(event.tourId);
+    const tourDoc = await tourRef.get();
+
+    if (!tourDoc.exists) {
+      return res.status(500).send({
+        error: {
+          code: "INTERNAL_ERROR",
+          message: "Error interno: tour asociado no encontrado",
+          details: "Associated tour does not exist",
+        },
+      });
+    }
+
+    const tour = tourDoc.data();
+    if (!tour.isActive) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour asociado al evento no disponible",
+          details: "The associated tour is not active",
+        },
+      });
+    }
+
+    // Crear la reserva en una transacción para garantizar consistencia
+    const bookingId = await db.runTransaction(async (transaction) => {
+      // Obtener datos actualizados del evento
+      const eventSnapshot = await transaction.get(eventRef);
+      const eventData = eventSnapshot.data();
+
+      // Verificar capacidad nuevamente (double-check para concurrencia)
+      const newBookedSlots = eventData.bookedSlots + bookingData.pax;
+      if (newBookedSlots > eventData.maxCapacity) {
+        throw new Error("CAPACITY_EXCEEDED");
+      }
+
+      // Calcular precio basado en el número de participantes
+      let pricePerPerson = 1000000; // Valor por defecto
+      if (tour.pricingTiers && Array.isArray(tour.pricingTiers)) {
+        // Buscar el precio adecuado según el número total de personas en el evento
+        const totalPax = newBookedSlots; // Número total de participantes en el evento
+        const pricingTier = tour.pricingTiers.find((tier) =>
+          totalPax >= (tier.paxFrom || tier.pax) && totalPax <= (tier.paxTo || tier.pax),
+        );
+        if (pricingTier) {
+          pricePerPerson = pricingTier.pricePerPerson || pricePerPerson;
+        }
+      }
+
+      // Calcular total
+      const totalPrice = pricePerPerson * bookingData.pax;
+
+      // Actualizar el evento para incrementar los slots reservados
+      transaction.update(eventRef, {
+        bookedSlots: newBookedSlots,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Crear la reserva
+      const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
+
+      const bookingDoc = {
+        bookingId: bookingRef.id,
+        eventId: eventRef.id,
+        tourId: event.tourId,
+        tourName: event.tourName, // Ya está denormalizado
+        customer: bookingData.customer,
+        pax: bookingData.pax,
+        pricePerPerson: pricePerPerson,
+        totalPrice: totalPrice,
+        bookingDate: admin.firestore.FieldValue.serverTimestamp(),
+        status: CONSTANTS.STATUS.BOOKING_PENDING,
+        statusHistory: [{
+          timestamp: new Date().toISOString(), // Using client timestamp since Firestore timestamps can't be in arrays
+          status: CONSTANTS.STATUS.BOOKING_PENDING,
+          note: "Joined to existing event",
+          adminUser: "system",
+        }],
+        isEventOrigin: false, // No creó el evento
+        ipAddress: clientIP,
+        bookingReference: generateBookingReference(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      transaction.set(bookingRef, bookingDoc);
+
+      return bookingRef.id;
+    });
+
+    // Registrar intento de reserva para rate limiting
+    await recordBookingAttempt(clientIP);
+
+    // Devolver éxit
+    return res.status(201).json({
+      success: true,
+      bookingId: bookingId,
+      bookingReference: generateBookingReference(),
+      status: CONSTANTS.STATUS.BOOKING_PENDING,
+      pricePerPerson: 1000000, // Temporal - debería ser el precio calculado
+      message: "Se ha unido exitosamente al evento.",
+    });
+  } catch (error) {
+    if (error.message === "CAPACITY_EXCEEDED") {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida para este evento",
+          details: "Not enough capacity available for the requested number of participants",
+        },
+      });
+    }
+
+    console.error("Error al unirse al evento:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la unión al evento",
+        details: error.message,
+      },
+    });
+  }
+};
+
+/**
+ * Verifica el estado de una reserva por código de referencia
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con la información de la reserva.
+ */
+const checkBooking = async (req, res) => {
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  try {
+    // Obtener parámetros de consulta
+    const {reference, email} = req.query;
+
+    if (!reference) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El código de referencia es obligatorio",
+          details: "reference parameter is required",
+        },
+      });
+    }
+
+    // Buscar la reserva por código de referencia
+    // En Firestore no se puede hacer una búsqueda directa por bookingReference
+    // así que buscaremos en la colección BOOKINGS
+    const bookingsQuery = await db.collection(CONSTANTS.COLLECTIONS.BOOKINGS)
+        .where("bookingReference", "==", reference)
+        .limit(1)
+        .get();
+
+    if (bookingsQuery.empty) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "No booking found with the provided reference",
+        },
+      });
+    }
+
+    const bookingDoc = bookingsQuery.docs[0];
+    const booking = {...bookingDoc.data(), bookingId: bookingDoc.id};
+
+    // Si se proporciona email, verificar que coincida (para seguridad adicional)
+    if (email && booking.customer.email !== email) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "No booking found with the provided reference and email combination",
+        },
+      });
+    }
+
+    // Obtener información adicional del tour y evento
+    let tour = null;
+    try {
+      const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(booking.tourId);
+      const tourDoc = await tourRef.get();
+      if (tourDoc.exists) {
+        tour = tourDoc.data();
+      }
+    } catch (e) {
+      console.warn("Error fetching tour info for booking:", e);
+    }
+
+    // Formatear respuesta
+    const response = {
+      bookingId: booking.bookingId,
+      eventId: booking.eventId,
+      tourId: booking.tourId,
+      tourName: tour ? tour.name : {es: booking.tourName, en: booking.tourName}, // Si no se pudo obtener el tour,
+      // usar el denormalizado
+      customer: {
+        fullName: booking.customer.fullName,
+      },
+      pax: booking.pax,
+      status: booking.status,
+      bookingDate: booking.bookingDate,
+      startDate: booking.startDate, // Esto estaría en el evento
+      pricePerPerson: booking.pricePerPerson,
+      totalPrice: booking.totalPrice,
+      bookingReference: booking.bookingReference,
+      isEventOrigin: booking.isEventOrigin,
+    };
+
+    // Obtener la fecha del evento
+    try {
+      const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(booking.eventId);
+      const eventDoc = await eventRef.get();
+      if (eventDoc.exists) {
+        const event = eventDoc.data();
+        response.startDate = event.startDate;
+        response.endDate = event.endDate;
+      }
+    } catch (e) {
+      console.warn("Error fetching event info for booking:", e);
+    }
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error("Error al verificar la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la verificación de reserva",
+        details: error.message,
+      },
+    });
+  }
+};
+
+/**
+ * Crea una nueva reserva para un tour en una fecha específica
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con la información de la reserva.
+ */
+const createBooking = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  try {
+    // Obtener IP del cliente para rate limiting
+    const clientIP = getClientIP(req);
+
+    // Verificar rate limiting
+    const isLimited = await isRateLimited(clientIP);
+    if (isLimited) {
+      return res.status(403).send({
+        error: {
+          code: "RATE_LIMIT_EXCEEDED",
+          message: "Demasiadas solicitudes desde esta dirección IP. Intente de nuevo más tarde.",
+          details: "Rate limit exceeded",
+        },
+      });
+    }
+
+    // Validar datos de entrada
+    const bookingData = req.body;
+
+    // Validar campos requeridos
+    if (!bookingData.tourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tourId es obligatorio",
+          details: "tourId is required",
+        },
+      });
+    }
+
+    if (!bookingData.startDate) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha de inicio es obligatoria",
+          details: "startDate is required",
+        },
+      });
+    }
+
+    if (!bookingData.customer || !bookingData.customer.fullName ||
+        !bookingData.customer.documentId || !bookingData.customer.phone ||
+        !bookingData.customer.email) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La información del cliente es incompleta",
+          details: "fullName, documentId, phone, and email are required in customer object",
+        },
+      });
+    }
+
+    if (!bookingData.pax || bookingData.pax <= 0) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El número de participantes debe ser un número positivo",
+          details: "pax must be a positive number",
+        },
+      });
+    }
+
+    // Validar que la fecha sea válida
+    const startDate = new Date(bookingData.startDate);
+    if (isNaN(startDate.getTime())) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha proporcionada no es válida",
+          details: "startDate is not a valid date",
+        },
+      });
+    }
+
+    // Verificar que el tour exista y esté activo
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(bookingData.tourId);
+    const tourDoc = await tourRef.get();
+
+    if (!tourDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no encontrado o no disponible",
+          details: "The specified tour does not exist or is inactive",
+        },
+      });
+    }
+
+    const tour = tourDoc.data();
+    if (!tour.isActive) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no disponible",
+          details: "The specified tour is not active",
+        },
+      });
+    }
+
+    // Crear o encontrar un evento para esta fecha
+    let eventRef;
+    let eventExists = false;
+
+    // Buscar si ya existe un evento para este tour y fecha
+    const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
+        .where("tourId", "==", bookingData.tourId)
+        .where("startDate", "==", startDate)
+        .limit(1)
+        .get();
+
+    if (!eventsQuery.empty) {
+      // Usar evento existente
+      eventRef = eventsQuery.docs[0].ref;
+      eventExists = true;
+    } else {
+      // Crear nuevo evento privado
+      const newEvent = {
+        tourId: bookingData.tourId,
+        tourName: tour.name.es, // Denormalizado para optimización
+        startDate: startDate,
+        endDate: new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 días después, por ejemplo
+        maxCapacity: 8, // Capacidad por defecto
+        bookedSlots: 0, // Inicializado en 0
+        type: CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Privado inicialmente
+        status: "active",
+        totalBookings: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+      eventRef = createdEvent;
+      eventExists = false;
+    }
+
+    // Ahora crear la reserva en una transacción para garantizar consistencia
+    const bookingId = await db.runTransaction(async (transaction) => {
+      // Obtener datos actualizados del evento
+      const eventSnapshot = await transaction.get(eventRef);
+      const eventData = eventSnapshot.data();
+
+      // Verificar capacidad
+      const newBookedSlots = eventData.bookedSlots + bookingData.pax;
+      if (newBookedSlots > eventData.maxCapacity) {
+        throw new Error("CAPACITY_EXCEEDED");
+      }
+
+      // Calcular precio basado en el número de participantes (usando precios predefinidos del tour si existen)
+      // Por ahora, usamos un precio por defecto o el del tour si está disponible
+      let pricePerPerson = 1000000; // Valor por defecto
+      if (tour.pricingTiers && Array.isArray(tour.pricingTiers)) {
+        // Buscar el precio adecuado según el número de personas
+        const pricingTier = tour.pricingTiers.find((tier) =>
+          bookingData.pax >= (tier.paxFrom || tier.pax) && bookingData.pax <= (tier.paxTo || tier.pax),
+        );
+        if (pricingTier) {
+          pricePerPerson = pricingTier.pricePerPerson || pricePerPerson;
+        }
+      }
+
+      // Calcular total
+      const totalPrice = pricePerPerson * bookingData.pax;
+
+      // Actualizar el evento para incrementar los slots reservados
+      transaction.update(eventRef, {
+        bookedSlots: newBookedSlots,
+        totalBookings: (eventData.totalBookings || 0) + 1,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Crear la reserva
+      const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
+
+      const bookingDoc = {
+        bookingId: bookingRef.id,
+        eventId: eventRef.id,
+        tourId: bookingData.tourId,
+        tourName: tour.name.es, // Denormalizado
+        customer: bookingData.customer,
+        pax: bookingData.pax,
+        pricePerPerson: pricePerPerson,
+        totalPrice: totalPrice,
+        bookingDate: admin.firestore.FieldValue.serverTimestamp(),
+        status: CONSTANTS.STATUS.BOOKING_PENDING,
+        statusHistory: [{
+          timestamp: new Date().toISOString(), // Using client timestamp since Firestore timestamps can't be in arrays
+          status: CONSTANTS.STATUS.BOOKING_PENDING,
+          note: "Initial booking created",
+          adminUser: "system",
+        }],
+        isEventOrigin: !eventExists, // Indica si esta reserva creó el evento
+        ipAddress: clientIP,
+        bookingReference: generateBookingReference(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      transaction.set(bookingRef, bookingDoc);
+
+      return bookingRef.id;
+    });
+
+    // Registrar intento de reserva para rate limiting
+    await recordBookingAttempt(clientIP);
+
+    // Devolver éxito
+    return res.status(201).json({
+      success: true,
+      bookingId: bookingId,
+      bookingReference: generateBookingReference(),
+      status: CONSTANTS.STATUS.BOOKING_PENDING,
+      message: "Reserva creada exitosamente. Por favor tome nota de su código de referencia.",
+    });
+  } catch (error) {
+    if (error.message === "CAPACITY_EXCEEDED") {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida para esta fecha",
+          details: "Not enough capacity available for the requested number of participants",
+        },
+      });
+    }
+
+    console.error("Error al crear la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la reserva",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -418,6 +1155,8 @@ module.exports = {
   adminCreateTourV2: functions.https.onRequest(adminCreateTour),
   adminUpdateTourV2: functions.https.onRequest(adminUpdateTour),
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
-  // Más funciones se agregarán aquí. Por ejemplo:
-  // createBooking: functions.https.onRequest(createBookingFlow)
+  createBooking: functions.https.onRequest(createBooking),
+  joinEvent: functions.https.onRequest(joinEvent),
+  checkBooking: functions.https.onRequest(checkBooking),
+  // Más funciones se agregarán aquí
 };
