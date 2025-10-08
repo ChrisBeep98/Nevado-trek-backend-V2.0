@@ -36,7 +36,7 @@ nevado-trek-backend/
 
 ## Funcionalidades Implementadas
 
-### 1. GET /tours - Endpoint Público de Tours
+### 1. GET /getToursV2 - Endpoint Público de Tours
 
 **Descripción**: Endpoint que permite obtener la lista de tours activos disponibles.
 
@@ -46,8 +46,9 @@ nevado-trek-backend/
 - Manejo apropiado de errores HTTP
 - Devuelve `200 OK` con array vacío si no hay tours
 - Devuelve `500 Internal Server Error` en caso de errores
+- URL: `https://us-central1-nevadotrektest01.cloudfunctions.net/getToursV2`
 
-### 2. GET /tours/:tourId - Endpoint Público de Tour Individual
+### 2. GET /getTourByIdV2 - Endpoint Público de Tour Individual
 
 **Descripción**: Endpoint que permite obtener un tour específico por su ID.
 
@@ -57,8 +58,9 @@ nevado-trek-backend/
 - Validación de parámetros de URL
 - Manejo apropiado de errores HTTP
 - Devuelve `404 Not Found` si el tour no existe o no está activo
+- URL: `https://us-central1-nevadotrektest01.cloudfunctions.net/getTourByIdV2`
 
-### 3. POST /admin/tours - Endpoint de Administración para Crear Tours
+### 3. POST /adminCreateTourV2 - Endpoint de Administración para Crear Tours
 
 **Descripción**: Endpoint protegido que permite a administradores crear nuevos tours.
 
@@ -70,8 +72,9 @@ nevado-trek-backend/
 - Devuelve `201 Created` en caso de éxito
 - Devuelve `400 Bad Request` para datos inválidos
 - Devuelve `401 Unauthorized` si la autenticación falla
+- URL: `https://us-central1-nevadotrektest01.cloudfunctions.net/adminCreateTourV2`
 
-### 4. PUT /admin/tours/:tourId - Endpoint de Administración para Actualizar Tours
+### 4. PUT /adminUpdateTourV2 - Endpoint de Administración para Actualizar Tours
 
 **Descripción**: Endpoint protegido que permite a administradores actualizar tours existentes.
 
@@ -84,10 +87,20 @@ nevado-trek-backend/
 - Devuelve `400 Bad Request` para datos inválidos
 - Devuelve `401 Unauthorized` si la autenticación falla
 - Devuelve `404 Not Found` si el tour no existe
+- URL: `https://us-central1-nevadotrektest01.cloudfunctions.net/adminUpdateTourV2`
 
-**URL**: 
-- Local: `http://localhost:5001/[project-id]/us-central1/getTours`
-- Producción: `https://[project-id].cloudfunctions.net/getTours`
+### 5. DELETE /adminDeleteTourV2 - Endpoint de Administración para Eliminar Tours
+
+**Descripción**: Endpoint protegido que permite a administradores eliminar tours existentes (eliminación lógica).
+
+**Características**:
+- Requiere autenticación con header `X-Admin-Secret-Key`
+- Realiza eliminación lógica marcando `isActive` como `false`
+- Actualiza marca de tiempo de modificación
+- Devuelve `200 OK` en caso de éxito
+- Devuelve `401 Unauthorized` si la autenticación falla
+- Devuelve `404 Not Found` si el tour no existe
+- URL: `https://us-central1-nevadotrektest01.cloudfunctions.net/adminDeleteTourV2`
 
 ### 2. Sistema de Constantes
 

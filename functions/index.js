@@ -327,6 +327,65 @@ const adminUpdateTour = async (req, res) => {
   }
 };
 
+/**
+ * Elimina lógicamente un tour existente (marca como inactivo).
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta de eliminación del tour.
+ */
+const adminDeleteTour = async (req, res) => {
+  // Verificamos que sea una solicitud DELETE
+  if (req.method !== "DELETE") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraemos el tourId de la URL
+    const tourId = req.params.tourId || req.path.split("/")[3];
+
+    if (!tourId) {
+      return res.status(400).send({
+        message: "Bad Request: tourId is required in the URL path",
+      });
+    }
+
+    // Marcamos el tour como inactivo (eliminación lógica)
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(tourId);
+    const docSnapshot = await tourRef.get();
+
+    if (!docSnapshot.exists) {
+      return res.status(404).send({
+        message: "Tour not found",
+      });
+    }
+
+    // Actualizamos el tour estableciendo isActive a false
+    // y actualizamos la fecha
+    await tourRef.update({
+      isActive: false,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Devolvemos confirmación de eliminación exitosa
+    return res.status(200).json({
+      success: true,
+      tourId: tourId,
+      message: "Tour deleted successfully (marked as inactive)",
+    });
+  } catch (error) {
+    console.error("Error al eliminar el tour:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -334,10 +393,11 @@ const adminUpdateTour = async (req, res) => {
 // Exporta la función para que se active mediante una solicitud HTTP.
 // El nombre de la URL será /tours (ej: /api/getTours)
 module.exports = {
-  getTours: functions.https.onRequest(getToursList),
-  getTourById: functions.https.onRequest(getTourById),
-  adminCreateTour: functions.https.onRequest(adminCreateTour),
-  adminUpdateTour: functions.https.onRequest(adminUpdateTour),
+  getToursV2: functions.https.onRequest(getToursList),
+  getTourByIdV2: functions.https.onRequest(getTourById),
+  adminCreateTourV2: functions.https.onRequest(adminCreateTour),
+  adminUpdateTourV2: functions.https.onRequest(adminUpdateTour),
+  adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
   // Más funciones se agregarán aquí. Por ejemplo:
   // createBooking: functions.https.onRequest(createBookingFlow)
 };

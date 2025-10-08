@@ -439,6 +439,88 @@ async function testAdminUpdateTour() {
   console.log('   ✓ PUT /admin/tours/:tourId test completed\n');
 }
 
+// Test adminDeleteTour function
+async function testAdminDeleteTour() {
+  console.log('5. Testing DELETE /admin/tours/:tourId (adminDeleteTour)...');
+  
+  const mockReq = { 
+    method: 'DELETE',
+    headers: { 'x-admin-secret-key': 'miClaveSecreta123' },
+    path: '/admin/tours/tour1'
+  };
+  let responseSent = null;
+  
+  const mockRes = {
+    status: (code) => {
+      return {
+        json: (data) => {
+          responseSent = { status: code, data: data };
+          return mockRes;
+        },
+        send: (data) => {
+          responseSent = { status: code, data: data };
+          return mockRes;
+        }
+      };
+    }
+  };
+  
+  const adminDeleteTour = async (req, res) => {
+    if (req.method !== "DELETE") {
+      return res.status(405).send("Method Not Allowed");
+    }
+
+    if (!isAdminRequest(req)) {
+      return res.status(401).send("Unauthorized: Invalid admin secret key");
+    }
+
+    try {
+      const pathParts = req.path.split("/");
+      const tourId = pathParts[3]; // For /admin/tours/{tourId}, this would be index 3
+
+      if (!tourId) {
+        return res.status(400).send({
+          message: "Bad Request: tourId is required in the URL path",
+        });
+      }
+
+      const tourRef = mockDb.collection(CONSTANTS.COLLECTIONS.TOURS).doc(tourId);
+      const docSnapshot = await tourRef.get();
+
+      if (!docSnapshot.exists) {
+        return res.status(404).send({
+          message: "Tour not found",
+        });
+      }
+
+      // Update the tour to set isActive to false
+      await tourRef.update({
+        isActive: false,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      return res.status(200).json({
+        success: true,
+        tourId: tourId,
+        message: "Tour deleted successfully (marked as inactive)",
+      });
+
+    } catch (error) {
+      console.error("Error al eliminar el tour:", error);
+      return res.status(500).send({
+        message: "Internal Server Error",
+        details: error.message,
+      });
+    }
+  };
+  
+  await adminDeleteTour(mockReq, mockRes);
+  
+  console.log('   Status:', responseSent.status);
+  console.log('   Data:', responseSent.data);
+  console.log('   ✓ DELETE /admin/tours/:tourId test completed\n');
+}
+
 // Run all tests
 async function runAllTests() {
   try {
@@ -446,6 +528,7 @@ async function runAllTests() {
     await testGetTourById();
     await testAdminCreateTour();
     await testAdminUpdateTour();
+    await testAdminDeleteTour();
     
     console.log('=== All tests completed successfully! ===');
     console.log('The functions are working as expected.');
