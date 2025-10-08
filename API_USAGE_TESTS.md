@@ -163,6 +163,55 @@
 - **Authentication**: `X-Admin-Secret-Key` header required
 - **Response**: `200 OK` or error codes
 
+### Admin Booking Endpoints (Phase 2B)
+
+#### 9. GET /adminGetBookings
+- **URL**: https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetBookings
+- **Method**: GET
+- **Description**: List all bookings with filtering capabilities
+- **Authentication**: `X-Admin-Secret-Key` header required
+- **Query Parameters**:
+  - `status` (optional) - Filter by booking status
+  - `tourId` (optional) - Filter by tour ID
+  - `startDateFrom` (optional) - Filter by booking date from (ISO date string)
+  - `startDateTo` (optional) - Filter by booking date to (ISO date string)
+  - `customerName` (optional) - Filter by customer full name
+  - `limit` (optional) - Number of results per page (default: 50, max: 200)
+  - `offset` (optional) - Number of results to skip (for pagination)
+- **Response**: `200 OK` with paginated list of bookings
+- **Example Request**:
+  ```bash
+  curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+    "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetBookings?status=pending&limit=10"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "bookings": [
+      {
+        "bookingId": "string",
+        "eventId": "string",
+        "tourId": "string",
+        "customer": {
+          "fullName": "string",
+          "documentId": "string",
+          "phone": "string",
+          "email": "string"
+        },
+        "pax": "number",
+        "status": "pending",
+        "...": "other fields"
+      }
+    ],
+    "count": 1,
+    "pagination": {
+      "limit": 10,
+      "offset": 0,
+      "hasMore": false
+    }
+  }
+  ```
+
 ## Error Handling & Response Format
 
 ### Standard Error Format
@@ -250,7 +299,7 @@ A test script can be created to verify all endpoints work as expected, including
 
 ## Deployment Verification
 After deployment, verify:
-1. All 8 endpoints return 200/expected responses
+1. All 9 endpoints return 200/expected responses
 2. Rate limiting is active on booking endpoints
 3. Admin authentication blocks unauthorized access
 4. Data persists in Firestore collections

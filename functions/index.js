@@ -1143,6 +1143,146 @@ const createBooking = async (req, res) => {
   }
 };
 
+/**
+ * Obtiene la lista de todas las reservas con capacidades de filtrado
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con la lista de reservas filtradas.
+ */
+const adminGetBookings = async (req, res) => {
+  // Verificamos que sea una solicitud GET
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraemos los parámetros de consulta para filtrado y paginación
+    const {
+      status,
+      tourId,
+      startDateFrom,
+      startDateTo,
+      customerName,
+      limit: limitParam,
+      offset: offsetParam,
+    } = req.query;
+
+    // Inicializamos la consulta base
+    let bookingsQuery = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS);
+
+    // Aplicamos los filtros según los parámetros recibidos
+    if (status) {
+      // Asumimos que status es un solo valor; en el futuro podría extenderse para múltiples valores
+      bookingsQuery = bookingsQuery.where("status", "==", status);
+    }
+
+    if (tourId) {
+      bookingsQuery = bookingsQuery.where("tourId", "==", tourId);
+    }
+
+    // Filtrar por rango de fechas (asumiendo bookingDate en la reserva)
+    if (startDateFrom) {
+      const from = new Date(startDateFrom);
+      if (!isNaN(from.getTime())) {
+        bookingsQuery = bookingsQuery.where("bookingDate", ">=", admin.firestore.Timestamp.fromDate(from));
+      }
+    }
+
+    if (startDateTo) {
+      // Ajustamos para que cubra toda la fecha final (hasta el final del día)
+      const to = new Date(startDateTo);
+      to.setDate(to.getDate() + 1); // Agregamos un día
+      if (!isNaN(to.getTime())) {
+        bookingsQuery = bookingsQuery.where("bookingDate", "<", admin.firestore.Timestamp.fromDate(to));
+      }
+    }
+
+    // Filtrar por nombre de cliente (búsqueda exacta por ahora,
+    // las búsquedas de texto completo requieren índices especiales en Firestore)
+    if (customerName) {
+      // Para búsquedas parciales, necesitaríamos índices de texto o almacenar
+      // variantes del nombre, por ahora usamos coincidencia exacta
+      bookingsQuery = bookingsQuery.where("customer.fullName", "==", customerName);
+    }
+
+    // Aplicar paginación si se proporciona
+    let limit = 50; // Límite por defecto
+    if (limitParam && !isNaN(parseInt(limitParam))) {
+      limit = parseInt(limitParam);
+      // Establecer un límite máximo para prevenir consultas muy pesadas
+      limit = Math.min(limit, 200);
+    }
+
+    bookingsQuery = bookingsQuery.limit(limit);
+
+    // Aplicar offset si se proporciona (usando startAfter)
+    if (offsetParam && !isNaN(parseInt(offsetParam)) && parseInt(offsetParam) > 0) {
+      const offset = parseInt(offsetParam);
+      // Para usar startAfter, necesitamos el documento en la posición offset-1
+      const offsetQuery = bookingsQuery.limit(offset);
+      const offsetSnapshot = await offsetQuery.get();
+
+      if (!offsetSnapshot.empty && offsetSnapshot.docs.length === offset) {
+        const lastDoc = offsetSnapshot.docs[offset - 1];
+        bookingsQuery = bookingsQuery.startAfter(lastDoc);
+      }
+    }
+
+    // Ejecutamos la consulta
+    const snapshot = await bookingsQuery.get();
+
+    if (snapshot.empty) {
+      // No hay reservas que coincidan con los filtros
+      return res.status(200).json({
+        bookings: [],
+        count: 0,
+        pagination: {
+          limit: limit,
+          offset: offsetParam ? parseInt(offsetParam) : 0,
+          hasMore: false,
+        },
+      });
+    }
+
+    // Mapeamos los documentos de Firestore a un array de objetos JSON
+    const bookings = snapshot.docs.map((doc) => ({
+      bookingId: doc.id,
+      ...doc.data(),
+    }));
+
+    // Determinamos si hay más resultados para paginación
+    let hasMore = false;
+    if (bookings.length === limit) {
+      // Verificamos si hay un documento adicional para indicar si hay más resultados
+      const nextQuery = bookingsQuery.limit(1);
+      const nextSnapshot = await nextQuery.get();
+      hasMore = !nextSnapshot.empty;
+    }
+
+    // Devolvemos la lista de reservas con información de paginación
+    return res.status(200).json({
+      bookings: bookings,
+      count: bookings.length,
+      pagination: {
+        limit: limit,
+        offset: offsetParam ? parseInt(offsetParam) : 0,
+        hasMore: hasMore,
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener la lista de reservas:", error);
+    return res.status(500).send({
+      message: "Internal Server Error",
+      details: error.message,
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1155,6 +1295,7 @@ module.exports = {
   adminCreateTourV2: functions.https.onRequest(adminCreateTour),
   adminUpdateTourV2: functions.https.onRequest(adminUpdateTour),
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
+  adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),
