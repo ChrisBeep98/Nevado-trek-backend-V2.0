@@ -155,18 +155,22 @@ module.exports = {
 
 ### Completado
 - ✅ Implementación base de Cloud Functions
-- ✅ Endpoint GET /tours para listar tours activos
+- ✅ Endpoint GET /getToursV2 para listar tours activos
+- ✅ Endpoint GET /getTourByIdV2 para obtener tour específico
+- ✅ Endpoint POST /adminCreateTourV2 para crear tours
+- ✅ Endpoint PUT /adminUpdateTourV2 para actualizar tours (corregido para extraer tourId del path)
+- ✅ Endpoint DELETE /adminDeleteTourV2 para eliminar tours (corregido para extraer tourId del path)
 - ✅ Sistema de constantes centralizado
 - ✅ Middleware de autenticación para admin
 - ✅ Validación y manejo de errores
 - ✅ Cumplimiento de estándares de calidad de código (linting)
 - ✅ Documentación actualizada
+- ✅ Despliegue exitoso a Firebase
+- ✅ Pruebas funcionales completadas con éxito
 
 ### Próximos Pasos
-- 🔜 Implementación de endpoints de administración (crear, editar, eliminar tours)
 - 🔜 Implementación de sistema de reservas
 - 🔜 Implementación de sistema de autenticación
-- 🔜 Despliegue a producción
 - 🔜 Integración con frontend
 
 ## Consideraciones de Seguridad
