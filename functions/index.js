@@ -1283,6 +1283,174 @@ const adminGetBookings = async (req, res) => {
   }
 };
 
+/**
+ * Actualiza el estado de una reserva existente
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta de actualización del estado de la reserva.
+ */
+const adminUpdateBookingStatus = async (req, res) => {
+  // Verificamos que sea una solicitud PUT
+  if (req.method !== "PUT") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraer el bookingId de la URL
+    const pathParts = req.path.split("/");
+    let bookingId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "" && pathParts[i] !== "status") {
+        bookingId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio en la URL",
+          details: "bookingId is required in the URL path",
+        },
+      });
+    }
+
+    // Obtener el nuevo estado del cuerpo de la solicitud
+    const {status: newStatus, reason} = req.body; // reason is optional for additional context
+
+    if (!newStatus) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El nuevo estado (status) es obligatorio",
+          details: "New status is required in the request body",
+        },
+      });
+    }
+
+    // Validar que el nuevo estado sea uno de los permitidos
+    const validStatuses = [
+      CONSTANTS.STATUS.BOOKING_PENDING,
+      CONSTANTS.STATUS.BOOKING_CONFIRMED,
+      CONSTANTS.STATUS.BOOKING_PAID,
+      CONSTANTS.STATUS.BOOKING_CANCELLED,
+      CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN,
+    ];
+
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: `Estado no válido. Los estados válidos son: ${validStatuses.join(", ")}`,
+          details: `Valid statuses are: ${validStatuses.join(", ")}`,
+        },
+      });
+    }
+
+    // Verificar que la reserva exista
+    const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    }
+
+    const bookingData = bookingDoc.data();
+    const currentStatus = bookingData.status;
+
+    // No permitimos ciertos cambios de estado, por ejemplo, de cancelled a paid
+    // Permitiremos solo transiciones lógicas de estado
+    // De cancelled no se debería de poder cambiar a otro estado normalmente
+    if (currentStatus === CONSTANTS.STATUS.BOOKING_CANCELLED &&
+        ![CONSTANTS.STATUS.BOOKING_CANCELLED].includes(newStatus)) {
+      // Si la reserva ya está cancelada, solo se puede dejarla cancelada o marcar como cancelada por admin
+      if (newStatus !== CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+        return res.status(400).send({
+          error: {
+            code: "INVALID_DATA",
+            message: "No se puede cambiar el estado de una reserva cancelada a otro estado diferente",
+            details: "Cannot change status of a cancelled booking",
+          },
+        });
+      }
+    }
+
+    // Crear nuevo historial de estado con la actualización
+    const newStatusHistoryEntry = {
+      timestamp: new Date().toISOString(),
+      status: newStatus,
+      note: reason || `Status updated by admin`,
+      adminUser: "system", // En una implementación más completa, aquí iría el ID del admin real
+    };
+
+    // Actualizar la reserva: estado y agregar al historial
+    const updatedStatusHistory = [...(bookingData.statusHistory || []), newStatusHistoryEntry];
+
+    // Si el estado cambia a "cancelled_by_admin" o "cancelled", podría requerir actualizaciones de capacidad
+    let capacityUpdate = {};
+    if (newStatus === CONSTANTS.STATUS.BOOKING_CANCELLED ||
+        newStatus === CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+      // Si la reserva se cancela, incrementamos la capacidad disponible en el evento
+      // Primero obtenemos el evento para actualizar la capacidad
+      const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+      const eventDoc = await eventRef.get();
+
+      if (eventDoc.exists) {
+        const eventData = eventDoc.data();
+        const newBookedSlots = Math.max(0, (eventData.bookedSlots || 0) - bookingData.pax);
+        capacityUpdate = {bookedSlots: newBookedSlots};
+      }
+    }
+
+    // Actualizar la reserva en Firestore
+    await bookingRef.update({
+      status: newStatus,
+      statusHistory: updatedStatusHistory,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      ...capacityUpdate,
+    });
+
+    // Si se requirió actualización de capacidad, también la aplicamos al evento
+    if (Object.keys(capacityUpdate).length > 0) {
+      const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+      await eventRef.update({
+        ...capacityUpdate,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    // Devolver confirmación de actualización exitosa
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingId,
+      message: "Estado de la reserva actualizado exitosamente",
+      previousStatus: currentStatus,
+      newStatus: newStatus,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el estado de la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la actualización de estado",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1296,6 +1464,7 @@ module.exports = {
   adminUpdateTourV2: functions.https.onRequest(adminUpdateTour),
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
+  adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatus), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),

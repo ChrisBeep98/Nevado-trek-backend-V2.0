@@ -40,7 +40,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 - **Objective**: Update booking status with audit trail
 - **Endpoint**: PUT /admin/bookings/:bookingId/status
 - **Features**: Status validation, history logging, capacity updates
-- **Status**: PLANNED
+- **Status**: COMPLETE - Deployed and tested
 
 ### Task 3: GET /admin/events/calendar (Priority: MEDIUM)
 - **Objective**: Calendar view of events
@@ -85,7 +85,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 ### 🔄 In Progress
 - [x] Phase 2B planning and implementation  
 - [x] Admin booking management endpoints (Task 1 completed)
-- [ ] Admin booking status updates (Task 2 in progress)
+- [x] Admin booking status updates (Task 2 completed)
 
 ### 📋 Next Immediate Tasks
 1. **Implement PUT /admin/bookings/:bookingId/status** endpoint
@@ -146,7 +146,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 4. Plan subsequent Phase 2B endpoints
 
 ## Current Status Summary
-- **Functions Deployed**: 9/9 operational (added adminGetBookings)
+- **Functions Deployed**: 10/10 operational (added adminUpdateBookingStatus)
 - **Phases Complete**: 2/5 (Phase 1, 2A)  
-- **Current Phase**: 2B in progress
-- **Next Action**: Implement PUT /admin/bookings/:bookingId/status endpoint (Task 2)
+- **Current Phase**: 2B in progress (Tasks 1 & 2 complete)
+- **Next Action**: Implement GET /admin/events/calendar endpoint (Task 3)
