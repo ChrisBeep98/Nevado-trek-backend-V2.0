@@ -266,10 +266,19 @@ const adminUpdateTour = async (req, res) => {
   }
 
   try {
-    // Extraemos el tourId de la URL (asumiendo que se configura como
-    // /admin/tours/{tourId})
-    // /admin/tours/{tourId}
-    const tourId = req.params.tourId || req.path.split("/")[3];
+    // Extraemos el tourId de la URL. Con las Cloud Functions HTTP,
+    // el formato de URL es
+    // https://region-project.cloudfunctions.net/functionName/{tourId}
+    // Entonces usamos req.path para obtener la parte después del nombre
+    const pathParts = req.path.split("/");
+    // El tourId debería ser el último segmento no vacío de la URL
+    let tourId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "") {
+        tourId = pathParts[i];
+        break;
+      }
+    }
 
     if (!tourId) {
       return res.status(400).send({
@@ -345,8 +354,19 @@ const adminDeleteTour = async (req, res) => {
   }
 
   try {
-    // Extraemos el tourId de la URL
-    const tourId = req.params.tourId || req.path.split("/")[3];
+    // Extraemos el tourId de la URL. Con las Cloud Functions HTTP,
+    // el formato de URL es
+    // https://region-project.cloudfunctions.net/functionName/{tourId}
+    // Entonces usamos req.path para obtener la parte después del nombre
+    const pathParts = req.path.split("/");
+    // El tourId debería ser el último segmento no vacío de la URL
+    let tourId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "") {
+        tourId = pathParts[i];
+        break;
+      }
+    }
 
     if (!tourId) {
       return res.status(400).send({
