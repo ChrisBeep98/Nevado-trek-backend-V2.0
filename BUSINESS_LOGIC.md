@@ -35,6 +35,13 @@ Complete reservation system for adventure tour management with:
 - **Event Types**: Private (individual booking origin) and public (joinable by multiple customers) events
 - **Event Statuses**: active, full, completed, cancelled
 - **Capacity Management**: Real-time capacity tracking for events
+- **Publish/Unpublish Control**: Admin can toggle event visibility between private and public
+
+### 6. Event Visibility Management
+- **Public Events**: Joinable by multiple customers, visible to joinEvent endpoint
+- **Private Events**: Only accessible to original booking customer
+- **Admin Control**: Administrators can change event visibility at any time
+- **Validation**: System prevents invalid state transitions
 
 ## Business Rules
 

@@ -1597,6 +1597,112 @@ const adminGetEventsCalendar = async (req, res) => {
   }
 };
 
+/**
+ * Publica o despublica un evento (cambia entre privado y público)
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con el resultado de la operación.
+ */
+const adminPublishEvent = async (req, res) => {
+  // Verificamos que sea una solicitud POST
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraer el eventId de la URL
+    const pathParts = req.path.split("/");
+    let eventId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "") {
+        // Verificar si este segmento es parte del endpoint publish
+        if (pathParts[i] !== "publish" && pathParts[i] !== "unpublish") {
+          eventId = pathParts[i];
+          break;
+        }
+      }
+    }
+
+    if (!eventId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El eventId es obligatorio en la URL",
+          details: "eventId is required in the URL path",
+        },
+      });
+    }
+
+    // Obtener la acción del cuerpo de la solicitud o usar publish por defecto
+    const {action} = req.body; // action can be 'publish' or 'unpublish'
+    let newType;
+
+    if (action === "unpublish" || action === "private") {
+      newType = CONSTANTS.STATUS.EVENT_TYPE_PRIVATE;
+    } else {
+      // Default to publish/public if action is 'publish', 'public', or not specified
+      newType = CONSTANTS.STATUS.EVENT_TYPE_PUBLIC;
+    }
+
+    // Verificar que el evento exista
+    const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(eventId);
+    const eventDoc = await eventRef.get();
+
+    if (!eventDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento no encontrado",
+          details: "The specified event does not exist",
+        },
+      });
+    }
+
+    const eventData = eventDoc.data();
+    const currentType = eventData.type;
+
+    // No permitir ciertas transiciones que no tienen sentido
+    if (currentType === newType) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: `El evento ya está en el estado deseado (${newType})`,
+          details: `Event is already ${newType}`,
+        },
+      });
+    }
+
+    // Actualizar el evento tipo
+    await eventRef.update({
+      type: newType,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Devolver confirmación de actualización exitosa
+    return res.status(200).json({
+      success: true,
+      eventId: eventId,
+      message: `Evento actualizado exitosamente a ${newType}`,
+      previousType: currentType,
+      newType: newType,
+    });
+  } catch (error) {
+    console.error("Error al publicar/despublicar el evento:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la solicitud de publicación",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1612,6 +1718,7 @@ module.exports = {
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
   adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatus), // Nuevo endpoint
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
+  adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),

@@ -262,6 +262,39 @@
   ```
 - **Deployment Status**: ✅ Deployed and fully functional
 
+#### 11. POST /adminPublishEvent/:eventId
+- **URL**: https://us-central1-nevadotrektest01.cloudfunctions.net/adminPublishEvent/{eventId}
+- **Method**: POST
+- **Description**: Publish or unpublish an event (toggle between public/private)
+- **Authentication**: `X-Admin-Secret-Key` header required
+- **Request Body**:
+  ```json
+  {
+    "action": "publish" | "unpublish"  // Optional, defaults to "publish"
+  }
+  ```
+- **URL Parameters**:
+  - `eventId` (required) - ID of the event to publish/unpublish
+- **Response**: `200 OK` with operation result, or appropriate error code
+- **Example Request**:
+  ```bash
+  curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
+    -H "Content-Type: application/json" \
+    -d '{"action":"publish"}' \
+    "https://us-central1-nevadotrektest01.cloudfunctions.net/adminPublishEvent/abc123"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "success": true,
+    "eventId": "abc123",
+    "message": "Evento actualizado exitosamente a public",
+    "previousType": "private",
+    "newType": "public"
+  }
+  ```
+- **Deployment Status**: ✅ Deployed and fully functional
+
 ## Error Handling & Response Format
 
 ### Standard Error Format
