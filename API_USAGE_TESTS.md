@@ -295,6 +295,42 @@
   ```
 - **Deployment Status**: ✅ Deployed and fully functional
 
+#### 12. POST /adminTransferBooking/:bookingId
+- **URL**: https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/{bookingId}
+- **Method**: POST
+- **Description**: Transfer a booking from one event to another
+- **Authentication**: `X-Admin-Secret-Key` header required
+- **Request Body**:
+  ```json
+  {
+    "destinationEventId": "string",  // Required: ID of the destination event
+    "reason": "string"               // Optional: Reason for the transfer
+  }
+  ```
+- **URL Parameters**:
+  - `bookingId` (required) - ID of the booking to transfer
+- **Response**: `200 OK` with transfer result, or appropriate error code
+- **Example Request**:
+  ```bash
+  curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
+    -H "Content-Type: application/json" \
+    -d '{"destinationEventId":"def456","reason":"Change of date requested by customer"}' \
+    "https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/abc123"
+  ```
+- **Example Response**:
+  ```json
+  {
+    "success": true,
+    "bookingId": "abc123",
+    "message": "Reserva transferida exitosamente",
+    "previousEventId": "oldEventId",
+    "newEventId": "def456",
+    "pax": 2,
+    "reason": "Change of date requested by customer"
+  }
+  ```
+- **Deployment Status**: ✅ Deployed and fully functional
+
 ## Error Handling & Response Format
 
 ### Standard Error Format
