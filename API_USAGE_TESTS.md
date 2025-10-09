@@ -428,7 +428,7 @@ curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
   -d '{"action":"publish"}' \
   "https://adminpublishevent-wgfhwjbpva-uc.a.run.app/EVENT_ID"
 
-# Transfer booking (admin)
+# Transfer booking (admin) - NOTE: bookingId is in URL path
 curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
   -H "Content-Type: application/json" \
   -d '{"destinationEventId":"NEW_EVENT_ID","reason":"Transfer test"}' \
