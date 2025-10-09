@@ -361,6 +361,111 @@ Run existing unit tests:
 node test_functions.js
 ```
 
+### Comprehensive API Testing
+Run the complete test suite to verify all 13 functions:
+```bash
+node final_mvp_verification.js
+```
+
+### Manual Testing via cURL
+
+#### Test Public Tours
+```bash
+# Get all active tours
+curl https://gettoursv2-wgfhwjbpva-uc.a.run.app
+
+# Get specific tour
+curl https://gettourbyidv2-wgfhwjbpva-uc.a.run.app/Sq59WCxZyMZaSWNovcse
+```
+
+#### Test Booking Functions
+```bash
+# Create booking (use valid tourId from GET /tours)
+curl -X POST https://createbooking-wgfhwjbpva-uc.a.run.app \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tourId": "Sq59WCxZyMZaSWNovcse",
+    "startDate": "2025-12-15T07:00:00Z",
+    "customer": {
+      "fullName": "Test Customer",
+      "documentId": "CC123456789",
+      "phone": "+573123456789",
+      "email": "test@example.com"
+    },
+    "pax": 1
+  }'
+```
+
+#### Test Admin Functions
+```bash
+# Create tour (requires admin key)
+curl -X POST https://admincreatetourv2-wgfhwjbpva-uc.a.run.app \
+  -H "Content-Type: application/json" \
+  -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  -d '{
+    "name": { "es": "Test Tour", "en": "Test Tour" },
+    "description": { "es": "Descripción", "en": "Description" },
+    "isActive": true
+  }'
+
+# Get all bookings (admin)
+curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  "https://admingetbookings-wgfhwjbpva-uc.a.run.app"
+
+# Update booking status (admin)
+curl -X PUT -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"confirmed","reason":"Test update"}' \
+  "https://adminupdatebookingstatus-wgfhwjbpva-uc.a.run.app/BOOKING_ID"
+
+# Get events calendar (admin)
+curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  "https://admingeteventscalendar-wgfhwjbpva-uc.a.run.app"
+
+# Publish/unpublish event (admin)
+curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"publish"}' \
+  "https://adminpublishevent-wgfhwjbpva-uc.a.run.app/EVENT_ID"
+
+# Transfer booking (admin)
+curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  -H "Content-Type: application/json" \
+  -d '{"destinationEventId":"NEW_EVENT_ID","reason":"Transfer test"}' \
+  "https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/BOOKING_ID"
+```
+
+### Automated Testing Scripts
+
+#### Run Complete System Verification
+```bash
+node final_mvp_verification.js
+```
+
+#### Run Basic Functionality Tests
+```bash
+node mvp_validation_test.js
+```
+
+#### Run Individual Endpoint Tests
+```bash
+node post_endpoint_check.js
+```
+
+### Testing Best Practices
+
+1. **Rate Limiting**: Booking endpoints have rate limiting (5 min between requests from same IP)
+2. **Admin Authentication**: All admin endpoints require `X-Admin-Secret-Key: miClaveSecreta123` header
+3. **Data Dependencies**: Some tests require existing data (tours, events, bookings)
+4. **State Management**: Booking transfers and event publish operations change system state
+
+### Validation Checks
+- All 13 endpoints should return 200/expected responses
+- Admin endpoints should reject unauthorized requests (401)
+- Rate-limited endpoints should return 403 when limits exceeded
+- Invalid data should return 400 error codes
+- Non-existent resources should return 404 error codes
+
 ### Manual Testing via cURL
 
 #### Test Public Tours
