@@ -59,6 +59,12 @@ Recomendaciones:
 - Mantenga su propio ritmo, respire y descanse si lo requiere.
 - No ingerir bebidas alcohólicas durante el viaje.
 
+Próximas Fechas Programadas:
+- 10 de Noviembre de 2025 (Evento ID: GLDTc6w1I4evp54SNw50)
+  - Estado: Activo
+  - Participantes: 2 de 8 cupos disponibles
+  - Primera reserva: BK-20251011-472 (2 personas, estado: pending, ID: qcWIadNTt0PcinNTjGxu)
+
 Itinerario:
 
 Día 1:
