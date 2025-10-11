@@ -95,7 +95,7 @@ const CONSTANTS = {
     EVENT_TYPE_PUBLIC: 'public',
     BOOKING_PENDING: 'pending'
   },
-  ADMIN_SECRET_KEY: 'miClaveSecreta123',
+  ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE',
   RATE_LIMIT_SECONDS: 10
 };
 
@@ -266,7 +266,7 @@ async function testAdminCreateTour() {
   
   const mockReq = { 
     method: 'POST',
-    headers: { 'x-admin-secret-key': 'miClaveSecreta123' },
+    headers: { 'x-admin-secret-key': process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE' },
     body: validTourData
   };
   let responseSent = null;
@@ -347,7 +347,7 @@ async function testAdminUpdateTour() {
   
   const mockReq = { 
     method: 'PUT',
-    headers: { 'x-admin-secret-key': 'miClaveSecreta123' },
+    headers: { 'x-admin-secret-key': process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE' },
     path: '/admin/tours/tour1',
     body: updateData
   };
@@ -445,7 +445,7 @@ async function testAdminDeleteTour() {
   
   const mockReq = { 
     method: 'DELETE',
-    headers: { 'x-admin-secret-key': 'miClaveSecreta123' },
+    headers: { 'x-admin-secret-key': process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE' },
     path: '/admin/tours/tour1'
   };
   let responseSent = null;

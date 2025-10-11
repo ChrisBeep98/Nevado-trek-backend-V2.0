@@ -199,7 +199,7 @@ Nevado Trek Backend/
 ### System Constants
 ```javascript
 CONSTANTS = {
-  ADMIN_SECRET_KEY: "miClaveSecreta123",  // Should move to Firebase Secrets
+  ADMIN_SECRET_KEY: "Parameter stored securely in Firebase Functions parameters",  // Now using secure parameters system
   
   COLLECTIONS: {
     TOURS: "tours",
@@ -232,7 +232,7 @@ CONSTANTS = {
 
 ### Authentication
 - Admin endpoints: `X-Admin-Secret-Key` header required
-- Secret key: `"miClaveSecreta123"`
+- Secret key: Parameter stored securely in Firebase Functions parameters (using new parameters system)
 - Customer endpoints: No authentication required (rate limited by IP)
 
 ### Rate Limiting

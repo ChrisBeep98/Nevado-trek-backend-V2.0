@@ -146,7 +146,7 @@
 - **Authentication**: `X-Admin-Secret-Key` header required
 - **Headers**: 
   - `Content-Type: application/json`
-  - `X-Admin-Secret-Key: miClaveSecreta123`
+  - `X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]`
 - **Response**: `201 Created` or error codes
 
 #### 7. PUT /adminUpdateTourV2/:tourId
@@ -181,7 +181,7 @@
 - **Response**: `200 OK` with paginated list of bookings
 - **Example Request**:
   ```bash
-  curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
     "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetBookings?status=pending&limit=10"
   ```
 - **Example Response**:
@@ -230,7 +230,7 @@
 - **Response**: `200 OK` with paginated list of events
 - **Example Request**:
   ```bash
-  curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
     "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsCalendar?startDateFrom=2025-01-01&limit=20"
   ```
 - **Example Response**:
@@ -278,7 +278,7 @@
 - **Response**: `200 OK` with operation result, or appropriate error code
 - **Example Request**:
   ```bash
-  curl -X POST -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  curl -X POST -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
     -H "Content-Type: application/json" \
     -d '{"action":"publish"}' \
     "https://us-central1-nevadotrektest01.cloudfunctions.net/adminPublishEvent/abc123"
@@ -359,7 +359,7 @@ curl -X POST https://createbooking-wgfhwjbpva-uc.a.run.app \
 # Create tour (requires admin key)
 curl -X POST https://admincreatetourv2-wgfhwjbpva-uc.a.run.app \
   -H "Content-Type: application/json" \
-  -H "X-Admin-Secret-Key: miClaveSecreta123" \
+  -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   -d '{
     "name": { "es": "Test Tour", "en": "Test Tour" },
     "description": { "es": "Descripción", "en": "Description" },

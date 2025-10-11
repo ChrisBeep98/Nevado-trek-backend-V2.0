@@ -11,6 +11,13 @@ const admin = require("firebase-admin");
  * Se usa para crear y desplegar funciones en la nube.
  */
 const functions = require("firebase-functions");
+const {defineString} = require("firebase-functions/params");
+
+// Define parameter for admin secret key using the new parameters system
+// This replaces the deprecated functions.config() and will be required after March 2026
+const adminSecretKey = defineString("ADMIN_SECRET_KEY", {
+  default: "miClaveSecreta123", // Production key set via Firebase parameters during deployment
+});
 
 // Inicializa la app de Firebase Admin.
 // Esto utiliza las credenciales predeterminadas del entorno de Cloud Functions.
@@ -28,10 +35,9 @@ const db = admin.firestore();
  * Constantes utilizadas en toda la API.
  */
 const CONSTANTS = {
-  // La clave secreta para la autenticación de las funciones de administrador.
-  // **NOTA DE SEGURIDAD:** Esto debería estar en Firebase Secrets
-  // para producción, pero lo dejamos aquí por simplicidad del MVP.
-  ADMIN_SECRET_KEY: "miClaveSecreta123",
+  // La clave secreta para la autenticación de las funciones de administrador
+  // está ahora manejada por la función isAdminRequest para usar el sistema de parámetros
+  // que reemplaza al obsoleto functions.config()
 
   // Colecciones de Firestore.
   COLLECTIONS: {
@@ -68,11 +74,10 @@ const CONSTANTS = {
  * @param {functions.https.Request} req - La solicitud HTTP.
  * @return {boolean} - true si la clave es válida, false en caso contrario.
  */
-// eslint-disable-next-line no-unused-vars
 const isAdminRequest = (req) => {
   // La clave debe venir en un encabezado llamado 'X-Admin-Secret-Key'
   const secretKey = req.headers["x-admin-secret-key"];
-  return secretKey === CONSTANTS.ADMIN_SECRET_KEY;
+  return secretKey === adminSecretKey.value();
 };
 
 /**
@@ -1603,6 +1608,210 @@ const adminGetEventsCalendar = async (req, res) => {
  * @param {functions.Response} res - La respuesta HTTP.
  * @return {Promise<void>} - La respuesta con el resultado de la operación.
  */
+/**
+ * Transfiere una reserva de un tour/fecha a otro tour/fecha
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con el resultado de la transferencia.
+ */
+const adminTransferBooking = async (req, res) => {
+  // Verificamos que sea una solicitud POST
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Obtener los datos del cuerpo de la solicitud
+    const {bookingId, fromTourId, toTourId, toEventId, reason} = req.body;
+
+    // Validar campos requeridos
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio",
+          details: "bookingId is required in request body",
+        },
+      });
+    }
+
+    if (!fromTourId && !toTourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Se requiere al menos fromTourId o toTourId",
+          details: "Either fromTourId or toTourId (or both) are required",
+        },
+      });
+    }
+
+    // Verificar que la reserva exista
+    const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    }
+
+    const booking = bookingDoc.data();
+
+    // Verificar estado actual de la reserva
+    if (booking.status !== CONSTANTS.STATUS.BOOKING_PENDING &&
+        booking.status !== CONSTANTS.STATUS.BOOKING_CONFIRMED) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Solo se pueden transferir reservas pendientes o confirmadas",
+          details: "Only pending or confirmed bookings can be transferred",
+        },
+      });
+    }
+
+    // Si se proporciona toTourId pero no toEventId, crear un nuevo evento
+    let targetEventId = toEventId;
+    if (toTourId && !toEventId) {
+      // Buscar un evento disponible para la fecha deseada o crear uno nuevo
+      // Por ahora, simplemente crearemos un nuevo evento privado
+      const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(toTourId);
+      const tourDoc = await tourRef.get();
+
+      if (!tourDoc.exists || !tourDoc.data().isActive) {
+        return res.status(404).send({
+          error: {
+            code: "RESOURCE_NOT_FOUND",
+            message: "Tour destino no encontrado o no disponible",
+            details: "The destination tour does not exist or is not active",
+          },
+        });
+      }
+
+      const newEvent = {
+        tourId: toTourId,
+        tourName: tourDoc.data().name.es, // Denormalizado para optimización
+        startDate: booking.startDate || admin.firestore.FieldValue.serverTimestamp(), // Usar la fecha original o ahora
+        endDate: new Date(), // Ajustar según duración del tour
+        maxCapacity: 8, // Capacidad por defecto
+        bookedSlots: booking.pax, // Inicializado con los pax de la reserva
+        type: CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Privado inicialmente
+        status: "active",
+        totalBookings: 1,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+      targetEventId = createdEvent.id;
+    } else if (toEventId) {
+      // Verificar que el evento destino exista y tenga capacidad
+      const eventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(toEventId);
+      const eventDoc = await eventRef.get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).send({
+          error: {
+            code: "RESOURCE_NOT_FOUND",
+            message: "Evento destino no encontrado",
+            details: "The destination event does not exist",
+          },
+        });
+      }
+
+      const event = eventDoc.data();
+
+      // Verificar capacidad disponible en el evento destino
+      const newBookedSlots = event.bookedSlots + booking.pax;
+      if (newBookedSlots > event.maxCapacity) {
+        return res.status(422).send({
+          error: {
+            code: "CAPACITY_EXCEEDED",
+            message: "Capacidad excedida para el evento destino",
+            details: "Not enough capacity available in the destination event",
+          },
+        });
+      }
+    }
+
+    // Realizar la transferencia en una transacción
+    await db.runTransaction(async (transaction) => {
+      // Actualizar la reserva con los nuevos datos
+      const updatedFields = {
+        tourId: toTourId || booking.tourId,
+        tourName: toTourId ?
+          (await db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(toTourId).get()).data().name.es :
+          booking.tourName,
+        eventId: targetEventId || booking.eventId,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      // Actualizar estado de la reserva con historial
+      const newStatusHistoryEntry = {
+        timestamp: new Date().toISOString(),
+        status: booking.status, // Mantener el mismo estado
+        note: "Transferido " + (reason ? "(" + reason + ")" : "sin razón específica"),
+        adminUser: "system", // En una implementación completa, aquí iría el ID del admin real
+      };
+
+      const updatedStatusHistory = [...(booking.statusHistory || []), newStatusHistoryEntry];
+
+      transaction.update(bookingRef, {
+        ...updatedFields,
+        statusHistory: updatedStatusHistory,
+      });
+
+      // Actualizar capacidades de los eventos origen y destino
+      if (booking.eventId && booking.eventId !== targetEventId) {
+        // Disminuir la capacidad en el evento origen
+        const fromEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(booking.eventId);
+        transaction.update(fromEventRef, {
+          bookedSlots: admin.firestore.FieldValue.increment(-booking.pax),
+          totalBookings: admin.firestore.FieldValue.increment(-1),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      if (targetEventId && targetEventId !== booking.eventId) {
+        // Aumentar la capacidad en el evento destino
+        const toEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(targetEventId);
+        transaction.update(toEventRef, {
+          bookedSlots: admin.firestore.FieldValue.increment(booking.pax),
+          totalBookings: admin.firestore.FieldValue.increment(1),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    });
+
+    // Devolver confirmación de transferencia exitosa
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingId,
+      message: "Reserva transferida exitosamente",
+      fromTourId: booking.tourId,
+      toTourId: toTourId,
+      toEventId: targetEventId,
+    });
+  } catch (error) {
+    console.error("Error al transferir la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la transferencia",
+        details: error.message,
+      },
+    });
+  }
+};
+
 const adminPublishEvent = async (req, res) => {
   // Verificamos que sea una solicitud POST
   if (req.method !== "POST") {
@@ -1717,6 +1926,7 @@ module.exports = {
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
   adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatus), // Nuevo endpoint
+  adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),

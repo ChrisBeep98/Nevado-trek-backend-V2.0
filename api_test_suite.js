@@ -6,7 +6,7 @@
 const testConfig = {
   // Base URLs for the deployed functions
   baseUrl: process.env.BASE_URL || 'https://us-central1-nevadotrektest01.cloudfunctions.net',
-  adminSecretKey: process.env.ADMIN_SECRET_KEY || 'miClaveSecreta123',
+  adminSecretKey: process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE',
   
   // Test data
   tours: [

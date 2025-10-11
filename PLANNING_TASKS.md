@@ -95,14 +95,18 @@ Building a complete adventure tour reservation system with bilingual support, an
 - [x] Event joining capability
 - [x] Booking status checking
 - [x] Documentation consolidation (4 files)
-- [x] Deployed: 11 functions operational (adminGetEventsCalendar added)
+- [x] Deployed: 12 functions operational (adminGetEventsCalendar added)
 - [x] Phase 2B Task 3: GET /admin/events/calendar endpoint
+- [x] Phase 2B Task 4: POST /adminPublishEvent endpoint
+- [x] Phase 2C: adminTransferBooking endpoint
 
 ### 🔄 In Progress
 - [x] Phase 2B planning and implementation  
 - [x] Admin booking management endpoints (Task 1 completed)
 - [x] Admin booking status updates (Task 2 completed)
 - [x] Admin events calendar endpoint (Task 3 completed)
+- [x] Admin publish/unpublish endpoint (Task 4 completed)
+- [x] Advanced booking transfer functionality
 
 ### 📋 Next Immediate Tasks
 1. **Deploy the adminPublishEvent endpoint** that has been implemented

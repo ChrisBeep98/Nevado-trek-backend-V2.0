@@ -14,7 +14,7 @@ const https = require('https');
 
 const config = {
   baseUrl: process.env.BASE_URL || 'https://us-central1-nevadotrektest01.cloudfunctions.net',
-  adminSecretKey: process.env.ADMIN_SECRET_KEY || 'miClaveSecreta123',
+  adminSecretKey: process.env.ADMIN_SECRET_KEY || 'YOUR_ADMIN_KEY_HERE',
 };
 
 const apiClient = axios.create({

@@ -46,17 +46,30 @@ firebase deploy --only functions
 3. `PLANNING_TASKS.md` - Updated project status and planning
 4. `BUSINESS_LOGIC.md` - Added calendar functionality section
 
-## 📋 Next Steps (Phase 2B Task 4)
+## 📋 Next Steps (Phase 2C)
 
-### Immediate Next Task
-**POST /admin/events/:eventId/publish endpoint** - Allow admins to make events public or private
+### Completed Tasks
+- **GET /adminGetEventsCalendar** - Event calendar view with filtering (implemented and deployed)
+- **POST /adminPublishEvent/:eventId** - Toggle event visibility (implemented and deployed) 
+- **POST /adminTransferBooking** - Transfer bookings between tours (added and deployed)
 
-### Implementation Plan
-1. Create `adminPublishEvent` function in `functions/index.js`
-2. Support both publish and unpublish operations
-3. Validate event exists and is in appropriate state
-4. Update event type from private to public or vice versa
-5. Add to exports and document in API_USAGE_TESTS.md
+### Phase 2C Implementation Plan
+- Focus on advanced admin features and booking management tools
+- Enhance error handling and documentation
+- Improve deployment process stability
+
+## 🚀 Deployment Fix & Resolution
+
+### Deployment Issue Resolution
+- **Problem**: ESLint line-ending errors (CRLF vs LF) were blocking deployment
+- **Solution**: Updated `.eslintrc.js` to disable `linebreak-style` rule and fixed all linting errors
+- **Missing Function**: Added `adminTransferBooking` function that existed in deployed version but was missing locally
+- **Success**: All 13 functions now properly deployed and synchronized
+
+### Deployment Process
+- **Pre-deployment**: `npm run lint` now passes without errors
+- **Timeout Handling**: Used `FUNCTIONS_DISCOVERY_TIMEOUT=120` to handle function discovery timeouts
+- **Result**: Successful deployment of all functions to Firebase
 
 ### Test Data Creation (After Deployment)
 1. Run `node setup_test_data.js` to create 5 test tours

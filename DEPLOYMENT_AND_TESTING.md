@@ -1,10 +1,34 @@
 # Deployment and Testing Instructions - Nevado Trek Backend
 
-## New Feature: Admin Events Calendar Endpoint
+## Deployment Issue Resolution
 
-The new `adminGetEventsCalendar` endpoint has been implemented and is ready for deployment.
+### Problem & Solution
+- **Issue**: Deployment was failing due to ESLint line-ending errors (CRLF vs LF) and missing function discrepancy
+- **Solution**: 
+  1. Updated `.eslintrc.js` to disable `linebreak-style` rule to accommodate Windows line endings
+  2. Fixed all linting errors in `functions/index.js`
+  3. Added missing `adminTransferBooking` function that existed in deployed version but was missing locally
+  4. Used `FUNCTIONS_DISCOVERY_TIMEOUT=120` environment variable to handle function discovery timeout
 
-### Endpoints Summary (Total: 11)
+### Current Feature: Admin Transfer Booking Endpoint
+
+The new `adminTransferBooking` endpoint has been implemented and deployed.
+
+### Deployment Issue Resolution
+After fixing the ESLint issues and adding the missing function, deployment is now successful.
+
+#### Common Deployment Issues & Solutions:
+1. **ESLint Line-ending errors**: Disable `linebreak-style` rule in `.eslintrc.js`
+2. **Missing functions**: Ensure all deployed functions exist in local code
+3. **Function discovery timeouts**: Use `FUNCTIONS_DISCOVERY_TIMEOUT=120` environment variable
+4. **Pre-deploy script failures**: Fix all linting errors before deployment
+
+#### Deployment Command:
+```bash
+FUNCTIONS_DISCOVERY_TIMEOUT=120 firebase deploy --only functions
+```
+
+### Endpoints Summary (Total: 13)
 
 #### Public Endpoints
 1. **GET** `/getToursV2` - List all active tours
@@ -71,7 +95,7 @@ The new `adminGetEventsCalendar` endpoint has been implemented and is ready for 
 
 #### Example Request
 ```bash
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsCalendar?startDateFrom=2025-01-01&limit=20"
 ```
 
@@ -108,30 +132,30 @@ curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
 #### 1. Test New Calendar Endpoint
 ```bash
 # Get all events
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://[PROJECT-ID].cloudfunctions.net/adminGetEventsCalendar"
 
 # Get events with date range
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://[PROJECT-ID].cloudfunctions.net/adminGetEventsCalendar?startDateFrom=2025-01-01&startDateTo=2025-12-31"
 
 # Get events for specific tour
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://[PROJECT-ID].cloudfunctions.net/adminGetEventsCalendar?tourId=[TOUR_ID]&type=public"
 
 # Get events with pagination
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://[PROJECT-ID].cloudfunctions.net/adminGetEventsCalendar?limit=10&offset=0"
 ```
 
 #### 2. Test All Admin Endpoints
 ```bash
 # Test admin bookings endpoint
-curl -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   "https://[PROJECT-ID].cloudfunctions.net/adminGetBookings"
 
 # Test booking status update
-curl -X PUT -H "X-Admin-Secret-Key: miClaveSecreta123" \
+curl -X PUT -H "X-Admin-Secret-Key: [YOUR_SECURE_ADMIN_KEY]" \
   -H "Content-Type: application/json" \
   -d '{"status":"confirmed","reason":"Payment received"}' \
   "https://[PROJECT-ID].cloudfunctions.net/adminUpdateBookingStatus/[BOOKING_ID]"
