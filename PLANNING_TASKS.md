@@ -1,7 +1,7 @@
 # Planning & Tasks - Nevado Trek Backend
 
 ## Project Overview
-Building a complete adventure tour reservation system with bilingual support, anonymous booking, and advanced admin management.
+Complete adventure tour reservation system with bilingual support, anonymous booking, advanced admin management, and comprehensive booking/transfer capabilities.
 
 ## Current Phase Status
 
@@ -46,7 +46,7 @@ Building a complete adventure tour reservation system with bilingual support, an
   - All API endpoints verified with production data
 - **Status**: Production ready and live
 
-## Production Features
+## Production Status
 
 ### Live Production Tour
 - **Name**: "Nevado del Tolima"
@@ -59,18 +59,27 @@ Building a complete adventure tour reservation system with bilingual support, an
 - **Full Itinerary**: Detailed 4-day program with activities
 - **Bilingual Content**: Full Spanish/English support
 
-### Public Endpoints (13 operational)
+### Active Events
+- **November 10, 2025**: Event ID GLDTc6w1I4evp54SNw50
+  - Status: Active, 2 of 8 participants booked
+  - First booking: BK-20251011-472 (2 people, pending status)
+
+## Deployed Functions (13 Total)
+
+### Public Endpoints
 1. **GET** `/getToursV2` - List all active tours
 2. **GET** `/getTourByIdV2/:tourId` - Get specific tour by ID
 3. **POST** `/createBooking` - Create new reservation
 4. **POST** `/joinEvent` - Join existing public event
 5. **GET** `/checkBooking` - Verify booking status by reference
+
+### Admin Endpoints
 6. **POST** `/adminCreateTourV2` - Create new tour
 7. **PUT** `/adminUpdateTourV2/:tourId` - Update existing tour
 8. **DELETE** `/adminDeleteTourV2/:tourId` - Logically delete tour
 9. **GET** `/adminGetBookings` - List bookings with filters
 10. **PUT** `/adminUpdateBookingStatus/:bookingId` - Update booking status
-11. **POST** `/adminTransferBooking` - Transfer bookings between tours
+11. **POST** `/adminTransferBooking/:bookingId` - Transfer bookings between tours
 12. **GET** `/adminGetEventsCalendar` - Event calendar view
 13. **POST** `/adminPublishEvent/:eventId` - Toggle event visibility
 
@@ -85,7 +94,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 6. **Commit**: Add changes to repository
 
 ### Quality Assurance
-- All functions must pass ESLint validation
+- All functions pass ESLint validation
 - Rate limiting properly implemented
 - Error handling with structured responses
 - Proper admin authentication where required
@@ -99,7 +108,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 - [x] Customer booking functionality  
 - [x] Event joining capability
 - [x] Booking status checking
-- [x] Documentation consolidation (4 files)
+- [x] Documentation consolidation (4 files into COMPLETE_DOCUMENTATION.md)
 - [x] Deployed: 13 functions operational
 - [x] Phase 2B Task 3: GET /admin/events/calendar endpoint
 - [x] Phase 2B Task 4: POST /adminPublishEvent endpoint
@@ -107,6 +116,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 - [x] Production launch preparation
 - [x] Database cleanup and production data setup
 - [x] First production tour with proper formatting (day 1-4, dual currency)
+- [x] First event and booking created for Nevado del Tolima tour
 
 ### 🔄 In Progress
 - Live customer bookings and revenue generation
@@ -118,7 +128,13 @@ Building a complete adventure tour reservation system with bilingual support, an
 2. **Gather customer feedback** on tour experience and booking process
 3. **Prepare for additional tours** based on market demand
 4. **Maintain 99% uptime** and fast response times
-5. **Update tour-info.md** with current production information
+5. **Implement booking details update endpoint** (adminUpdateBookingDetails)
+
+## Planned Enhancement: Booking Details Update
+- **New Endpoint**: PUT /adminUpdateBookingDetails/:bookingId
+- **Purpose**: Update core booking information while maintaining audit trail
+- **Features**: Update customer information, tour, date, pax, price
+- **Status**: Planned for next sprint
 
 ## Resource Allocation
 - **Developer**: 1 (primary implementation)
@@ -172,6 +188,7 @@ Building a complete adventure tour reservation system with bilingual support, an
 2. Monitor system performance and stability
 3. Gather customer feedback and improve user experience
 4. Prepare for expansion with additional tours
+5. Implement booking details update functionality
 
 ## Current Status Summary
 - **Functions Deployed**: 13/13 operational 
