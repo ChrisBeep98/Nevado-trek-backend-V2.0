@@ -1912,6 +1912,197 @@ const adminPublishEvent = async (req, res) => {
   }
 };
 
+/**
+ * Transfiere una reserva de un evento a otro
+ * @param {functions.https.Request} req - La solicitud HTTP.
+ * @param {functions.Response} res - La respuesta HTTP.
+ * @return {Promise<void>} - La respuesta con el resultado de la transferencia.
+ */
+const adminTransferBooking = async (req, res) => {
+  // Verificamos que sea una solicitud POST
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraer el bookingId de la URL
+    const pathParts = req.path.split("/");
+    let bookingId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "" && pathParts[i] !== "transfer") {
+        bookingId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio en la URL",
+          details: "bookingId is required in the URL path",
+        },
+      });
+    }
+
+    // Obtener los datos de transferencia del cuerpo de la solicitud
+    const {destinationEventId, reason} = req.body;
+
+    if (!destinationEventId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El destino (destinationEventId) es obligatorio",
+          details: "destinationEventId is required in the request body",
+        },
+      });
+    }
+
+    // Verificar que la reserva exista
+    const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    }
+
+    const bookingData = bookingDoc.data();
+
+    // No permitir transferir reservas canceladas
+    if (bookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED ||
+        bookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "No se puede transferir una reserva cancelada",
+          details: "Cannot transfer a cancelled booking",
+        },
+      });
+    }
+
+    // Verificar que el evento destino exista
+    const destinationEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(destinationEventId);
+    const destinationEventDoc = await destinationEventRef.get();
+
+    if (!destinationEventDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento destino no encontrado",
+          details: "The destination event does not exist",
+        },
+      });
+    }
+
+    const destinationEventData = destinationEventDoc.data();
+
+    // Verificar que el evento destino tenga capacidad disponible
+    const newBookedSlots = destinationEventData.bookedSlots + bookingData.pax;
+    if (newBookedSlots > destinationEventData.maxCapacity) {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida en el evento destino",
+          details: "Not enough capacity available in the destination event",
+        },
+      });
+    }
+
+    // Verificar que el tour del evento destino sea compatible con el tour de la reserva
+    if (destinationEventData.tourId !== bookingData.tourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tour del evento destino no coincide con el tour de la reserva",
+          details: "Destination event tour does not match booking tour",
+        },
+      });
+    }
+
+    // Obtener el evento origen para actualizar su capacidad después
+    const sourceEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+
+    // Realizar la transferencia en una transacción para garantizar consistencia
+    await db.runTransaction(async (transaction) => {
+      // Obtener los datos actuales del evento origen
+      const sourceEventSnapshot = await transaction.get(sourceEventRef);
+      if (!sourceEventSnapshot.exists) {
+        throw new Error("SOURCE_EVENT_NOT_FOUND");
+      }
+
+      const sourceEventData = sourceEventSnapshot.data();
+
+      // Actualizar la reserva para apuntar al nuevo evento
+      const newStatusHistoryEntry = {
+        timestamp: new Date().toISOString(),
+        status: bookingData.status, // Keep the same status, just changing event
+        note: `Transferido al evento ${destinationEventId}` + (reason ? ` - Razón: ${reason}` : ""),
+        adminUser: "system",
+      };
+
+      const updatedStatusHistory = [...(bookingData.statusHistory || []), newStatusHistoryEntry];
+
+      transaction.update(bookingRef, {
+        eventId: destinationEventId,
+        statusHistory: updatedStatusHistory,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Actualizar la capacidad: decrementar en el evento origen, incrementar en el destino
+      transaction.update(sourceEventRef, {
+        bookedSlots: Math.max(0, (sourceEventData.bookedSlots || 0) - bookingData.pax),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      transaction.update(destinationEventRef, {
+        bookedSlots: newBookedSlots,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    // Devolver confirmación de transferencia exitosa
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingId,
+      message: "Reserva transferida exitosamente",
+      previousEventId: bookingData.eventId,
+      newEventId: destinationEventId,
+      pax: bookingData.pax,
+      reason: reason || null,
+    });
+  } catch (error) {
+    if (error.message === "SOURCE_EVENT_NOT_FOUND") {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento origen no encontrado",
+          details: "The source event does not exist",
+        },
+      });
+    }
+
+    console.error("Error al transferir la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la transferencia de reserva",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1929,6 +2120,7 @@ module.exports = {
   adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
+  adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),

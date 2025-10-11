@@ -43,6 +43,14 @@ Complete reservation system for adventure tour management with:
 - **Admin Control**: Administrators can change event visibility at any time
 - **Validation**: System prevents invalid state transitions
 
+### 7. Booking Transfer Management
+- **Booking Transfer**: Admins can move bookings between events of the same tour
+- **Capacity Validation**: System checks destination event has available capacity
+- **Data Integrity**: Uses transactions to ensure capacity updates are consistent
+- **Audit Trail**: All transfers are logged in booking status history
+- **Status Preservation**: Booking status is maintained during transfer
+- **Restrictions**: Cannot transfer cancelled bookings
+
 ## Business Rules
 
 ### Tour Rules
