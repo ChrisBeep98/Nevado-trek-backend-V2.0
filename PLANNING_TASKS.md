@@ -130,11 +130,12 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 4. **Maintain 99% uptime** and fast response times
 5. **Implement booking details update endpoint** (adminUpdateBookingDetails)
 
-## Planned Enhancement: Booking Details Update
+## Completed Enhancement: Booking Details Update
 - **New Endpoint**: PUT /adminUpdateBookingDetails/:bookingId
 - **Purpose**: Update core booking information while maintaining audit trail
 - **Features**: Update customer information, tour, date, pax, price
-- **Status**: Planned for next sprint
+- **Status**: ✅ COMPLETED - Fully implemented, tested and deployed
+- **Additional Enhancement**: adminUpdateBookingStatus now supports additionalUpdates parameter for updating booking details during status changes
 
 ## Resource Allocation
 - **Developer**: 1 (primary implementation)

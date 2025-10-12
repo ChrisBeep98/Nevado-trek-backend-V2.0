@@ -16,6 +16,7 @@ module.exports = {
     "quotes": ["error", "double", {"allowTemplateLiterals": true}],
     "max-len": ["error", {"code": 120}],
     "linebreak-style": 0, // Disable linebreak-style rule to avoid CRLF/LF issues
+    "no-useless-escape": "off", // Allow regex escapes that ESLint thinks are unnecessary
   },
   overrides: [
     {

@@ -876,6 +876,30 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
     ```
   - **Response**: 200 with transfer confirmation and details
 
+- **PUT /adminUpdateBookingDetails/:bookingId**: Update core booking information (requires admin token)
+  - **Usage**: `PUT https://us-central1-nevadotrektest01.cloudfunctions.net/adminUpdateBookingDetails/{bookingId}`
+  - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **Body**: 
+    ```json
+    {
+      "customer": {
+        "fullName": "string (optional)",
+        "documentId": "string (optional)", 
+        "phone": "string (optional)",
+        "email": "string (optional)",
+        "notes": "string (optional)"
+      },
+      "tourId": "string (optional)",
+      "tourName": "string (optional)", 
+      "startDate": "ISO date string (optional)",
+      "pax": "number (optional)",
+      "price": "number (optional)",
+      "reason": "string (optional, reason for the change)"
+    }
+    ```
+  - **Response**: 200 with success message and updated booking details
+  - **Features**: Partial updates for customer information, tour, date, pax, price with full audit trail
+
 ### Architecture
 
 #### Technology Stack
@@ -902,7 +926,7 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
 
 **Date**: October 8, 2025  
 **Status**: Production Ready  
-**Functions Deployed**: 13/13 operational  
+**Functions Deployed**: 14/14 operational  
 **Phases Complete**: 4/5 (Phase 1, 2A, 2B, 2C)  
 
 ### Complete Feature Set

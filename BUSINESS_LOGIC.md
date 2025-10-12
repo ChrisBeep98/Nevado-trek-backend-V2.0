@@ -59,12 +59,14 @@ Complete reservation system for adventure tour management with:
 - **Restrictions**: Cannot transfer cancelled bookings
 - **Pricing Updates**: Automatic recalculation if pricing differs on destination event
 
-### 8. Booking Details Management (Planned Enhancement)
+### 8. Booking Details Management (Implemented)
 - **Customer Updates**: Admins can update customer information (name, document ID, phone, email, notes)
 - **Booking Modifications**: Change tour, date, pax count, pricing
 - **Validation Rules**: All changes must pass business rule validation
 - **Conflict Resolution**: Handle capacity, availability, and pricing conflicts
 - **Audit Trail**: Complete tracking of all booking detail modifications
+- **New Endpoint**: PUT /adminUpdateBookingDetails/:bookingId - Updates core booking information while maintaining audit trail
+- **Enhanced Capability**: Additional fields can now be updated during status changes via the additionalUpdates parameter
 
 ## Business Rules
 

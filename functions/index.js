@@ -13,6 +13,15 @@ const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const {defineString} = require("firebase-functions/params");
 
+// Import our modularized code
+/* eslint-disable no-unused-vars */
+const {COLLECTIONS, STATUS, RATE_LIMITING, BOOKING_REFERENCE_PREFIX} = require("./src/constants");
+const {validateCustomer, validateTourId, validateDate, validatePax, validatePrice} = require("./src/validators");
+const {addStatusHistoryEntry} = require("./src/audit");
+const {updateEventCapacity, canModifyBooking, generateBookingReference, getClientIP} = require("./src/helpers");
+/* eslint-enable no-unused-vars */
+const {updateBookingDetails} = require("./src/admin/booking-details");
+
 // Define parameter for admin secret key using the new parameters system
 // This replaces the deprecated functions.config() and will be required after March 2026
 const adminSecretKey = defineString("ADMIN_SECRET_KEY", {
@@ -61,9 +70,11 @@ const CONSTANTS = {
   },
 
   // Tiempo mínimo entre reservas de la misma IP (Anti-spam)
-  RATE_LIMIT_SECONDS: 300, // 5 minutos entre reservas por IP
-  MAX_BOOKINGS_PER_HOUR: 3, // Máximo 3 reservas por hora por IP
-  MAX_BOOKINGS_PER_DAY: 5, // Máximo 5 reservas por día por IP
+  RATE_LIMITING: {
+    RATE_LIMIT_SECONDS: 300, // 5 minutos entre reservas por IP
+    MAX_BOOKINGS_PER_HOUR: 3, // Máximo 3 reservas por hora por IP
+    MAX_BOOKINGS_PER_DAY: 5, // Máximo 5 reservas por día por IP
+  },
 
   // Nombres para los índices de búsqueda
   BOOKING_REFERENCE_PREFIX: "BK-",
@@ -85,13 +96,6 @@ const isAdminRequest = (req) => {
  * @param {functions.https.Request} req - La solicitud HTTP
  * @return {string} La dirección IP del cliente
  */
-const getClientIP = (req) => {
-  // Prioridad: X-Forwarded-For > X-Real-IP > req.ip
-  return req.headers["x-forwarded-for"] ||
-         req.headers["x-real-ip"] ||
-         req.ip;
-};
-
 /**
  * Verifica si una IP ha superado las limitaciones de tasa
  * @param {string} clientIP - Dirección IP del cliente
@@ -107,7 +111,7 @@ const isRateLimited = async (clientIP) => {
 
   try {
     // Obtener referencias a la colección de rate limiting
-    const rateLimiterRef = db.collection(CONSTANTS.COLLECTIONS.RATE_LIMITER);
+    const rateLimiterRef = db.collection(COLLECTIONS.RATE_LIMITER);
     const now = new Date();
 
     // Verificar si el registro existe para esta IP
@@ -127,17 +131,17 @@ const isRateLimited = async (clientIP) => {
 
     // Verificar límite de tiempo entre reservas
     const timeSinceLastBooking = now.getTime() - lastBookingTime.getTime();
-    if (timeSinceLastBooking < CONSTANTS.RATE_LIMIT_SECONDS * 1000) {
+    if (timeSinceLastBooking < RATE_LIMITING.RATE_LIMIT_SECONDS * 1000) {
       return true; // Bloqueado por frecuencia de solicitud
     }
 
     // Verificar límite de reservas por hora
-    if (bookingsThisHour >= CONSTANTS.MAX_BOOKINGS_PER_HOUR) {
+    if (bookingsThisHour >= RATE_LIMITING.MAX_BOOKINGS_PER_HOUR) {
       return true; // Bloqueado por límite de frecuencia por hora
     }
 
     // Verificar límite de reservas por día
-    if (bookingsThisDay >= CONSTANTS.MAX_BOOKINGS_PER_DAY) {
+    if (bookingsThisDay >= RATE_LIMITING.MAX_BOOKINGS_PER_DAY) {
       return true; // Bloqueado por límite de frecuencia por día
     }
 
@@ -160,7 +164,7 @@ const recordBookingAttempt = async (clientIP) => {
   }
 
   try {
-    const rateLimiterRef = db.collection(CONSTANTS.COLLECTIONS.RATE_LIMITER);
+    const rateLimiterRef = db.collection(COLLECTIONS.RATE_LIMITER);
     const docRef = rateLimiterRef.doc(clientIP);
     const now = admin.firestore.FieldValue.serverTimestamp();
 
@@ -201,15 +205,7 @@ const cleanupRateLimiting = async () => {
  * Genera un código de referencia único para una reserva
  * @return {string} Código de referencia en formato BK-YYYYMMDD-XXX
  */
-const generateBookingReference = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  const datePart = `${year}${month}${day}`;
-  const randomPart = String(Math.floor(Math.random() * 900) + 100).padStart(3, "0");
-  return `${CONSTANTS.BOOKING_REFERENCE_PREFIX}${datePart}-${randomPart}`;
-};
+
 
 // -----------------------------------------------------------
 // Sección de Endpoints Públicos (Lectura de Datos)
@@ -734,10 +730,10 @@ const joinEvent = async (req, res) => {
         pricePerPerson: pricePerPerson,
         totalPrice: totalPrice,
         bookingDate: admin.firestore.FieldValue.serverTimestamp(),
-        status: CONSTANTS.STATUS.BOOKING_PENDING,
+        status: STATUS.BOOKING_PENDING,
         statusHistory: [{
           timestamp: new Date().toISOString(), // Using client timestamp since Firestore timestamps can't be in arrays
-          status: CONSTANTS.STATUS.BOOKING_PENDING,
+          status: STATUS.BOOKING_PENDING,
           note: "Joined to existing event",
           adminUser: "system",
         }],
@@ -1036,7 +1032,7 @@ const createBooking = async (req, res) => {
         endDate: new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 días después, por ejemplo
         maxCapacity: 8, // Capacidad por defecto
         bookedSlots: 0, // Inicializado en 0
-        type: CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Privado inicialmente
+        type: STATUS.EVENT_TYPE_PRIVATE, // Privado inicialmente
         status: "active",
         totalBookings: 0,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -1294,6 +1290,7 @@ const adminGetBookings = async (req, res) => {
  * @param {functions.Response} res - La respuesta HTTP.
  * @return {Promise<void>} - La respuesta de actualización del estado de la reserva.
  */
+// eslint-disable-next-line no-unused-vars
 const adminUpdateBookingStatus = async (req, res) => {
   // Verificamos que sea una solicitud PUT
   if (req.method !== "PUT") {
@@ -1495,7 +1492,7 @@ const adminGetEventsCalendar = async (req, res) => {
 
     if (type) {
       // Validar que el tipo sea válido
-      if ([CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, CONSTANTS.STATUS.EVENT_TYPE_PUBLIC].includes(type)) {
+      if ([STATUS.EVENT_TYPE_PRIVATE, STATUS.EVENT_TYPE_PUBLIC].includes(type)) {
         eventsQuery = eventsQuery.where("type", "==", type);
       }
     }
@@ -1648,7 +1645,7 @@ const adminPublishEvent = async (req, res) => {
     let newType;
 
     if (action === "unpublish" || action === "private") {
-      newType = CONSTANTS.STATUS.EVENT_TYPE_PRIVATE;
+      newType = STATUS.EVENT_TYPE_PRIVATE;
     } else {
       // Default to publish/public if action is 'publish', 'public', or not specified
       newType = CONSTANTS.STATUS.EVENT_TYPE_PUBLIC;
@@ -1899,6 +1896,297 @@ const adminTransferBooking = async (req, res) => {
   }
 };
 
+/**
+ * Updates core booking information while maintaining audit trail
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with updated booking information.
+ */
+const adminUpdateBookingDetails = async (req, res) => {
+  // Verify this is a PUT request
+  if (req.method !== "PUT") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extract bookingId from URL
+    const pathParts = req.path.split("/");
+    let bookingId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "") {
+        bookingId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio en la URL",
+          details: "bookingId is required in the URL path",
+        },
+      });
+    }
+
+    // Get update data from request body
+    const updates = req.body;
+
+    // Get admin user from headers or default to system
+    const adminUser = "system"; // In a more complete implementation, extract admin ID from auth
+
+    // Call the modularized update function
+    const updatedBooking = await updateBookingDetails(bookingId, updates, adminUser, db);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingId,
+      message: "Detalles de la reserva actualizados exitosamente",
+      booking: updatedBooking,
+    });
+  } catch (error) {
+    console.error("Error al actualizar los detalles de la reserva:", error);
+
+    // Handle specific error types
+    if (error.message === "BOOKING_NOT_FOUND") {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    } else if (error.message === "BOOKING_CANNOT_BE_MODIFIED") {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La reserva no puede ser modificada",
+          details: "Cannot modify a cancelled booking",
+        },
+      });
+    } else if (error.message.startsWith("INVALID_CUSTOMER_DATA")) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Datos de cliente inválidos",
+          details: error.message.replace("INVALID_CUSTOMER_DATA: ", ""),
+        },
+      });
+    } else if (error.message === "INVALID_TOUR_ID") {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Tour ID inválido o no activo",
+          details: "The tour ID does not exist or is not active",
+        },
+      });
+    } else if (error.message === "INVALID_DATE_FORMAT") {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Formato de fecha inválido",
+          details: "Date format is invalid",
+        },
+      });
+    } else if (error.message === "INVALID_PAX_COUNT") {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Cantidad de participantes inválida",
+          details: "Pax count must be a positive integer not exceeding 100",
+        },
+      });
+    } else if (error.message === "INVALID_PRICE") {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Precio inválido",
+          details: "Price must be a non-negative number",
+        },
+      });
+    } else {
+      return res.status(500).send({
+        error: {
+          code: "INTERNAL_ERROR",
+          message: "Error interno al procesar la actualización de detalles",
+          details: error.message,
+        },
+      });
+    }
+  }
+};
+
+// Enhanced adminUpdateBookingStatus to support additional updates
+const adminUpdateBookingStatusExtended = async (req, res) => {
+  // Verify this is a PUT request
+  if (req.method !== "PUT") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extract bookingId from URL
+    const pathParts = req.path.split("/");
+    let bookingId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "" && pathParts[i] !== "status") {
+        bookingId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio en la URL",
+          details: "bookingId is required in the URL path",
+        },
+      });
+    }
+
+    // Get request body
+    const {status: newStatus, reason, additionalUpdates} = req.body;
+
+    if (!newStatus) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El nuevo estado (status) es obligatorio",
+          details: "New status is required in the request body",
+        },
+      });
+    }
+
+    // First update the status using existing logic
+    const bookingRef = db.collection(COLLECTIONS.BOOKINGS).doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    }
+
+    const bookingData = bookingDoc.data();
+    const currentStatus = bookingData.status;
+
+    // Validate new status
+    const validStatuses = [
+      STATUS.BOOKING_PENDING,
+      STATUS.BOOKING_CONFIRMED,
+      STATUS.BOOKING_PAID,
+      STATUS.BOOKING_CANCELLED,
+      STATUS.BOOKING_CANCELLED_BY_ADMIN,
+    ];
+
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: `Estado no válido. Los estados válidos son: ${validStatuses.join(", ")}`,
+          details: `Valid statuses are: ${validStatuses.join(", ")}`,
+        },
+      });
+    }
+
+    // Check if status change is allowed
+    if (currentStatus === STATUS.BOOKING_CANCELLED &&
+        ![STATUS.BOOKING_CANCELLED].includes(newStatus)) {
+      if (newStatus !== STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+        return res.status(400).send({
+          error: {
+            code: "INVALID_DATA",
+            message: "No se puede cambiar el estado de una reserva cancelada a otro estado diferente",
+            details: "Cannot change status of a cancelled booking",
+          },
+        });
+      }
+    }
+
+    // Create status history entry
+    const newStatusHistoryEntry = {
+      timestamp: new Date().toISOString(),
+      status: newStatus,
+      note: reason || `Status updated by admin`,
+      adminUser: "system",
+    };
+
+    // Update booking status
+    const updatedStatusHistory = [...(bookingData.statusHistory || []), newStatusHistoryEntry];
+    let capacityUpdate = {};
+
+    if (newStatus === STATUS.BOOKING_CANCELLED ||
+        newStatus === STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+      const eventRef = db.collection(COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+      const eventDoc = await eventRef.get();
+
+      if (eventDoc.exists) {
+        const eventData = eventDoc.data();
+        const newBookedSlots = Math.max(0, (eventData.bookedSlots || 0) - bookingData.pax);
+        capacityUpdate = {bookedSlots: newBookedSlots};
+      }
+    }
+
+    // Prepare update object
+    const updateObj = {
+      status: newStatus,
+      statusHistory: updatedStatusHistory,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      ...capacityUpdate,
+    };
+
+    // If additional updates are provided, merge them
+    if (additionalUpdates) {
+      // Use the updateBookingDetails function for additional updates
+      await updateBookingDetails(bookingId, additionalUpdates, "system", db);
+    } else {
+      // Only update status and related fields
+      await bookingRef.update(updateObj);
+
+      // Update capacity if needed
+      if (Object.keys(capacityUpdate).length > 0) {
+        const eventRef = db.collection(COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+        await eventRef.update({
+          ...capacityUpdate,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingId,
+      message: "Estado de la reserva actualizado exitosamente",
+      previousStatus: currentStatus,
+      newStatus: newStatus,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el estado de la reserva:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la actualización de estado",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -1912,7 +2200,8 @@ module.exports = {
   adminUpdateTourV2: functions.https.onRequest(adminUpdateTour),
   adminDeleteTourV2: functions.https.onRequest(adminDeleteTour),
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
-  adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatus), // Nuevo endpoint
+  adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatusExtended), // Updated endpoint
+  adminUpdateBookingDetails: functions.https.onRequest(adminUpdateBookingDetails), // New endpoint
   adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
