@@ -59,9 +59,13 @@ Complete reservation system for adventure tour management with bilingual support
 ## 📋 Current Production Status
 
 - **MVP**: Complete and operational
-- **Functions Deployed**: 13/13
+- **Functions Deployed**: 14/14
 - **Active Tour**: "Nevado del Tolima" (ID: 9ujvQOODur1hEOMoLjEq)
 - **Active Event**: November 10, 2025 with 2 of 8 participants booked
+
+## 📖 Documentation
+
+For detailed API usage instructions, see [APIUSAGE.md](APIUSAGE.md)
 
 ## 🛠️ Development Commands
 
