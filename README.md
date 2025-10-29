@@ -37,16 +37,17 @@ Complete reservation system for adventure tour management with bilingual support
 4. `POST /joinEvent` - Join existing public event
 5. `GET /checkBooking` - Verify booking status by reference
 
-### Admin Endpoints (9)
+### Admin Endpoints (11)
 6. `POST /adminCreateTourV2` - Create new tour
 7. `PUT /adminUpdateTourV2/:tourId` - Update existing tour
 8. `DELETE /adminDeleteTourV2/:tourId` - Logically delete tour
 9. `GET /adminGetBookings` - List bookings with filters
 10. `PUT /adminUpdateBookingStatus/:bookingId` - Update booking status
 11. `PUT /adminUpdateBookingDetails/:bookingId` - Update core booking information (customer, tour, date, pax, price)
-12. `POST /adminTransferBooking/:bookingId` - Transfer bookings between tours
-13. `GET /adminGetEventsCalendar` - Event calendar view
-14. `POST /adminPublishEvent/:eventId` - Toggle event visibility
+12. `POST /adminTransferBooking/:bookingId` - Transfer bookings between events of the same tour
+13. `POST /adminTransferToNewTour/:bookingId` - Transfer bookings between different tours (NEW!)
+14. `GET /adminGetEventsCalendar` - Event calendar view
+15. `POST /adminPublishEvent/:eventId` - Toggle event visibility
 
 ## 🌐 Technology Stack
 
@@ -97,3 +98,5 @@ The system follows a microservices architecture using Firebase Cloud Functions w
 - Comprehensive audit trails
 - Event publishing/unpublishing
 - Booking transfers between events
+- Timezone-aware date handling for Colombia locale (UTC-5)
+- Synchronized booking and event date management

@@ -29,9 +29,10 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 
 ### ✅ Phase 2C: Advanced Features (COMPLETED)
 - **Status**: Complete
-- **Deployed Functions**: 1+ (booking transfers, advanced admin tools)
+- **Deployed Functions**: 2+ (booking transfers, advanced admin tools)
 - **Completed Tasks**: 
-  - POST /adminTransferBooking - Transfer bookings between tours
+  - POST /adminTransferBooking - Transfer bookings between events of the same tour
+  - POST /adminTransferToNewTour - Transfer bookings between different tours (NEW!)
 - **Status**: Operational and tested
 
 ### ✅ Phase 2D: Production Launch (COMPLETED)
@@ -64,7 +65,7 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
   - Status: Active, 2 of 8 participants booked
   - First booking: BK-20251011-472 (2 people, pending status)
 
-## Deployed Functions (13 Total)
+## Deployed Functions (15 Total)
 
 ### Public Endpoints
 1. **GET** `/getToursV2` - List all active tours
@@ -79,9 +80,11 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 8. **DELETE** `/adminDeleteTourV2/:tourId` - Logically delete tour
 9. **GET** `/adminGetBookings` - List bookings with filters
 10. **PUT** `/adminUpdateBookingStatus/:bookingId` - Update booking status
-11. **POST** `/adminTransferBooking/:bookingId` - Transfer bookings between tours
-12. **GET** `/adminGetEventsCalendar` - Event calendar view
-13. **POST** `/adminPublishEvent/:eventId` - Toggle event visibility
+11. **PUT** `/adminUpdateBookingDetails/:bookingId` - Update core booking information (customer, tour, date, pax, price)
+12. **POST** `/adminTransferBooking/:bookingId` - Transfer bookings between events of the same tour
+13. **POST** `/adminTransferToNewTour/:bookingId` - Transfer bookings between different tours (NEW!)
+14. **GET** `/adminGetEventsCalendar` - Event calendar view
+15. **POST** `/adminPublishEvent/:eventId` - Toggle event visibility
 
 ## Development Workflow
 
@@ -109,10 +112,11 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 - [x] Event joining capability
 - [x] Booking status checking
 - [x] Documentation consolidation (4 files into COMPLETE_DOCUMENTATION.md)
-- [x] Deployed: 13 functions operational
+- [x] Deployed: 15 functions operational
 - [x] Phase 2B Task 3: GET /admin/events/calendar endpoint
 - [x] Phase 2B Task 4: POST /adminPublishEvent endpoint
-- [x] Phase 2C: adminTransferBooking endpoint
+- [x] Phase 2C: adminTransferBooking endpoint (same tour transfers)
+- [x] Phase 2C: adminTransferToNewTour endpoint (cross-tour transfers) - NEW!
 - [x] Production launch preparation
 - [x] Database cleanup and production data setup
 - [x] First production tour with proper formatting (day 1-4, dual currency)
@@ -134,6 +138,9 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 - **New Endpoint**: PUT /adminUpdateBookingDetails/:bookingId
 - **Purpose**: Update core booking information while maintaining audit trail
 - **Features**: Update customer information, tour, date, pax, price
+- **Enhanced Date Handling**: When updating startDate, the booking is moved to a new event for the new date, with capacity automatically adjusted between old and new events
+- **Date Synchronization**: Booking's startDate field is now properly synchronized with the associated event's date
+- **Timezone Handling**: Proper timezone conversion for Colombia timezone (UTC-5) ensures calendar dates display correctly
 - **Status**: ✅ COMPLETED - Fully implemented, tested and deployed
 - **Additional Enhancement**: adminUpdateBookingStatus now supports additionalUpdates parameter for updating booking details during status changes
 
@@ -200,13 +207,13 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 >>>>>>> 9da27100fc5ccffb054f68523d20206139bef56d
 
 ## Current Status Summary
-- **Functions Deployed**: 13/13 operational 
+- **Functions Deployed**: 15/15 operational 
 - **Phases Complete**: 5/5 (Phase 1, 2A, 2B, 2C, 2D)  
 - **Current Phase**: PRODUCTION - Live customer bookings
 - **Production Tour**: "Nevado del Tolima" (ID: 9ujvQOODur1hEOMoLjEq) active and accepting bookings
 <<<<<<< HEAD
 - **Status**: Production system fully operational and ready for revenue generation
-- **Deployment Date**: October 11, 2025 - All 13 functions successfully deployed to Firebase
+- **Deployment Date**: October 11, 2025 - All 15 functions successfully deployed to Firebase (including 2 new cross-tour transfer functions)
 =======
 - **Status**: Production system fully operational and ready for revenue generation
 >>>>>>> 9da27100fc5ccffb054f68523d20206139bef56d

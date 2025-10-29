@@ -2187,6 +2187,320 @@ const adminUpdateBookingStatusExtended = async (req, res) => {
   }
 };
 
+/**
+ * Transfers a booking to a different tour (with optional new date)
+ * This function handles all operations: cancelling the old booking,
+ * creating a new event if needed, and creating a new booking on the new tour
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with the result of the tour transfer.
+ */
+const adminTransferToNewTour = async (req, res) => {
+  // Verificamos que sea una solicitud POST
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verificamos la autenticación de administrador
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extraer el bookingId de la URL
+    const pathParts = req.path.split("/");
+    let bookingId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "" && pathParts[i] !== "transferToNewTour") {
+        bookingId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!bookingId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El bookingId es obligatorio en la URL",
+          details: "bookingId is required in the URL path",
+        },
+      });
+    }
+
+    // Obtener los datos de transferencia del cuerpo de la solicitud
+    const {newTourId, newStartDate, reason} = req.body;
+
+    if (!newTourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El nuevo tourId es obligatorio",
+          details: "newTourId is required in the request body",
+        },
+      });
+    }
+
+    // Verificar que la reserva exista
+    const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Reserva no encontrada",
+          details: "The specified booking does not exist",
+        },
+      });
+    }
+
+    const originalBookingData = bookingDoc.data();
+
+    // No permitir transferir reservas ya canceladas
+    if (originalBookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED ||
+        originalBookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "No se puede transferir una reserva ya cancelada",
+          details: "Cannot transfer an already cancelled booking",
+        },
+      });
+    }
+
+    // Verificar que el nuevo tour exista y esté activo
+    const newTourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(newTourId);
+    const newTourDoc = await newTourRef.get();
+
+    if (!newTourDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "El tour de destino no existe",
+          details: "The destination tour does not exist",
+        },
+      });
+    }
+
+    const newTour = newTourDoc.data();
+    if (!newTour.isActive) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tour de destino no está activo",
+          details: "The destination tour is not active",
+        },
+      });
+    }
+
+    // Validar fecha si se proporciona
+    let targetDate = originalBookingData.startDate;
+    if (newStartDate) {
+      targetDate = new Date(newStartDate);
+      if (isNaN(targetDate.getTime())) {
+        return res.status(400).send({
+          error: {
+            code: "INVALID_DATA",
+            message: "La nueva fecha no es válida",
+            details: "New start date is not valid",
+          },
+        });
+      }
+    } else {
+      // If no new date is provided, use the original booking's event date
+      const originalEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(originalBookingData.eventId);
+      const originalEventDoc = await originalEventRef.get();
+
+      if (originalEventDoc.exists) {
+        const originalEvent = originalEventDoc.data();
+        targetDate = originalEvent.startDate.toDate ? originalEvent.startDate.toDate() : originalEvent.startDate;
+      }
+    }
+
+    // Buscar o crear un evento para el nuevo tour en la fecha deseada
+    let targetEventRef;
+    let eventExists = false;
+
+    // Buscar si ya existe un evento para este tour y fecha
+    const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
+        .where("tourId", "==", newTourId)
+        .where("startDate", "==", targetDate)
+        .limit(1)
+        .get();
+
+    if (!eventsQuery.empty) {
+      // Usar evento existente
+      targetEventRef = eventsQuery.docs[0].ref;
+      eventExists = true;
+    } else {
+      // Crear nuevo evento con la misma configuración del tour
+      const newEvent = {
+        tourId: newTourId,
+        tourName: newTour.name.es || `Tour ${newTourId}`, // Denormalizado para optimización
+        startDate: targetDate,
+        endDate: new Date(targetDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 días después, por ejemplo
+        maxCapacity: newTour.maxParticipants || 8, // Usar capacidad del tour o 8 por defecto
+        bookedSlots: 0, // Inicializado en 0
+        type: CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Inicialmente privado
+        status: "active",
+        totalBookings: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+      targetEventRef = createdEvent;
+      eventExists = false;
+    }
+
+    // Realizar todas las operaciones en una transacción para garantizar consistencia
+    const result = await db.runTransaction(async (transaction) => {
+      // 1. Obtener datos actualizados del evento destino
+      const targetEventSnapshot = await transaction.get(targetEventRef);
+      const targetEventData = targetEventSnapshot.data();
+
+      // 2. Verificar capacidad en el evento destino
+      const newBookedSlots = targetEventData.bookedSlots + originalBookingData.pax;
+      if (newBookedSlots > targetEventData.maxCapacity) {
+        throw new Error("CAPACITY_EXCEEDED");
+      }
+
+      // 3. Calcular precio para el nuevo tour
+      let pricePerPerson = 1000000; // Valor por defecto
+      if (newTour.pricingTiers && Array.isArray(newTour.pricingTiers)) {
+        // Buscar el precio adecuado según el número de personas
+        const pricingTier = newTour.pricingTiers.find((tier) =>
+          originalBookingData.pax >= (tier.paxFrom || tier.pax) &&
+          originalBookingData.pax <= (tier.paxTo || tier.pax),
+        );
+        if (pricingTier) {
+          // Use the pricePerPerson object which might contain multiple currencies
+          if (typeof pricingTier.pricePerPerson === "object") {
+            pricePerPerson = pricingTier.pricePerPerson.COP || pricingTier.pricePerPerson.USD || 1000000;
+          } else {
+            pricePerPerson = pricingTier.pricePerPerson || 1000000;
+          }
+        }
+      }
+
+      // Calcular total
+      const totalPrice = pricePerPerson * originalBookingData.pax;
+
+      // 4. Actualizar la capacidad del evento destino
+      transaction.update(targetEventRef, {
+        bookedSlots: newBookedSlots,
+        totalBookings: (targetEventData.totalBookings || 0) + 1,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // 5. Crear la nueva reserva en el nuevo tour
+      const newBookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
+
+      const newBookingDoc = {
+        bookingId: newBookingRef.id,
+        eventId: targetEventRef.id,
+        tourId: newTourId,
+        tourName: newTour.name.es || `Tour ${newTourId}`, // Denormalizado
+        customer: originalBookingData.customer,
+        pax: originalBookingData.pax,
+        pricePerPerson: pricePerPerson,
+        totalPrice: totalPrice,
+        bookingDate: admin.firestore.FieldValue.serverTimestamp(),
+        status: originalBookingData.status, // Mantener el mismo estado
+        statusHistory: [{
+          ...originalBookingData.statusHistory[originalBookingData.statusHistory.length - 1], // Copy last status
+          note: `Transferido desde tour ${originalBookingData.tourId} al tour ${newTourId}` +
+                (reason ? ` - Razón: ${reason}` : ""),
+        }],
+        isEventOrigin: !eventExists, // Indica si esta reserva creó el evento
+        ipAddress: originalBookingData.ipAddress || getClientIP(req),
+        bookingReference: generateBookingReference(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        // Agregar información de la transferencia
+        transferInfo: {
+          originalBookingId: bookingId,
+          originalTourId: originalBookingData.tourId,
+          transferDate: admin.firestore.FieldValue.serverTimestamp(),
+          reason: reason || null,
+        },
+      };
+
+      transaction.set(newBookingRef, newBookingDoc);
+
+      // 6. Cancelar la reserva original
+      const cancellationNote = `Transferido al tour ${newTourId}, nueva reserva: ` +
+                               `${newBookingRef.id}` + (reason ? ` - Razón: ${reason}` : "");
+      const newStatusHistoryEntry = {
+        timestamp: new Date().toISOString(),
+        status: CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN,
+        note: cancellationNote,
+        adminUser: "system",
+      };
+
+      const updatedStatusHistory = [...(originalBookingData.statusHistory || []), newStatusHistoryEntry];
+
+      transaction.update(bookingRef, {
+        status: CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN,
+        statusHistory: updatedStatusHistory,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // 7. Actualizar la capacidad del evento original
+      const originalEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(originalBookingData.eventId);
+      const originalEventSnapshot = await transaction.get(originalEventRef);
+
+      if (originalEventSnapshot.exists) {
+        const originalEventData = originalEventSnapshot.data();
+        const newOriginalBookedSlots = Math.max(0, (originalEventData.bookedSlots || 0) - originalBookingData.pax);
+        transaction.update(originalEventRef, {
+          bookedSlots: newOriginalBookedSlots,
+          totalBookings: Math.max(0, (originalEventData.totalBookings || 0) - 1),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      return {
+        newBookingId: newBookingRef.id,
+        newBookingReference: newBookingDoc.bookingReference,
+        originalBookingId: bookingId,
+        cancelledStatus: CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN,
+      };
+    });
+
+    // Devolver confirmación de transferencia exitosa
+    return res.status(200).json({
+      success: true,
+      message: "Reserva transferida exitosamente a nuevo tour",
+      originalBookingId: result.originalBookingId,
+      newBookingId: result.newBookingId,
+      newBookingReference: result.newBookingReference,
+      cancelledBookingStatus: result.cancelledStatus,
+      pax: originalBookingData.pax,
+      reason: reason || null,
+    });
+  } catch (error) {
+    if (error.message === "CAPACITY_EXCEEDED") {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida en el evento de destino",
+          details: "Not enough capacity available in the destination event",
+        },
+      });
+    }
+
+    console.error("Error al transferir la reserva a nuevo tour:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la transferencia a nuevo tour",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -2203,6 +2517,7 @@ module.exports = {
   adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatusExtended), // Updated endpoint
   adminUpdateBookingDetails: functions.https.onRequest(adminUpdateBookingDetails), // New endpoint
   adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
+  adminTransferToNewTour: functions.https.onRequest(adminTransferToNewTour), // New endpoint for cross-tour transfers
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
   createBooking: functions.https.onRequest(createBooking),

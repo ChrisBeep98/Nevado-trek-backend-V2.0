@@ -642,6 +642,20 @@ Complete reservation system for adventure tour management with:
 - **Status Preservation**: Booking status is maintained during transfer
 - **Restrictions**: Cannot transfer cancelled bookings
 
+### 8. Cross-Tour Booking Transfer Management (NEW)
+- **Cross-Tour Transfer**: Admins can move bookings from one tour to a completely different tour
+- **New Endpoint**: POST /adminTransferToNewTour/:bookingId - Handles complete cross-tour transfers
+- **Event Creation**: Automatically creates new events on destination tour if needed for the specified date
+- **Booking Recreation**: Creates a completely new booking on destination tour with same customer details
+- **Original Cancellation**: Cancels the original booking with reference to new booking
+- **Pricing Recalculation**: Uses destination tour's pricing tiers for new booking
+- **Capacity Management**: Adjusts capacity on both original and destination events
+- **Data Preservation**: Maintains all customer information from original booking
+- **New Reference Generation**: Creates new booking reference for the new booking
+- **Audit Trail**: Complete tracking of cross-tour transfer with references to both bookings
+- **Transaction Safety**: All operations occur within Firestore transaction for data consistency
+- **Validation**: Ensures destination tour exists and has capacity for pax count
+
 ## Business Rules
 
 ### Tour Rules
@@ -722,7 +736,7 @@ After fixing the ESLint issues and adding the missing function, deployment is no
 
 #### Deployment Command:
 ```bash
-FUNCTIONS_DISCOVERY_TIMEOUT=120 firebase deploy --only functions
+set FUNCTIONS_DISCOVERY_TIMEOUT=120 firebase deploy --only functions
 ```
 
 ## Admin Panel Architecture & Design
@@ -861,20 +875,36 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
     ```
   - **Response**: 200 with success message and type change details
 
-- **POST /adminTransferBooking**: Transfer booking between tours (requires admin token)
-  - **Usage**: `POST https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking`
+- **POST /adminTransferBooking**: Transfer booking between events of the same tour (requires admin token)
+  - **Usage**: `POST https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/{bookingId}`
   - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **URL Parameters**:
+    - `bookingId` (required) - ID of the booking to transfer
   - **Body**: 
     ```json
     {
-      "bookingId": "string",
-      "fromTourId": "string (optional)",
-      "toTourId": "string (required to change tour)",
-      "toEventId": "string (optional, if not provided, creates new event)",
+      "destinationEventId": "string (required, must be same tour)",
       "reason": "string (optional, reason for transfer)"
     }
     ```
   - **Response**: 200 with transfer confirmation and details
+
+- **POST /adminTransferToNewTour**: Transfer booking between different tours (NEW!) (requires admin token)
+  - **Usage**: `POST https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferToNewTour/{bookingId}`
+  - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **URL Parameters**:
+    - `bookingId` (required) - ID of the booking to transfer
+  - **Body**: 
+    ```json
+    {
+      "newTourId": "string (required)",
+      "newStartDate": "ISO date string (optional, defaults to original date)",
+      "reason": "string (optional, reason for transfer)"
+    }
+    ```
+  - **Response**: 200 with transfer confirmation and details
+  - **Features**: Complete cross-tour transfer functionality that handles creating new events if needed, preserving customer information, adjusting capacity on both events, cancelling the original booking, and maintaining audit trails - all within a single Firestore transaction
+  - **Important Behavior**: When called, the system will: 1) Validate the destination tour exists and is active, 2) Find or create an event for the destination tour on the specified date, 3) Create a new booking on the destination tour with the same customer details, 4) Cancel the original booking with a reference to the new booking, 5) Adjust capacity on both events accordingly
 
 - **PUT /adminUpdateBookingDetails/:bookingId**: Update core booking information (requires admin token)
   - **Usage**: `PUT https://us-central1-nevadotrektest01.cloudfunctions.net/adminUpdateBookingDetails/{bookingId}`
@@ -899,6 +929,9 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
     ```
   - **Response**: 200 with success message and updated booking details
   - **Features**: Partial updates for customer information, tour, date, pax, price with full audit trail
+  - **Important Behavior**: When updating the `startDate`, the system finds or creates an appropriate event for the new date and moves the booking to the new event, automatically adjusting capacity between the old and new events using Firestore transactions
+  - **Date Synchronization**: The booking's startDate field is now properly synchronized with the associated event's date to ensure consistency
+  - **Timezone Handling**: Date changes properly account for Colombia timezone (UTC-5) to ensure correct calendar day display, with date-only strings interpreted as beginning of day in local timezone (e.g., "2025-12-31" will be interpreted as December 31st in Colombia timezone)
 
 ### Architecture
 

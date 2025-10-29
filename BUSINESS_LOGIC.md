@@ -59,12 +59,29 @@ Complete reservation system for adventure tour management with:
 - **Restrictions**: Cannot transfer cancelled bookings
 - **Pricing Updates**: Automatic recalculation if pricing differs on destination event
 
-### 8. Booking Details Management (Implemented)
+### 8. Cross-Tour Booking Transfer Management (NEW)
+- **Cross-Tour Transfer**: Admins can move bookings from one tour to a completely different tour
+- **New Endpoint**: POST /adminTransferToNewTour/:bookingId - Handles complete cross-tour transfers
+- **Event Creation**: Automatically creates new events on destination tour if needed for the specified date
+- **Booking Recreation**: Creates a completely new booking on destination tour with same customer details
+- **Original Cancellation**: Cancels the original booking with reference to new booking
+- **Pricing Recalculation**: Uses destination tour's pricing tiers for new booking
+- **Capacity Management**: Adjusts capacity on both original and destination events
+- **Data Preservation**: Maintains all customer information from original booking
+- **New Reference Generation**: Creates new booking reference for the new booking
+- **Audit Trail**: Complete tracking of cross-tour transfer with references to both bookings
+- **Transaction Safety**: All operations occur within Firestore transaction for data consistency
+- **Validation**: Ensures destination tour exists and has capacity for pax count
+
+### 9. Booking Details Management (Implemented)
 - **Customer Updates**: Admins can update customer information (name, document ID, phone, email, notes)
 - **Booking Modifications**: Change tour, date, pax count, pricing
+- **Date Change Behavior**: When date is changed, the booking is moved to a new event for that date with capacity automatically adjusted between old and new events
+- **Date Synchronization**: The booking's startDate field is now properly synchronized with the associated event's date to ensure consistency
+- **Timezone Handling**: Date changes properly account for Colombia timezone (UTC-5) to ensure correct calendar day display, with date-only strings interpreted as beginning of day in local timezone
 - **Validation Rules**: All changes must pass business rule validation
 - **Conflict Resolution**: Handle capacity, availability, and pricing conflicts
-- **Audit Trail**: Complete tracking of all booking detail modifications
+- **Audit Trail**: Complete tracking of all booking detail modifications including event transitions when dates change
 - **New Endpoint**: PUT /adminUpdateBookingDetails/:bookingId - Updates core booking information while maintaining audit trail
 - **Enhanced Capability**: Additional fields can now be updated during status changes via the additionalUpdates parameter
 
