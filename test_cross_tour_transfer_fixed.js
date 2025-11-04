@@ -30,6 +30,7 @@ async function testCrossTourTransferEndpoint() {
         console.log(`   ✅ Found confirmed booking: ${confirmedBooking.bookingId}`);
         console.log(`   📝 Booking Tour: ${confirmedBooking.tourName} (${confirmedBooking.tourId})`);
         console.log(`   📝 Booking Status: ${confirmedBooking.status}`);
+        console.log(`   📝 Booking Date: ${confirmedBooking.startDate}`);
         
         // Find a different tour to transfer to
         console.log("\n2. Finding a different tour to transfer to...");
@@ -41,15 +42,19 @@ async function testCrossTourTransferEndpoint() {
         if (otherTour) {
           console.log(`   ✅ Found other tour: ${otherTour.name.es} (${otherTour.tourId})`);
           
-          // Test the cross-tour transfer
+          // Use the original date in ISO string format directly from the booking
+          const originalDate = new Date(confirmedBooking.startDate);
+          const formattedDate = originalDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          
           console.log("\n3. Testing POST /adminTransferToNewTour");
           console.log(`   🔄 Transferring booking ${confirmedBooking.bookingId} from ${confirmedBooking.tourName} to ${otherTour.name.es}`);
+          console.log(`   📅 Using date: ${formattedDate}`);
           
           const transferResponse = await axios.post(
             `${BASE_URL}/adminTransferToNewTour/${confirmedBooking.bookingId}`,
             { 
               newTourId: otherTour.tourId,
-              newStartDate: confirmedBooking.startDate, // Same date for simplicity
+              newStartDate: formattedDate, // Use date-only format
               reason: "Test cross-tour transfer via API test"
             },
             {
