@@ -1012,19 +1012,9 @@ const createBooking = async (req, res) => {
     let eventRef;
     let eventExists = false;
 
-    // Buscar si ya existe un evento para este tour y fecha
-    const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
-        .where("tourId", "==", bookingData.tourId)
-        .where("startDate", "==", startDate)
-        .limit(1)
-        .get();
-
-    if (!eventsQuery.empty) {
-      // Usar evento existente
-      eventRef = eventsQuery.docs[0].ref;
-      eventExists = true;
-    } else {
-      // Crear nuevo evento privado
+    // Check if admin wants to create a new event regardless of existing events
+    if (bookingData.createNewEvent) {
+      // Create a new event for this booking regardless of any existing event
       const newEvent = {
         tourId: bookingData.tourId,
         tourName: tour.name.es, // Denormalizado para optimización
@@ -1042,6 +1032,38 @@ const createBooking = async (req, res) => {
       const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
       eventRef = createdEvent;
       eventExists = false;
+    } else {
+      // Buscar si ya existe un evento para este tour y fecha
+      const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
+          .where("tourId", "==", bookingData.tourId)
+          .where("startDate", "==", startDate)
+          .limit(1)
+          .get();
+
+      if (!eventsQuery.empty) {
+        // Usar evento existente
+        eventRef = eventsQuery.docs[0].ref;
+        eventExists = true;
+      } else {
+        // Crear nuevo evento privado
+        const newEvent = {
+          tourId: bookingData.tourId,
+          tourName: tour.name.es, // Denormalizado para optimización
+          startDate: startDate,
+          endDate: new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 días después, por ejemplo
+          maxCapacity: 8, // Capacidad por defecto
+          bookedSlots: 0, // Inicializado en 0
+          type: STATUS.EVENT_TYPE_PRIVATE, // Privado inicialmente
+          status: "active",
+          totalBookings: 0,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+        eventRef = createdEvent;
+        eventExists = false;
+      }
     }
 
     // Ahora crear la reserva en una transacción para garantizar consistencia
@@ -1744,16 +1766,96 @@ const adminTransferBooking = async (req, res) => {
     }
 
     // Obtener los datos de transferencia del cuerpo de la solicitud
-    const {destinationEventId, reason} = req.body;
+    const {destinationEventId, reason, createNewEvent, newStartDate, newMaxCapacity, newEventType} = req.body;
 
-    if (!destinationEventId) {
+    // If createNewEvent is true, we'll create a new event instead of using destinationEventId
+    if (!createNewEvent && !destinationEventId) {
       return res.status(400).send({
         error: {
           code: "INVALID_DATA",
-          message: "El destino (destinationEventId) es obligatorio",
-          details: "destinationEventId is required in the request body",
+          message: "El destino (destinationEventId) es obligatorio o se debe especificar createNewEvent=true",
+          details: "destinationEventId is required in the request body or createNewEvent must be true",
         },
       });
+    }
+
+    // If createNewEvent is true, we'll create a new event for the same tour as the booking
+    let destinationEventIdForTransfer = destinationEventId;
+    if (createNewEvent) {
+      // We need to create a new event, so we'll use the booking's tourId and the newStartDate
+      const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc(bookingId);
+      const bookingDoc = await bookingRef.get();
+      const bookingData = bookingDoc.data();
+
+      if (!bookingData) {
+        return res.status(404).send({
+          error: {
+            code: "RESOURCE_NOT_FOUND",
+            message: "Reserva no encontrada",
+            details: "The specified booking does not exist",
+          },
+        });
+      }
+
+      // Use newStartDate if provided, otherwise use the original booking date
+      let newEventDate = bookingData.startDate;
+      if (newStartDate) {
+        newEventDate = new Date(newStartDate);
+        if (isNaN(newEventDate.getTime())) {
+          return res.status(400).send({
+            error: {
+              code: "INVALID_DATA",
+              message: "La nueva fecha no es válida",
+              details: "New start date is not valid",
+            },
+          });
+        }
+      } else {
+        // Get the original event date to use as default
+        const originalEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(bookingData.eventId);
+        const originalEventDoc = await originalEventRef.get();
+        if (originalEventDoc.exists) {
+          const originalEvent = originalEventDoc.data();
+          newEventDate = originalEvent.startDate.toDate ? originalEvent.startDate.toDate() : originalEvent.startDate;
+        }
+      }
+
+      // Get tour info for the new event
+      const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(bookingData.tourId);
+      const tourDoc = await tourRef.get();
+
+      if (!tourDoc.exists) {
+        return res.status(404).send({
+          error: {
+            code: "RESOURCE_NOT_FOUND",
+            message: "Tour no encontrado",
+            details: "The tour for the booking does not exist",
+          },
+        });
+      }
+
+      const tour = tourDoc.data();
+
+      // Create the new event
+      const newEvent = {
+        tourId: bookingData.tourId,
+        tourName: tour.name && tour.name.es ? tour.name.es :
+                  (tour.name || `Tour ${bookingData.tourId}`), // Denormalized for optimization
+        startDate: newEventDate,
+        endDate: new Date(newEventDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days after as default
+        maxCapacity: newMaxCapacity || tour.maxParticipants || 8, // Use provided capacity,
+        // tour's capacity, or default to 8
+        bookedSlots: 0, // Will be updated in transaction
+        type: newEventType ||
+             CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Default to private if not specified
+        status: "active",
+        totalBookings: 0, // Will be updated in transaction
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+      destinationEventIdForTransfer = createdEvent.id;
     }
 
     // Verificar que la reserva exista
@@ -1785,7 +1887,7 @@ const adminTransferBooking = async (req, res) => {
     }
 
     // Verificar que el evento destino exista
-    const destinationEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(destinationEventId);
+    const destinationEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(destinationEventIdForTransfer);
     const destinationEventDoc = await destinationEventRef.get();
 
     if (!destinationEventDoc.exists) {
@@ -1860,6 +1962,7 @@ const adminTransferBooking = async (req, res) => {
 
       transaction.update(destinationEventRef, {
         bookedSlots: newBookedSlots,
+        totalBookings: (destinationEventData.totalBookings || 0) + 1,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     });
@@ -1870,7 +1973,7 @@ const adminTransferBooking = async (req, res) => {
       bookingId: bookingId,
       message: "Reserva transferida exitosamente",
       previousEventId: bookingData.eventId,
-      newEventId: destinationEventId,
+      newEventId: destinationEventIdForTransfer,
       pax: bookingData.pax,
       reason: reason || null,
     });
@@ -2364,7 +2467,7 @@ const adminCreateBooking = async (req, res) => {
       const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
 
       const statusToSet = bookingData.status || CONSTANTS.STATUS.BOOKING_PENDING;
-      
+
       const bookingDoc = {
         bookingId: bookingRef.id,
         eventId: eventRef.id,
@@ -2592,17 +2695,27 @@ const adminTransferToNewTour = async (req, res) => {
 
     // Realizar todas las operaciones en una transacción para garantizar consistencia
     const result = await db.runTransaction(async (transaction) => {
-      // 1. Obtener datos actualizados del evento destino
+      // 1. Realizar TODAS las lecturas primero
       const targetEventSnapshot = await transaction.get(targetEventRef);
-      const targetEventData = targetEventSnapshot.data();
+      const originalEventSnapshot = await transaction.get(
+          db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(originalBookingData.eventId),
+      );
 
-      // 2. Verificar capacidad en el evento destino
+      if (!targetEventSnapshot.exists) {
+        throw new Error("TARGET_EVENT_NOT_FOUND");
+      }
+
+      // 2. Obtener datos de los eventos
+      const targetEventData = targetEventSnapshot.data();
+      const originalEventData = originalEventSnapshot.exists ? originalEventSnapshot.data() : null;
+
+      // 3. Verificar capacidad en el evento destino
       const newBookedSlots = targetEventData.bookedSlots + originalBookingData.pax;
       if (newBookedSlots > targetEventData.maxCapacity) {
         throw new Error("CAPACITY_EXCEEDED");
       }
 
-      // 3. Calcular precio para el nuevo tour
+      // 4. Calcular precio para el nuevo tour
       let pricePerPerson = 1000000; // Valor por defecto
       if (newTour.pricingTiers && Array.isArray(newTour.pricingTiers)) {
         // Buscar el precio adecuado según el número de personas
@@ -2623,14 +2736,14 @@ const adminTransferToNewTour = async (req, res) => {
       // Calcular total
       const totalPrice = pricePerPerson * originalBookingData.pax;
 
-      // 4. Actualizar la capacidad del evento destino
+      // 5. Actualizar la capacidad del evento destino
       transaction.update(targetEventRef, {
         bookedSlots: newBookedSlots,
         totalBookings: (targetEventData.totalBookings || 0) + 1,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // 5. Crear la nueva reserva en el nuevo tour
+      // 6. Crear la nueva reserva en el nuevo tour
       const newBookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
 
       const newBookingDoc = {
@@ -2646,8 +2759,8 @@ const adminTransferToNewTour = async (req, res) => {
         status: originalBookingData.status, // Mantener el mismo estado
         statusHistory: [{
           ...originalBookingData.statusHistory[originalBookingData.statusHistory.length - 1], // Copy last status
-          note: `Transferido desde tour ${originalBookingData.tourId} al tour ${newTourId}` +
-                (reason ? ` - Razón: ${reason}` : ""),
+          note: `Transferido desde tour ${originalBookingData.tourId} al tour ` +
+                `${newTourId}` + (reason ? ` - Razón: ${reason}` : ""),
         }],
         isEventOrigin: !eventExists, // Indica si esta reserva creó el evento
         ipAddress: originalBookingData.ipAddress || getClientIP(req),
@@ -2665,9 +2778,9 @@ const adminTransferToNewTour = async (req, res) => {
 
       transaction.set(newBookingRef, newBookingDoc);
 
-      // 6. Cancelar la reserva original
-      const cancellationNote = `Transferido al tour ${newTourId}, nueva reserva: ` +
-                               `${newBookingRef.id}` + (reason ? ` - Razón: ${reason}` : "");
+      // 7. Cancelar la reserva original
+      const cancellationNote = `Transferido al tour ${newTourId}, nueva reserva: ${newBookingRef.id}` +
+                               (reason ? ` - Razón: ${reason}` : "");
       const newStatusHistoryEntry = {
         timestamp: new Date().toISOString(),
         status: CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN,
@@ -2683,13 +2796,10 @@ const adminTransferToNewTour = async (req, res) => {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // 7. Actualizar la capacidad del evento original
-      const originalEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(originalBookingData.eventId);
-      const originalEventSnapshot = await transaction.get(originalEventRef);
-
-      if (originalEventSnapshot.exists) {
-        const originalEventData = originalEventSnapshot.data();
+      // 8. Actualizar la capacidad del evento original
+      if (originalEventData) {
         const newOriginalBookedSlots = Math.max(0, (originalEventData.bookedSlots || 0) - originalBookingData.pax);
+        const originalEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(originalBookingData.eventId);
         transaction.update(originalEventRef, {
           bookedSlots: newOriginalBookedSlots,
           totalBookings: Math.max(0, (originalEventData.totalBookings || 0) - 1),
@@ -2738,6 +2848,481 @@ const adminTransferToNewTour = async (req, res) => {
   }
 };
 
+/**
+ * Creates a new event independently of any booking
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with the new event information.
+ */
+const adminCreateEvent = async (req, res) => {
+  // Verify this is a POST request
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Get event data from request body
+    const eventData = req.body;
+
+    // Validate required fields
+    if (!eventData.tourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tourId es obligatorio",
+          details: "tourId is required",
+        },
+      });
+    }
+
+    if (!eventData.startDate) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha de inicio es obligatoria",
+          details: "startDate is required",
+        },
+      });
+    }
+
+    // Validate date format
+    const startDate = new Date(eventData.startDate);
+    if (isNaN(startDate.getTime())) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha proporcionada no es válida",
+          details: "startDate is not a valid date",
+        },
+      });
+    }
+
+    // Verify tour exists and is active
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(eventData.tourId);
+    const tourDoc = await tourRef.get();
+
+    if (!tourDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no encontrado o no disponible",
+          details: "The specified tour does not exist or is inactive",
+        },
+      });
+    }
+
+    const tour = tourDoc.data();
+    if (!tour.isActive) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no disponible",
+          details: "The specified tour is not active",
+        },
+      });
+    }
+
+    // Create the new event
+    const newEvent = {
+      tourId: eventData.tourId,
+      tourName: tour.name && tour.name.es ? tour.name.es :
+                (tour.name || `Tour ${eventData.tourId}`), // Denormalized for optimization
+      startDate: startDate,
+      endDate: eventData.endDate ? new Date(eventData.endDate) :
+               new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days after if not specified
+      maxCapacity: eventData.maxCapacity || tour.maxParticipants || 8, // Use provided capacity,
+      // tour's capacity, or default to 8
+      bookedSlots: 0, // Initialized to 0
+      type: eventData.type ||
+           CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Default to private if not specified
+      status: eventData.status || "active", // Default to active if not specified
+      totalBookings: 0,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    // Add any additional fields from the request
+    if (eventData.notes) {
+      newEvent.notes = eventData.notes;
+    }
+
+    const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+
+    // Return success response
+    return res.status(201).json({
+      success: true,
+      eventId: createdEvent.id,
+      message: "Evento creado exitosamente",
+      event: {
+        eventId: createdEvent.id,
+        ...newEvent,
+        startDate: newEvent.startDate.toISOString(),
+        endDate: newEvent.endDate.toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear el evento:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la creación del evento",
+        details: error.message,
+      },
+    });
+  }
+};
+
+/**
+ * Splits an event into multiple events by moving selected bookings to new events
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with the result of the event split.
+ */
+const adminSplitEvent = async (req, res) => {
+  // Verify this is a POST request
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extract eventId from URL
+    const pathParts = req.path.split("/");
+    let eventId = null;
+    for (let i = pathParts.length - 1; i >= 0; i--) {
+      if (pathParts[i] && pathParts[i].trim() !== "" && pathParts[i] !== "split") {
+        eventId = pathParts[i];
+        break;
+      }
+    }
+
+    if (!eventId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El eventId es obligatorio en la URL",
+          details: "eventId is required in the URL path",
+        },
+      });
+    }
+
+    // Get request body
+    const {bookingIds, newEventMaxCapacity, newEventType, reason} = req.body;
+
+    if (!bookingIds || !Array.isArray(bookingIds) || bookingIds.length === 0) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "bookingIds es obligatorio y debe ser un array no vacío",
+          details: "bookingIds is required and must be a non-empty array",
+        },
+      });
+    }
+
+    // Verify the source event exists
+    const sourceEventRef = db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).doc(eventId);
+    const sourceEventDoc = await sourceEventRef.get();
+
+    if (!sourceEventDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Evento origen no encontrado",
+          details: "The source event does not exist",
+        },
+      });
+    }
+
+    const sourceEventData = sourceEventDoc.data();
+
+    // Verify all bookings exist and belong to this event
+    const bookingsCollection = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS);
+    const bookingPromises = bookingIds.map((bookingId) => bookingsCollection.doc(bookingId).get());
+    const bookingDocs = await Promise.all(bookingPromises);
+
+    const bookingsToMove = [];
+    let totalPaxToMove = 0;
+
+    for (let i = 0; i < bookingDocs.length; i++) {
+      const bookingDoc = bookingDocs[i];
+      const bookingId = bookingIds[i];
+
+      if (!bookingDoc.exists) {
+        return res.status(404).send({
+          error: {
+            code: "RESOURCE_NOT_FOUND",
+            message: `Reserva no encontrada: ${bookingId}`,
+            details: `Booking ${bookingId} does not exist`,
+          },
+        });
+      }
+
+      const bookingData = bookingDoc.data();
+      if (bookingData.eventId !== eventId) {
+        return res.status(400).send({
+          error: {
+            code: "INVALID_DATA",
+            message: `La reserva ${bookingId} no pertenece al evento especificado`,
+            details: `Booking ${bookingId} does not belong to the specified event`,
+          },
+        });
+      }
+
+      if (bookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED ||
+          bookingData.status === CONSTANTS.STATUS.BOOKING_CANCELLED_BY_ADMIN) {
+        return res.status(400).send({
+          error: {
+            code: "INVALID_DATA",
+            message: `La reserva ${bookingId} está cancelada y no se puede mover`,
+            details: `Booking ${bookingId} is cancelled and cannot be moved`,
+          },
+        });
+      }
+
+      bookingsToMove.push({docRef: bookingDoc.ref, data: bookingData});
+      totalPaxToMove += bookingData.pax;
+    }
+
+    // Create a new event for the bookings to be moved
+    const newEvent = {
+      tourId: sourceEventData.tourId,
+      tourName: sourceEventData.tourName,
+      startDate: sourceEventData.startDate.toDate ? sourceEventData.startDate.toDate() : sourceEventData.startDate,
+      endDate: sourceEventData.endDate.toDate ? sourceEventData.endDate.toDate() : sourceEventData.endDate,
+      maxCapacity: newEventMaxCapacity || sourceEventData.maxCapacity || 8,
+      bookedSlots: totalPaxToMove, // Start with the pax that will be moved
+      type: newEventType || sourceEventData.type, // Default to same type as source
+      status: sourceEventData.status,
+      totalBookings: bookingIds.length,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    // Add any additional fields from the source event
+    if (sourceEventData.notes) {
+      newEvent.notes = sourceEventData.notes;
+    }
+
+    const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+    const newEventId = createdEvent.id;
+
+    // Move the selected bookings to the new event in a transaction
+    await db.runTransaction(async (transaction) => {
+      // Update each booking to point to the new event
+      for (const {docRef, data} of bookingsToMove) {
+        // Create status history entry for the move
+        const newStatusHistoryEntry = {
+          timestamp: new Date().toISOString(),
+          status: data.status, // Keep the same status
+          note: `Movido al evento ${newEventId} como parte de división de evento` +
+                (reason ? ` - Razón: ${reason}` : ""),
+          adminUser: "system",
+        };
+
+        const updatedStatusHistory = [...(data.statusHistory || []), newStatusHistoryEntry];
+
+        transaction.update(docRef, {
+          eventId: newEventId,
+          statusHistory: updatedStatusHistory,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      // Update capacity: reduce from source event and it will be added to the new event
+      transaction.update(sourceEventRef, {
+        bookedSlots: admin.firestore.FieldValue.increment(-totalPaxToMove),
+        totalBookings: admin.firestore.FieldValue.increment(-bookingIds.length),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      message: "Evento dividido exitosamente",
+      sourceEventId: eventId,
+      newEventId: newEventId,
+      movedBookingsCount: bookingIds.length,
+      movedPaxCount: totalPaxToMove,
+      bookingIds: bookingIds,
+      reason: reason || null,
+    });
+  } catch (error) {
+    console.error("Error al dividir el evento:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la división del evento",
+        details: error.message,
+      },
+    });
+  }
+};
+
+/**
+ * Gets all events for a specific date and tour
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with the list of events.
+ */
+const adminGetEventsByDate = async (req, res) => {
+  // Verify this is a GET request
+  if (req.method !== "GET") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Extract tourId and date from URL
+    const pathParts = req.path.split("/");
+
+    // We expect the format to be: /adminGetEventsByDate/:tourId/:date
+    // The last two non-empty parts should be the tourId and date
+    const nonEmptyParts = pathParts.filter((part) => part.trim() !== "");
+
+    if (nonEmptyParts.length < 2) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "tourId y fecha son obligatorios en la URL",
+          details: "tourId and date are required in the URL path in format /adminGetEventsByDate/:tourId/:date",
+        },
+      });
+    }
+
+    // Extract tourId and date from the path (last two segments)
+    const dateParam = nonEmptyParts[nonEmptyParts.length - 1]; // Last part is the date
+    const tourId = nonEmptyParts[nonEmptyParts.length - 2]; // Second to last is the tourId
+
+    if (!tourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tourId es obligatorio en la URL",
+          details: "tourId is required in the URL path",
+        },
+      });
+    }
+
+    if (!dateParam) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha es obligatoria en la URL",
+          details: "date is required in the URL path",
+        },
+      });
+    }
+
+    // Parse the date parameter
+    const requestedDate = new Date(dateParam);
+    if (isNaN(requestedDate.getTime())) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "Formato de fecha inválido",
+          details: "Date format is invalid. Use YYYY-MM-DD format.",
+        },
+      });
+    }
+
+    // Verify tour exists and is active
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(tourId);
+    const tourDoc = await tourRef.get();
+
+    if (!tourDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no encontrado o no disponible",
+          details: "The specified tour does not exist or is inactive",
+        },
+      });
+    }
+
+    const tour = tourDoc.data();
+    if (!tour.isActive) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no disponible",
+          details: "The specified tour is not active",
+        },
+      });
+    }
+
+    // Create date range for the query (from start of day to end of day)
+    const startOfDay = new Date(requestedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(requestedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Query all events for the tour on the specified date
+    const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
+        .where("tourId", "==", tourId)
+        .where("startDate", ">=", admin.firestore.Timestamp.fromDate(startOfDay))
+        .where("startDate", "<=", admin.firestore.Timestamp.fromDate(endOfDay))
+        .get();
+
+    if (eventsQuery.empty) {
+      // No events for this date
+      return res.status(200).json({
+        events: [],
+        count: 0,
+        tourId: tourId,
+        date: requestedDate.toISOString().split("T")[0],
+        message: "No events found for the specified tour and date",
+      });
+    }
+
+    // Map the Firestore documents to a JSON array
+    const events = eventsQuery.docs.map((doc) => {
+      const eventData = doc.data();
+      return {
+        eventId: doc.id,
+        ...eventData,
+        // Convert Firestore timestamps to ISO strings for better handling in the frontend
+        startDate: eventData.startDate ? eventData.startDate.toDate().toISOString() : null,
+        endDate: eventData.endDate ? eventData.endDate.toDate().toISOString() : null,
+        createdAt: eventData.createdAt ? eventData.createdAt.toDate().toISOString() : null,
+        updatedAt: eventData.updatedAt ? eventData.updatedAt.toDate().toISOString() : null,
+      };
+    });
+
+    // Return the list of events
+    return res.status(200).json({
+      events: events,
+      count: events.length,
+      tourId: tourId,
+      date: requestedDate.toISOString().split("T")[0],
+      message: `Found ${events.length} events for tour ${tourId} on date ${requestedDate.toISOString().split("T")[0]}`,
+    });
+  } catch (error) {
+    console.error("Error al obtener los eventos por fecha:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la solicitud de eventos por fecha",
+        details: error.message,
+      },
+    });
+  }
+};
+
 // -----------------------------------------------------------
 // Exportación
 // -----------------------------------------------------------
@@ -2758,6 +3343,9 @@ module.exports = {
   adminTransferToNewTour: functions.https.onRequest(adminTransferToNewTour), // New endpoint for cross-tour transfers
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
   adminPublishEvent: functions.https.onRequest(adminPublishEvent), // Nuevo endpoint
+  adminCreateEvent: functions.https.onRequest(adminCreateEvent), // New endpoint for creating events independently
+  adminSplitEvent: functions.https.onRequest(adminSplitEvent), // New endpoint for splitting events
+  adminGetEventsByDate: functions.https.onRequest(adminGetEventsByDate), // New endpoint for getting events by date
   createBooking: functions.https.onRequest(createBooking),
   joinEvent: functions.https.onRequest(joinEvent),
   checkBooking: functions.https.onRequest(checkBooking),

@@ -68,6 +68,18 @@ Update core booking information while maintaining audit trail. When updating the
 - Tracks the event transition in the booking's `previousStates` field
 - All capacity adjustments are handled atomically in a Firestore transaction
 
+**Multiple Events Per Date Support:** The `adminUpdateBookingDetails` endpoint now supports creating new events even when an event already exists for the same tour and date:
+
+```json
+{
+  "startDate": "2025-12-25T00:00:00.000Z",
+  "createNewEvent": true,
+  "reason": "Creating separate private group for this booking"
+}
+```
+
+When `createNewEvent` is set to `true`, a new event will be created for the specified date and tour, regardless of whether an event already exists for that date. This allows for multiple separate events for the same tour on the same date.
+
 **Example:**
 ```bash
 curl -X PUT "https://us-central1-nevadotrektest01.cloudfunctions.net/adminUpdateBookingDetails/qcWIadNTt0PcinNTjGxu" \
@@ -128,12 +140,21 @@ Move a booking from one event to another within the same tour.
 **Request Body:**
 ```json
 {
-  "destinationEventId": "string (required)",
+  "destinationEventId": "string (required unless createNewEvent is true)",
+  "createNewEvent": "boolean (optional, if true creates new event with booking parameters)",
+  "newStartDate": "ISO date string (optional, used when createNewEvent is true, defaults to original event date)",
+  "newMaxCapacity": "number (optional, used when createNewEvent is true, defaults to tour's max capacity or 8)",
+  "newEventType": "private|public (optional, used when createNewEvent is true, defaults to 'private')",
   "reason": "string (optional)"
 }
 ```
 
-**Example:**
+**Important Features:**
+- **New Event Creation**: When `createNewEvent` is `true`, creates a new separate event for the same tour instead of using an existing event
+- **Flexible Destination**: Can either specify a `destinationEventId` or let the system create a new event with `createNewEvent: true`
+- **Custom Event Properties**: When creating new events, can specify capacity and type
+
+**Example 1 - Transfer to existing event:**
 ```bash
 curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/qcWIadNTt0PcinNTjGxu" \
   -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY" \
@@ -141,6 +162,20 @@ curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminTrans
   -d '{
     "destinationEventId": "newEventId123",
     "reason": "Customer requested date change"
+  }'
+```
+
+**Example 2 - Create new event during transfer:**
+```bash
+curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminTransferBooking/qcWIadNTt0PcinNTjGxu" \
+  -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "createNewEvent": true,
+    "newStartDate": "2025-12-25T00:00:00.000Z", 
+    "newMaxCapacity": 6,
+    "newEventType": "private",
+    "reason": "Moving to new private group"
   }'
 ```
 
@@ -218,7 +253,55 @@ Retrieve bookings with various filtering options. The startDate in the response 
 - `limit` - Number of results per page (default: 50, max: 200)
 - `offset` - Number of results to skip
 
-### 6. Date Change Tracking
+### 6. Admin Create Booking (NEW!)
+`POST /adminCreateBooking`
+
+Create a new booking directly as an admin, without rate limiting. This endpoint has the same functionality as the public createBooking endpoint but is available to admins without rate limiting and allows specifying an initial booking status.
+
+**Request Body:**
+```json
+{
+  "tourId": "string (required)",
+  "startDate": "ISO date string (required)",
+  "customer": {
+    "fullName": "string (required)",
+    "documentId": "string (required)",
+    "phone": "string (required)",
+    "email": "string (required)",
+    "notes": "string (optional)"
+  },
+  "pax": "number (required)",
+  "status": "pending|confirmed|paid|cancelled|cancelled_by_admin (optional, defaults to 'pending')",
+  "createNewEvent": "boolean (optional, if true creates new event even if one exists for same date and tour)"
+}
+```
+
+**Important Features:**
+- **No Rate Limiting**: Unlike the public booking endpoint, this endpoint has no rate limiting for admins
+- **Initial Status**: Can specify the initial booking status instead of defaulting to 'pending'
+- **New Event Creation**: Uses the `createNewEvent` flag to create a separate event even if one already exists for the same date and tour
+
+**Example:**
+```bash
+curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminCreateBooking" \
+  -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tourId": "tourId123",
+    "startDate": "2025-12-25T00:00:00.000Z",
+    "customer": {
+      "fullName": "Admin Created Customer",
+      "documentId": "123456789",
+      "phone": "+573123456789",
+      "email": "admin-customer@example.com"
+    },
+    "pax": 4,
+    "status": "confirmed",
+    "createNewEvent": true
+  }'
+```
+
+### 7. Date Change Tracking
 When a booking date is changed via `PUT /adminUpdateBookingDetails/:bookingId` with a new startDate, the change is tracked in the booking's `previousStates` field with the following structure:
 ```json
 {
@@ -270,6 +353,117 @@ Retrieve events with filtering for calendar view.
 - `status` - Filter by event status ('active', 'full', 'completed', 'cancelled')
 - `limit` - Number of results per page
 - `offset` - Number of results to skip
+
+### 3. Create Event Independently (NEW!)
+`POST /adminCreateEvent`
+
+Create a new event independently of any booking, allowing admins to prepare events in advance with specific capacity and visibility settings.
+
+**Request Body:**
+```json
+{
+  "tourId": "string (required)",
+  "startDate": "ISO date string (required)",
+  "endDate": "ISO date string (optional, defaults to 3 days after start)",
+  "maxCapacity": "number (optional, defaults to tour's max capacity or 8)",
+  "type": "private|public (optional, defaults to 'private')",
+  "status": "active|inactive|completed|cancelled (optional, defaults to 'active')",
+  "notes": "string (optional)"
+}
+```
+
+**Example:**
+```bash
+curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminCreateEvent" \
+  -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tourId": "tourId123",
+    "startDate": "2025-12-25T00:00:00.000Z",
+    "maxCapacity": 6,
+    "type": "private",
+    "notes": "Special private group"
+  }'
+```
+
+### 4. Get Events by Date (NEW!)
+`GET /adminGetEventsByDate/:tourId/:date`
+
+Retrieve all events for a specific tour on a specific date. This endpoint is particularly useful when managing multiple events per date for the same tour.
+
+**URL Parameters:**
+- `tourId`: The ID of the tour
+- `date`: The date in YYYY-MM-DD format
+
+**Example:**
+```bash
+curl -X GET "https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsByDate/tourId123/2025-12-25" \
+  -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY"
+```
+
+### 5. Split Event (NEW!)
+`POST /adminSplitEvent/:eventId`
+
+Split a single event into multiple events by moving selected bookings to a new event. This allows admins to separate groups within a larger event.
+
+**Request Body:**
+```json
+{
+  "bookingIds": "array of booking IDs to move to new event (required)",
+  "newEventMaxCapacity": "number (optional, defaults to original capacity)",
+  "newEventType": "private|public (optional, defaults to original type)",
+  "reason": "string (optional)"
+}
+```
+
+**Example:**
+```bash
+curl -X POST "https://us-central1-nevadotrektest01.cloudfunctions.net/adminSplitEvent/eventId123" \
+  -H "X-Admin-Secret-Key: YOUR_ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bookingIds": ["bookingId456", "bookingId789"],
+    "newEventMaxCapacity": 4,
+    "newEventType": "private",
+    "reason": "Separating into smaller groups for better experience"
+  }'
+```
+
+## Multiple Events Per Date Support
+
+### Overview
+The system now supports multiple events for the same tour on the same date, providing greater operational flexibility:
+
+1. **Creating Separate Events**: Use the `createNewEvent` parameter when updating booking details
+2. **Transferring to New Events**: Use the `createNewEvent` parameter in transfer operations
+3. **Direct Event Creation**: Create events independently using `adminCreateEvent`
+4. **Event Splitting**: Separate existing events using `adminSplitEvent`
+
+### Using Multiple Events in Booking Updates
+When updating booking details via `PUT /adminUpdateBookingDetails/:bookingId`, you can now create a new event for the same date and tour:
+
+```json
+{
+  "startDate": "2025-12-25T00:00:00.000Z",
+  "createNewEvent": true,
+  "reason": "Creating separate group for this booking"
+}
+```
+
+### Using Multiple Events in Booking Transfers
+When transferring bookings via `POST /adminTransferBooking/:bookingId`, you can now create a new event:
+
+```json
+{
+  "createNewEvent": true,
+  "newStartDate": "2025-12-25T00:00:00.000Z", 
+  "newMaxCapacity": 6,
+  "newEventType": "private",
+  "reason": "Moving to new private group"
+}
+```
+
+This will create a new event for the same tour on the specified date and transfer the booking to it.
 
 ## Tour Management
 

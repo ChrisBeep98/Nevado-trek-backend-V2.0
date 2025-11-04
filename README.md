@@ -37,7 +37,7 @@ Complete reservation system for adventure tour management with bilingual support
 4. `POST /joinEvent` - Join existing public event
 5. `GET /checkBooking` - Verify booking status by reference
 
-### Admin Endpoints (11)
+### Admin Endpoints (14)
 6. `POST /adminCreateTourV2` - Create new tour
 7. `PUT /adminUpdateTourV2/:tourId` - Update existing tour
 8. `DELETE /adminDeleteTourV2/:tourId` - Logically delete tour
@@ -48,6 +48,9 @@ Complete reservation system for adventure tour management with bilingual support
 13. `POST /adminTransferToNewTour/:bookingId` - Transfer bookings between different tours (NEW!)
 14. `GET /adminGetEventsCalendar` - Event calendar view
 15. `POST /adminPublishEvent/:eventId` - Toggle event visibility
+16. `POST /adminCreateEvent` - Create events independently of bookings (NEW!)
+17. `POST /adminSplitEvent/:eventId` - Split events into multiple events by moving selected bookings (NEW!)
+18. `GET /adminGetEventsByDate/:tourId/:date` - Get all events for a specific tour on a specific date (NEW!)
 
 ## 🌐 Technology Stack
 
@@ -60,7 +63,7 @@ Complete reservation system for adventure tour management with bilingual support
 ## 📋 Current Production Status
 
 - **MVP**: Complete and operational
-- **Functions Deployed**: 14/14
+- **Functions Deployed**: 17/17 (with 3 new endpoints added)
 - **Active Tour**: "Nevado del Tolima" (ID: 9ujvQOODur1hEOMoLjEq)
 - **Active Event**: November 10, 2025 with 2 of 8 participants booked
 

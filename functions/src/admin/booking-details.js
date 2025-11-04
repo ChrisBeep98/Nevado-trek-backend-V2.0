@@ -96,20 +96,11 @@ const updateBookingDetails = async (bookingId, updates, adminUser, db) => {
       newStartDate = new Date(updates.startDate);
     }
 
-    // Find an existing event for this tour with the new date
-    const tourEventsRef = db.collection(COLLECTIONS.TOUR_EVENTS);
-    const existingEventQuery = await tourEventsRef
-        .where("tourId", "==", bookingData.tourId)
-        .where("startDate", "==", admin.firestore.Timestamp.fromDate(newStartDate))
-        .limit(1)
-        .get();
-
     let newEventId = null;
-    if (!existingEventQuery.empty) {
-      // Use existing event
-      newEventId = existingEventQuery.docs[0].id;
-    } else {
-      // Create a new event for the updated date
+
+    // Check if admin wants to create a new event even if one exists for the same date
+    if (updates.createNewEvent) {
+      // Create a new event for the updated date regardless of existing events
       const newEvent = {
         tourId: bookingData.tourId,
         tourName: bookingData.tourName,
@@ -127,6 +118,38 @@ const updateBookingDetails = async (bookingId, updates, adminUser, db) => {
 
       const createdEvent = await db.collection(COLLECTIONS.TOUR_EVENTS).add(newEvent);
       newEventId = createdEvent.id;
+    } else {
+      // Find an existing event for this tour with the new date
+      const tourEventsRef = db.collection(COLLECTIONS.TOUR_EVENTS);
+      const existingEventQuery = await tourEventsRef
+          .where("tourId", "==", bookingData.tourId)
+          .where("startDate", "==", admin.firestore.Timestamp.fromDate(newStartDate))
+          .limit(1)
+          .get();
+
+      if (!existingEventQuery.empty) {
+        // Use existing event
+        newEventId = existingEventQuery.docs[0].id;
+      } else {
+        // Create a new event for the updated date
+        const newEvent = {
+          tourId: bookingData.tourId,
+          tourName: bookingData.tourName,
+          startDate: newStartDate,
+          // Calculate endDate based on tour duration if available, or default to 3 days later
+          endDate: new Date(newStartDate.getTime() + 3 * 24 * 60 * 60 * 1000),
+          maxCapacity: 8, // Default capacity
+          bookedSlots: 0, // Will be updated in transaction
+          type: "private", // New events start as private
+          status: "active",
+          totalBookings: 0, // Will be updated in transaction
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        const createdEvent = await db.collection(COLLECTIONS.TOUR_EVENTS).add(newEvent);
+        newEventId = createdEvent.id;
+      }
     }
 
     // Store the old event ID for capacity adjustment later

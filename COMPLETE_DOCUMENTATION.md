@@ -924,6 +924,7 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
       "startDate": "ISO date string (optional)",
       "pax": "number (optional)",
       "price": "number (optional)",
+      "createNewEvent": "boolean (optional, if true creates new event even if one exists for same date and tour)",
       "reason": "string (optional, reason for the change)"
     }
     ```
@@ -932,6 +933,54 @@ A comprehensive admin panel for managing all aspects of the adventure tour reser
   - **Important Behavior**: When updating the `startDate`, the system finds or creates an appropriate event for the new date and moves the booking to the new event, automatically adjusting capacity between the old and new events using Firestore transactions
   - **Date Synchronization**: The booking's startDate field is now properly synchronized with the associated event's date to ensure consistency
   - **Timezone Handling**: Date changes properly account for Colombia timezone (UTC-5) to ensure correct calendar day display, with date-only strings interpreted as beginning of day in local timezone (e.g., "2025-12-31" will be interpreted as December 31st in Colombia timezone)
+  - **Multiple Events Support**: When `createNewEvent` is set to `true`, the system creates a new event for the same date and tour even if one already exists, allowing for multiple separate events per date
+
+- **POST /adminCreateEvent**: Create events independently of bookings (requires admin token) (NEW!)
+  - **Usage**: `POST https://us-central1-nevadotrektest01.cloudfunctions.net/adminCreateEvent`
+  - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **Body**: 
+    ```json
+    {
+      "tourId": "string (required)",
+      "startDate": "ISO date string (required)",
+      "endDate": "ISO date string (optional, defaults to 3 days after start)",
+      "maxCapacity": "number (optional, defaults to tour's max capacity or 8)",
+      "type": "private|public (optional, defaults to 'private')",
+      "status": "active|inactive|completed|cancelled (optional, defaults to 'active')",
+      "notes": "string (optional)"
+    }
+    ```
+  - **Response**: 201 with success message and created event details
+  - **Features**: Allows admins to create events in advance with specific capacity and visibility settings without requiring a booking
+  - **Use Cases**: Creating events ahead of time, preparing private groups, setting up events with specific capacity needs
+
+- **POST /adminSplitEvent/:eventId**: Split an event into multiple events by moving selected bookings (requires admin token) (NEW!)
+  - **Usage**: `POST https://us-central1-nevadotrektest01.cloudfunctions.net/adminSplitEvent/{eventId}`
+  - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **URL Parameters**:
+    - `eventId` (required) - ID of the event to split
+  - **Body**: 
+    ```json
+    {
+      "bookingIds": "array of booking IDs to move to new event (required)",
+      "newEventMaxCapacity": "number (optional, defaults to original capacity)",
+      "newEventType": "private|public (optional, defaults to original type)",
+      "reason": "string (optional)"
+    }
+    ```
+  - **Response**: 200 with success message and split details
+  - **Features**: Splits a single event into multiple events by moving selected bookings to a new event
+  - **Use Cases**: Separating large groups into smaller ones, creating private groups from public events
+
+- **GET /adminGetEventsByDate/:tourId/:date**: Get all events for a specific tour on a specific date (requires admin token) (NEW!)
+  - **Usage**: `GET https://us-central1-nevadotrektest01.cloudfunctions.net/adminGetEventsByDate/{tourId}/{date}`
+  - **Headers**: `X-Admin-Secret-Key: [YOUR_TOKEN]`
+  - **URL Parameters**:
+    - `tourId` (required) - ID of the tour
+    - `date` (required) - Date in YYYY-MM-DD format
+  - **Response**: 200 with list of events for the specified tour on the specified date
+  - **Features**: Retrieves all events for a specific tour on a specific date, particularly useful when managing multiple events per date
+  - **Use Cases**: Checking all events for a tour on a specific date, managing capacity across multiple events
 
 ### Architecture
 

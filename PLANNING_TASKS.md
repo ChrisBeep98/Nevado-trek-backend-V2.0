@@ -65,7 +65,7 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
   - Status: Active, 2 of 8 participants booked
   - First booking: BK-20251011-472 (2 people, pending status)
 
-## Deployed Functions (15 Total)
+## Deployed Functions (18 Total)
 
 ### Public Endpoints
 1. **GET** `/getToursV2` - List all active tours
@@ -85,6 +85,9 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 13. **POST** `/adminTransferToNewTour/:bookingId` - Transfer bookings between different tours (NEW!)
 14. **GET** `/adminGetEventsCalendar` - Event calendar view
 15. **POST** `/adminPublishEvent/:eventId` - Toggle event visibility
+16. **POST** `/adminCreateEvent` - Create events independently of bookings (NEW!)
+17. **POST** `/adminSplitEvent/:eventId` - Split events into multiple events by moving selected bookings (NEW!)
+18. **GET** `/adminGetEventsByDate/:tourId/:date` - Get all events for a specific tour on a specific date (NEW!)
 
 ## Development Workflow
 
@@ -121,6 +124,13 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 - [x] Database cleanup and production data setup
 - [x] First production tour with proper formatting (day 1-4, dual currency)
 - [x] First event and booking created for Nevado del Tolima tour
+- [x] Multiple Events Per Date Enhancement: 
+     - Enhanced adminUpdateBookingDetails with createNewEvent parameter
+     - Enhanced createBooking with createNewEvent parameter  
+     - Enhanced adminTransferBooking with createNewEvent parameter
+     - New adminCreateEvent endpoint for creating events independently
+     - New adminSplitEvent endpoint for splitting events
+     - New adminGetEventsByDate endpoint for getting events by date
 
 ### 🔄 In Progress
 - Live customer bookings and revenue generation
@@ -144,6 +154,17 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 - **Status**: ✅ COMPLETED - Fully implemented, tested and deployed
 - **Additional Enhancement**: adminUpdateBookingStatus now supports additionalUpdates parameter for updating booking details during status changes
 
+## Completed Enhancement: Multiple Events Per Date Support
+- **Enhanced Functionality**: Multiple events can now exist for the same tour on the same date
+- **Enhanced adminUpdateBookingDetails**: Added createNewEvent parameter to create new events even when one exists for same date and tour
+- **Enhanced createBooking**: Added createNewEvent parameter to create separate events during booking creation
+- **Enhanced adminTransferBooking**: Added createNewEvent, newStartDate, newMaxCapacity, and newEventType parameters for creating events during transfers
+- **New adminCreateEvent endpoint**: Allows admins to create events independently of bookings
+- **New adminSplitEvent endpoint**: Splits an event into multiple events by moving selected bookings to new events
+- **New adminGetEventsByDate endpoint**: Retrieves all events for a specific tour on a specific date
+- **Implementation**: All functionality implemented with proper transaction handling and capacity management
+- **Status**: ✅ COMPLETED - Fully implemented, tested and deployed
+
 ## Resource Allocation
 - **Developer**: 1 (primary implementation)
 - **Timeline**: Production ongoing
@@ -165,7 +186,7 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 ## Success Metrics
 
 ### Technical Metrics
-- All 13 functions operational with 99% uptime
+- All 18 functions operational with 99% uptime
 - Rate limiting preventing spam while allowing legitimate customers
 - Proper error handling with <5% internal server errors
 - Fast response times (<2s for all endpoints)
@@ -192,28 +213,16 @@ Complete adventure tour reservation system with bilingual support, anonymous boo
 - Mobile app integration
 
 ## Current Task Priority
-<<<<<<< HEAD
-1. Production deployment has been successfully completed - all 13 functions deployed and operational
-2. Focus on live customer bookings and revenue generation
-3. Monitor system performance and stability
-4. Gather customer feedback and improve user experience
-5. Prepare for expansion with additional tours
-=======
 1. Focus on live customer bookings and revenue generation
 2. Monitor system performance and stability
 3. Gather customer feedback and improve user experience
 4. Prepare for expansion with additional tours
 5. Implement booking details update functionality
->>>>>>> 9da27100fc5ccffb054f68523d20206139bef56d
+6. Enhance multiple events per date capabilities
 
 ## Current Status Summary
-- **Functions Deployed**: 15/15 operational 
-- **Phases Complete**: 5/5 (Phase 1, 2A, 2B, 2C, 2D)  
+- **Functions Deployed**: 18/18 operational 
+- **Phases Complete**: 5/5 (Phase 1, 2A, 2B, 2C, 2D) + Multiple Events Per Date Enhancement  
 - **Current Phase**: PRODUCTION - Live customer bookings
 - **Production Tour**: "Nevado del Tolima" (ID: 9ujvQOODur1hEOMoLjEq) active and accepting bookings
-<<<<<<< HEAD
 - **Status**: Production system fully operational and ready for revenue generation
-- **Deployment Date**: October 11, 2025 - All 15 functions successfully deployed to Firebase (including 2 new cross-tour transfer functions)
-=======
-- **Status**: Production system fully operational and ready for revenue generation
->>>>>>> 9da27100fc5ccffb054f68523d20206139bef56d
