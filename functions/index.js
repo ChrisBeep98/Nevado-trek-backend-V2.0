@@ -2188,6 +2188,243 @@ const adminUpdateBookingStatusExtended = async (req, res) => {
 };
 
 /**
+ * Creates a new booking as an admin (without rate limiting)
+ * @param {functions.https.Request} req - The HTTP request.
+ * @param {functions.Response} res - The HTTP response.
+ * @return {Promise<void>} - The response with the new booking information.
+ */
+const adminCreateBooking = async (req, res) => {
+  // Verify this is a POST request
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  // Verify admin authentication
+  if (!isAdminRequest(req)) {
+    return res.status(401).send("Unauthorized: Invalid admin secret key");
+  }
+
+  try {
+    // Validate input data (same as createBooking but without rate limiting)
+    const bookingData = req.body;
+
+    // Validate required fields
+    if (!bookingData.tourId) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El tourId es obligatorio",
+          details: "tourId is required",
+        },
+      });
+    }
+
+    if (!bookingData.startDate) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha de inicio es obligatoria",
+          details: "startDate is required",
+        },
+      });
+    }
+
+    if (!bookingData.customer || !bookingData.customer.fullName ||
+        !bookingData.customer.documentId || !bookingData.customer.phone ||
+        !bookingData.customer.email) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La información del cliente es incompleta",
+          details: "fullName, documentId, phone, and email are required in customer object",
+        },
+      });
+    }
+
+    if (!bookingData.pax || bookingData.pax <= 0) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "El número de participantes debe ser un número positivo",
+          details: "pax must be a positive number",
+        },
+      });
+    }
+
+    // Validate date format
+    const startDate = new Date(bookingData.startDate);
+    if (isNaN(startDate.getTime())) {
+      return res.status(400).send({
+        error: {
+          code: "INVALID_DATA",
+          message: "La fecha proporcionada no es válida",
+          details: "startDate is not a valid date",
+        },
+      });
+    }
+
+    // Verify tour exists and is active
+    const tourRef = db.collection(CONSTANTS.COLLECTIONS.TOURS).doc(bookingData.tourId);
+    const tourDoc = await tourRef.get();
+
+    if (!tourDoc.exists) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no encontrado o no disponible",
+          details: "The specified tour does not exist or is inactive",
+        },
+      });
+    }
+
+    const tour = tourDoc.data();
+    if (!tour.isActive) {
+      return res.status(404).send({
+        error: {
+          code: "RESOURCE_NOT_FOUND",
+          message: "Tour no disponible",
+          details: "The specified tour is not active",
+        },
+      });
+    }
+
+    // Create or find event for this date
+    let eventRef;
+    let eventExists = false;
+
+    // Check if an event already exists for this tour and date
+    const eventsQuery = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS)
+        .where("tourId", "==", bookingData.tourId)
+        .where("startDate", "==", startDate)
+        .limit(1)
+        .get();
+
+    if (!eventsQuery.empty) {
+      // Use existing event
+      eventRef = eventsQuery.docs[0].ref;
+      eventExists = true;
+    } else {
+      // Create new event (private by default)
+      const newEvent = {
+        tourId: bookingData.tourId,
+        tourName: tour.name.es, // Denormalized for optimization
+        startDate: startDate,
+        endDate: new Date(startDate.getTime() + 3 * 24 * 60 * 60 * 1000), // 3 days after, for example
+        maxCapacity: tour.maxParticipants || 8, // Use tour's max capacity or default to 8
+        bookedSlots: 0, // Initialized to 0
+        type: CONSTANTS.STATUS.EVENT_TYPE_PRIVATE, // Private initially by admin
+        status: "active",
+        totalBookings: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      const createdEvent = await db.collection(CONSTANTS.COLLECTIONS.TOUR_EVENTS).add(newEvent);
+      eventRef = createdEvent;
+      eventExists = false;
+    }
+
+    // Create booking in transaction for data consistency
+    const bookingId = await db.runTransaction(async (transaction) => {
+      // Get updated event data
+      const eventSnapshot = await transaction.get(eventRef);
+      const eventData = eventSnapshot.data();
+
+      // Check capacity
+      const newBookedSlots = eventData.bookedSlots + bookingData.pax;
+      if (newBookedSlots > eventData.maxCapacity) {
+        throw new Error("CAPACITY_EXCEEDED");
+      }
+
+      // Calculate price based on participants (using tour's pricing if available)
+      let pricePerPerson = 1000000; // Default value
+      if (tour.pricingTiers && Array.isArray(tour.pricingTiers)) {
+        // Find appropriate pricing tier based on number of people
+        const pricingTier = tour.pricingTiers.find((tier) =>
+          bookingData.pax >= (tier.paxFrom || tier.pax) && bookingData.pax <= (tier.paxTo || tier.pax),
+        );
+        if (pricingTier) {
+          pricePerPerson = (typeof pricingTier.pricePerPerson === "object") ?
+            (pricingTier.pricePerPerson.COP || pricingTier.pricePerPerson.USD || 1000000) :
+            (pricingTier.pricePerPerson || 1000000);
+        }
+      }
+
+      // Calculate total
+      const totalPrice = pricePerPerson * bookingData.pax;
+
+      // Update event to increase booked slots
+      transaction.update(eventRef, {
+        bookedSlots: newBookedSlots,
+        totalBookings: (eventData.totalBookings || 0) + 1,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Create the booking
+      const bookingRef = db.collection(CONSTANTS.COLLECTIONS.BOOKINGS).doc();
+
+      const statusToSet = bookingData.status || CONSTANTS.STATUS.BOOKING_PENDING;
+      
+      const bookingDoc = {
+        bookingId: bookingRef.id,
+        eventId: eventRef.id,
+        tourId: bookingData.tourId,
+        tourName: tour.name.es, // Denormalized
+        customer: bookingData.customer,
+        pax: bookingData.pax,
+        pricePerPerson: pricePerPerson,
+        totalPrice: totalPrice,
+        bookingDate: admin.firestore.FieldValue.serverTimestamp(),
+        status: statusToSet, // Use provided status or default to pending
+        statusHistory: [{
+          timestamp: new Date().toISOString(), // Using client timestamp since Firestore timestamps can't be in arrays
+          status: statusToSet,
+          note: "Booking created by admin",
+          adminUser: "system", // In a complete implementation, use actual admin ID
+        }],
+        isEventOrigin: !eventExists, // Indicates if this booking created the event
+        ipAddress: "admin_created", // Mark as admin-created
+        bookingReference: generateBookingReference(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      transaction.set(bookingRef, bookingDoc);
+
+      return bookingRef.id;
+    });
+
+    // Return success response
+    return res.status(201).json({
+      success: true,
+      bookingId: bookingId,
+      bookingReference: generateBookingReference(),
+      status: bookingData.status || CONSTANTS.STATUS.BOOKING_PENDING,
+      message: "Reserva creada exitosamente por administrador.",
+    });
+  } catch (error) {
+    if (error.message === "CAPACITY_EXCEEDED") {
+      return res.status(422).send({
+        error: {
+          code: "CAPACITY_EXCEEDED",
+          message: "Capacidad excedida para esta fecha",
+          details: "Not enough capacity available for the requested number of participants",
+        },
+      });
+    }
+
+    console.error("Error al crear la reserva por admin:", error);
+    return res.status(500).send({
+      error: {
+        code: "INTERNAL_ERROR",
+        message: "Error interno al procesar la reserva",
+        details: error.message,
+      },
+    });
+  }
+};
+
+/**
  * Transfers a booking to a different tour (with optional new date)
  * This function handles all operations: cancelling the old booking,
  * creating a new event if needed, and creating a new booking on the new tour
@@ -2516,6 +2753,7 @@ module.exports = {
   adminGetBookings: functions.https.onRequest(adminGetBookings), // Nuevo endpoint
   adminUpdateBookingStatus: functions.https.onRequest(adminUpdateBookingStatusExtended), // Updated endpoint
   adminUpdateBookingDetails: functions.https.onRequest(adminUpdateBookingDetails), // New endpoint
+  adminCreateBooking: functions.https.onRequest(adminCreateBooking), // New endpoint for admin booking creation
   adminTransferBooking: functions.https.onRequest(adminTransferBooking), // Nuevo endpoint
   adminTransferToNewTour: functions.https.onRequest(adminTransferToNewTour), // New endpoint for cross-tour transfers
   adminGetEventsCalendar: functions.https.onRequest(adminGetEventsCalendar), // Nuevo endpoint
