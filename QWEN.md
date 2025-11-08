@@ -188,3 +188,6 @@ The system uses Firebase parameters (replacing the deprecated functions.config()
 - **New adminSplitEvent endpoint**: Splits an event into multiple events by moving selected bookings to new events
 - **New adminGetEventsByDate endpoint**: Retrieves all events for a specific tour on a specific date
 - These features enable multiple separate events for the same tour on the same date, providing operational flexibility
+
+## Qwen Added Memories
+- Nevado Trek Backend superadmin token: ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7
