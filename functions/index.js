@@ -8,9 +8,12 @@ const cors = require("cors");
 admin.initializeApp();
 
 const {validateAdminKey} = require("./src/middleware/auth");
+const {validateBooking, validateTour} = require("./src/middleware/validation");
+
 const toursController = require("./src/controllers/tours.controller");
 const departuresController = require("./src/controllers/departures.controller");
 const bookingsController = require("./src/controllers/bookings.controller");
+const adminController = require("./src/controllers/admin.controller");
 
 const app = express();
 app.use(cors({origin: true}));
@@ -20,11 +23,14 @@ app.use(express.json());
 const adminRouter = express.Router();
 adminRouter.use(validateAdminKey);
 
+// Dashboard Stats
+adminRouter.get("/stats", adminController.getDashboardStats);
+
 // Tours
-adminRouter.post("/tours", toursController.createTour);
+adminRouter.post("/tours", validateTour, toursController.createTour);
 adminRouter.get("/tours", toursController.getAllTours); // Includes inactive
 adminRouter.get("/tours/:id", toursController.getTour);
-adminRouter.put("/tours/:id", toursController.updateTour);
+adminRouter.put("/tours/:id", validateTour, toursController.updateTour);
 adminRouter.delete("/tours/:id", toursController.deleteTour);
 
 // Departures
@@ -37,6 +43,7 @@ adminRouter.delete("/departures/:id", departuresController.deleteDeparture);
 // Bookings
 adminRouter.put("/bookings/:id", bookingsController.updateBooking);
 adminRouter.post("/bookings/:id/move", bookingsController.moveBooking);
+adminRouter.post("/bookings/:id/discount", bookingsController.applyDiscount);
 
 app.use("/admin", adminRouter);
 
@@ -44,30 +51,36 @@ app.use("/admin", adminRouter);
 // --- Public Routes ---
 const publicRouter = express.Router();
 
-// Public Tours (Active only) - Reusing controller but logic might need tweak to filter active
-// For now, let's assume public only needs list
+// Public Tours (Active only)
 publicRouter.get("/tours", async (req, res) => {
-  // Custom public handler to filter active
-  const db = admin.firestore();
-  const snapshot = await db.collection("tours").where("isActive", "==", true).get();
-  const tours = snapshot.docs.map((doc) => ({tourId: doc.id, ...doc.data()}));
-  res.json(tours);
+  try {
+    const db = admin.firestore();
+    const snapshot = await db.collection("tours").where("isActive", "==", true).get();
+    const tours = snapshot.docs.map((doc) => ({tourId: doc.id, ...doc.data()}));
+    res.json(tours);
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
 });
 
 // Public Departures (Open Public ones)
 publicRouter.get("/departures", async (req, res) => {
-  const db = admin.firestore();
-  const snapshot = await db.collection("departures")
-      .where("type", "==", "public")
-      .where("status", "==", "open")
-      .where("date", ">=", new Date())
-      .get();
-  const deps = snapshot.docs.map((doc) => ({departureId: doc.id, ...doc.data()}));
-  res.json(deps);
+  try {
+    const db = admin.firestore();
+    const snapshot = await db.collection("departures")
+        .where("type", "==", "public")
+        .where("status", "==", "open")
+        .where("date", ">=", new Date())
+        .get();
+    const deps = snapshot.docs.map((doc) => ({departureId: doc.id, ...doc.data()}));
+    res.json(deps);
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
 });
 
 // Public Booking
-publicRouter.post("/bookings", bookingsController.createBooking);
+publicRouter.post("/bookings", validateBooking, bookingsController.createBooking);
 
 app.use("/public", publicRouter);
 

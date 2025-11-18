@@ -13,10 +13,7 @@ exports.createTour = async (req, res) => {
   try {
     const tourData = req.body;
 
-    // Basic validation
-    if (!tourData.name) {
-      return res.status(400).json({error: "Missing required fields: name"});
-    }
+    // Note: Detailed validation is handled by middleware
 
     const newTour = {
       ...tourData,
@@ -87,8 +84,6 @@ exports.getTour = async (req, res) => {
 
 /**
  * Update Tour
- * Note: In a strict versioning system, this might create a new document.
- * For now, we update in place but increment version.
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  * @return {Promise<void>}
@@ -97,6 +92,11 @@ exports.updateTour = async (req, res) => {
   try {
     const {id} = req.params;
     const updates = req.body;
+
+    // Prevent updating immutable fields
+    delete updates.createdAt;
+    delete updates.tourId;
+    delete updates.id;
 
     const tourRef = db.collection(COLLECTIONS.TOURS).doc(id);
 

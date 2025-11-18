@@ -204,3 +204,51 @@ exports.moveBooking = async (req, res) => {
     return res.status(500).json({error: error.message});
   }
 };
+
+/**
+ * Apply Discount to Booking
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.applyDiscount = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {discountAmount, newFinalPrice, reason} = req.body;
+
+    if (newFinalPrice === undefined && discountAmount === undefined) {
+      return res.status(400).json({error: "Must provide discountAmount or newFinalPrice"});
+    }
+
+    await db.runTransaction(async (t) => {
+      const bookingRef = db.collection(COLLECTIONS.BOOKINGS).doc(id);
+      const doc = await t.get(bookingRef);
+
+      if (!doc.exists) {
+        throw new Error("Booking not found");
+      }
+
+      const currentData = doc.data();
+      let finalPrice = currentData.finalPrice;
+
+      if (newFinalPrice !== undefined) {
+        finalPrice = newFinalPrice;
+      } else if (discountAmount !== undefined) {
+        finalPrice = currentData.originalPrice - discountAmount;
+      }
+
+      if (finalPrice < 0) finalPrice = 0;
+
+      t.update(bookingRef, {
+        finalPrice,
+        discountReason: reason || "Admin applied discount",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    return res.status(200).json({success: true, message: "Discount applied"});
+  } catch (error) {
+    console.error("Error applying discount:", error);
+    return res.status(500).json({error: error.message});
+  }
+};
