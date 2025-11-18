@@ -1,0 +1,200 @@
+const admin = require("firebase-admin");
+const {COLLECTIONS, DEPARTURE_TYPES, DEPARTURE_STATUS} = require("../constants");
+
+const db = admin.firestore();
+
+/**
+ * Create Departure
+ * Can be created explicitly by admin or implicitly via booking
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.createDeparture = async (req, res) => {
+  try {
+    const {tourId, date, type, maxPax} = req.body;
+
+    // Validate Tour exists
+    const tourDoc = await db.collection(COLLECTIONS.TOURS).doc(tourId).get();
+    if (!tourDoc.exists) {
+      return res.status(404).json({error: "Tour not found"});
+    }
+    const tourData = tourDoc.data();
+
+    const newDeparture = {
+      tourId,
+      date: new Date(date), // Ensure date object
+      type: type || DEPARTURE_TYPES.PRIVATE,
+      status: DEPARTURE_STATUS.OPEN,
+      maxPax: maxPax || (type === DEPARTURE_TYPES.PUBLIC ? 8 : 99),
+      currentPax: 0,
+      pricingSnapshot: tourData.pricingTiers, // Snapshot pricing
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    const docRef = await db.collection(COLLECTIONS.DEPARTURES).add(newDeparture);
+
+    return res.status(201).json({
+      success: true,
+      departureId: docRef.id,
+      data: newDeparture,
+    });
+  } catch (error) {
+    console.error("Error creating departure:", error);
+    return res.status(500).json({error: error.message});
+  }
+};
+
+/**
+ * Get Departures (Calendar View)
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.getDepartures = async (req, res) => {
+  try {
+    const {start, end} = req.query;
+    let query = db.collection(COLLECTIONS.DEPARTURES);
+
+    if (start && end) {
+      query = query
+          .where("date", ">=", new Date(start))
+          .where("date", "<=", new Date(end));
+    }
+
+    const snapshot = await query.get();
+    const departures = snapshot.docs.map((doc) => ({
+      departureId: doc.id,
+      ...doc.data(),
+      // Convert Timestamp to ISO string for JSON
+      date: doc.data().date.toDate().toISOString(),
+    }));
+
+    return res.status(200).json(departures);
+  } catch (error) {
+    console.error("Error getting departures:", error);
+    return res.status(500).json({error: error.message});
+  }
+};
+
+/**
+ * Update Departure
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.updateDeparture = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const updates = req.body;
+
+    // If updating date, we just update the field.
+    // Bookings reference departureId, so they automatically "move".
+    if (updates.date) {
+      updates.date = new Date(updates.date);
+    }
+
+    await db.collection(COLLECTIONS.DEPARTURES).doc(id).update(updates);
+
+    return res.status(200).json({success: true, message: "Departure updated"});
+  } catch (error) {
+    console.error("Error updating departure:", error);
+    return res.status(500).json({error: error.message});
+  }
+};
+
+/**
+ * Split Booking from Departure (Create new Private Departure)
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.splitDeparture = async (req, res) => {
+  try {
+    const {id} = req.params; // Departure ID
+    const {bookingId} = req.body;
+
+    if (!bookingId) {
+      return res.status(400).json({error: "bookingId is required"});
+    }
+
+    await db.runTransaction(async (t) => {
+      // 1. Get Original Departure
+      const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
+      const depDoc = await t.get(depRef);
+      if (!depDoc.exists) throw new Error("Departure not found");
+      const depData = depDoc.data();
+
+      // 2. Get Booking
+      const bookingRef = db.collection(COLLECTIONS.BOOKINGS).doc(bookingId);
+      const bookingDoc = await t.get(bookingRef);
+      if (!bookingDoc.exists) throw new Error("Booking not found");
+      const bookingData = bookingDoc.data();
+
+      if (bookingData.departureId !== id) {
+        throw new Error("Booking does not belong to this departure");
+      }
+
+      // 3. Create New Private Departure
+      const newDepRef = db.collection(COLLECTIONS.DEPARTURES).doc();
+      const newDepData = {
+        ...depData,
+        type: DEPARTURE_TYPES.PRIVATE,
+        maxPax: 99, // Flexible for private
+        currentPax: bookingData.pax,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        // Keep same tour, date, pricing snapshot
+      };
+      // Remove ID if copied
+      delete newDepData.id;
+
+      t.set(newDepRef, newDepData);
+
+      // 4. Update Original Departure (Reduce Pax)
+      t.update(depRef, {
+        currentPax: admin.firestore.FieldValue.increment(-bookingData.pax),
+      });
+
+      // 5. Update Booking (Link to new Departure)
+      t.update(bookingRef, {
+        departureId: newDepRef.id,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    return res.status(200).json({success: true, message: "Departure split successfully"});
+  } catch (error) {
+    console.error("Error splitting departure:", error);
+    return res.status(500).json({error: error.message});
+  }
+};
+
+/**
+ * Safe Delete Departure
+ * Only allowed if currentPax is 0
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.deleteDeparture = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
+
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(depRef);
+      if (!doc.exists) throw new Error("Departure not found");
+
+      if (doc.data().currentPax > 0) {
+        throw new Error("Cannot delete departure with active bookings. Move bookings first.");
+      }
+
+      t.delete(depRef);
+    });
+
+    return res.status(200).json({success: true, message: "Departure deleted"});
+  } catch (error) {
+    console.error("Error deleting departure:", error);
+    return res.status(400).json({error: error.message});
+  }
+};
