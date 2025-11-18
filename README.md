@@ -1,105 +1,64 @@
-# Nevado Trek Backend
+# Nevado Trek Backend (V2.0 - Departure Centric)
 
-Complete reservation system for adventure tour management with bilingual support, anonymous booking, and advanced admin management.
+This is the refactored backend for the Nevado Trek reservation system. It has been re-architected to follow a **Departure-Centric** logic, separating Master Tours, Specific Departures, and Bookings to handle complex scenarios like public/private groups, dynamic pricing, and flexible transfers.
 
-## 📁 File Structure
+## 📚 Documentation
 
-### Documentation
-- `COMPLETE_DOCUMENTATION.md` - Complete system documentation (architecture, API, business logic, etc.)
-- `BUSINESS_LOGIC.md` - Business rules and processes
-- `PLANNING_TASKS.md` - Project planning and current status
+*   **[ARCHITECTURE.md](ARCHITECTURE.md)**: **(READ THIS FIRST)** The single source of truth for the system architecture, database schema, and API endpoints.
+*   **[new-logic-quotes.md](new-logic-quotes.md)**: The business requirements and logic definitions that drove this refactor.
 
-### Core System
-- `functions/index.js` - Main backend functions (in functions directory)
+## 🚀 Key Features
 
-### Tours & Data
-- `tour-info.md` - Current tour information and events
+*   **Monolithic API**: A single Cloud Function (`api`) serving an Express.js app with 15+ endpoints.
+*   **Departure-Centric**: Bookings are linked to specific Departures (dates), not just generic "events".
+*   **Public vs Private**: Explicit handling of Open Groups (Public) and Private Trips.
+*   **Advanced Management**:
+    *   **Split**: Detach a booking from a group to create a private trip.
+    *   **Move**: Transfer bookings between dates/tours with automatic capacity handling.
+    *   **Safe Delete**: Prevents deleting departures with active passengers.
+*   **Versioning**: Tours have version numbers to track changes over time.
 
-### Testing & Setup
-- `api_test_suite.js` - Comprehensive API testing suite
-- `test_functions.js` - General test functions
-- `setup_test_data.js` - Test data setup script
-- `final_mvp_verification.js` - Final system verification
+## 🛠️ Setup & Development
 
-### Production Utilities
-- `cleanup_data.js` - Data cleanup script
-- `create_corrected_tour.js` - Tour creation with proper formatting
-- `create_production_tour.js` - Initial tour creation script
-- `create_tour_events.js` - Event and booking creation script
-- `direct_cleanup.js` - Direct database cleanup (alternative approach)
+### Prerequisites
+*   Node.js 22
+*   Firebase CLI
+*   Google Cloud Project (`nevadotrektest01`)
 
-## 🚀 Features
+### Installation
+```bash
+cd functions
+npm install
+```
 
-### Public Endpoints (5)
-1. `GET /getToursV2` - List all active tours
-2. `GET /getTourByIdV2/:tourId` - Get specific tour by ID  
-3. `POST /createBooking` - Create new reservation
-4. `POST /joinEvent` - Join existing public event
-5. `GET /checkBooking` - Verify booking status by reference
+### Local Development (Emulator)
+```bash
+firebase emulators:start
+```
 
-### Admin Endpoints (14)
-6. `POST /adminCreateTourV2` - Create new tour
-7. `PUT /adminUpdateTourV2/:tourId` - Update existing tour
-8. `DELETE /adminDeleteTourV2/:tourId` - Logically delete tour
-9. `GET /adminGetBookings` - List bookings with filters
-10. `PUT /adminUpdateBookingStatus/:bookingId` - Update booking status
-11. `PUT /adminUpdateBookingDetails/:bookingId` - Update core booking information (customer, tour, date, pax, price)
-12. `POST /adminTransferBooking/:bookingId` - Transfer bookings between events of the same tour
-13. `POST /adminTransferToNewTour/:bookingId` - Transfer bookings between different tours (NEW!)
-14. `GET /adminGetEventsCalendar` - Event calendar view
-15. `POST /adminPublishEvent/:eventId` - Toggle event visibility
-16. `POST /adminCreateEvent` - Create events independently of bookings (NEW!)
-17. `POST /adminSplitEvent/:eventId` - Split events into multiple events by moving selected bookings (NEW!)
-18. `GET /adminGetEventsByDate/:tourId/:date` - Get all events for a specific tour on a specific date (NEW!)
-
-## 🌐 Technology Stack
-
-- **Backend**: Firebase Cloud Functions (Node.js 22)
-- **Database**: Google Cloud Firestore (NoSQL)
-- **SDK**: Firebase Admin SDK
-- **Runtime**: Google Cloud Run (2nd Gen)
-- **Authentication**: Secret key headers (X-Admin-Secret-Key)
-
-## 📋 Current Production Status
-
-- **MVP**: Complete and operational
-- **Functions Deployed**: 17/17 (with 3 new endpoints added)
-- **Active Tour**: "Nevado del Tolima" (ID: 9ujvQOODur1hEOMoLjEq)
-- **Active Event**: November 10, 2025 with 2 of 8 participants booked
-
-## 📖 Documentation
-
-For detailed API usage instructions, see [APIUSAGE.md](APIUSAGE.md)
-
-## 🛠️ Development Commands
-
-Deploy functions:
+### Deployment
 ```bash
 firebase deploy --only functions
 ```
 
-Run tests:
+### Verification
+Run the test script to verify the core flows (Create Tour -> Create Booking -> Split -> Move):
 ```bash
-node api_test_suite.js
+node test_new_logic.js
 ```
 
-Setup test data:
-```bash
-node setup_test_data.js
+## 🔐 Security
+
+*   **Admin Endpoints**: Protected by `X-Admin-Secret-Key` header.
+*   **Public Endpoints**: Open for frontend integration.
+
+## 🏗️ Project Structure
+
 ```
-
-## 🔐 Admin Access
-
-All admin endpoints require the `X-Admin-Secret-Key` header with a valid admin token.
-
-## 🏗️ Architecture
-
-The system follows a microservices architecture using Firebase Cloud Functions with Firestore backend, supporting:
-- Bilingual (Spanish/English) content
-- Rate limiting to prevent spam
-- Real-time capacity management
-- Comprehensive audit trails
-- Event publishing/unpublishing
-- Booking transfers between events
-- Timezone-aware date handling for Colombia locale (UTC-5)
-- Synchronized booking and event date management
+/functions
+  /src
+    /controllers   # Logic for Tours, Departures, Bookings
+    /middleware    # Auth and validation
+    constants.js   # System enums and config
+  index.js         # Main Express App Entry Point
+```

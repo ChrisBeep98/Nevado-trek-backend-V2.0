@@ -88,13 +88,49 @@ exports.updateDeparture = async (req, res) => {
     const {id} = req.params;
     const updates = req.body;
 
-    // If updating date, we just update the field.
-    // Bookings reference departureId, so they automatically "move".
-    if (updates.date) {
-      updates.date = new Date(updates.date);
-    }
+    await db.runTransaction(async (t) => {
+      const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
+      const depDoc = await t.get(depRef);
 
-    await db.collection(COLLECTIONS.DEPARTURES).doc(id).update(updates);
+      if (!depDoc.exists) {
+        throw new Error("Departure not found");
+      }
+
+      const currentData = depDoc.data();
+
+      // 1. Handle Date Change
+      // Just update the field. Bookings follow automatically.
+      if (updates.date) {
+        updates.date = new Date(updates.date);
+      }
+
+      // 2. Handle Tour Change -> Update Pricing Snapshot
+      if (updates.tourId && updates.tourId !== currentData.tourId) {
+        const tourDoc = await t.get(db.collection(COLLECTIONS.TOURS).doc(updates.tourId));
+        if (!tourDoc.exists) throw new Error("New Tour not found");
+
+        updates.pricingSnapshot = tourDoc.data().pricingTiers;
+      }
+
+      // 3. Handle Type Change -> Update MaxPax
+      if (updates.type && updates.type !== currentData.type) {
+        if (updates.type === DEPARTURE_TYPES.PUBLIC) {
+          // Switching to Public
+          const newMax = updates.maxPax || 8;
+          if (currentData.currentPax > newMax) {
+            throw new Error(
+                `Cannot switch to Public: Current bookings (${currentData.currentPax}) exceed limit (${newMax})`,
+            );
+          }
+          updates.maxPax = newMax;
+        } else {
+          // Switching to Private
+          updates.maxPax = updates.maxPax || 99;
+        }
+      }
+
+      t.update(depRef, updates);
+    });
 
     return res.status(200).json({success: true, message: "Departure updated"});
   } catch (error) {
