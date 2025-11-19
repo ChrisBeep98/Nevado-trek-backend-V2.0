@@ -10,8 +10,8 @@ function log(msg) {
 fs.writeFileSync('test_results.log', '');
 
 // CONFIGURATION
-// const API_BASE_URL = 'http://127.0.0.1:5001/nevadotrektest01/us-central1/api'; // Emulator URL
-const API_BASE_URL = 'https://us-central1-nevadotrektest01.cloudfunctions.net/api'; // Deployed URL (Uncomment to use)
+const API_BASE_URL = 'http://127.0.0.1:5001/nevadotrektest01/us-central1/api'; // Emulator URL
+// const API_BASE_URL = 'https://us-central1-nevadotrektest01.cloudfunctions.net/api'; // Deployed URL
 const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
 
 const client = axios.create({
@@ -46,9 +46,9 @@ async function runTests() {
         description: { en: 'A test tour', es: 'Un tour de prueba' },
         type: 'multi-day',
         pricingTiers: [
-            { minPax: 1, maxPax: 1, priceCOP: 100000, priceUSD: 30 },
-            { minPax: 2, maxPax: 2, priceCOP: 90000, priceUSD: 28 },
-            { minPax: 3, maxPax: 3, priceCOP: 85000, priceUSD: 26 },
+            { minPax: 1, maxPax: 1, priceCOP: 150000, priceUSD: 45 },
+            { minPax: 2, maxPax: 2, priceCOP: 120000, priceUSD: 35 },
+            { minPax: 3, maxPax: 3, priceCOP: 100000, priceUSD: 30 },
             { minPax: 4, maxPax: 8, priceCOP: 80000, priceUSD: 25 }
         ],
         isActive: true
@@ -72,10 +72,10 @@ async function runTests() {
     res = await client.put(`/admin/tours/${state.tourId}`, {
         ...newTour,
         pricingTiers: [
-            { minPax: 1, maxPax: 1, priceCOP: 120000, priceUSD: 35 }, // Price increase
-            { minPax: 2, maxPax: 2, priceCOP: 110000, priceUSD: 32 },
-            { minPax: 3, maxPax: 3, priceCOP: 100000, priceUSD: 30 },
-            { minPax: 4, maxPax: 8, priceCOP: 90000, priceUSD: 28 }
+            { minPax: 1, maxPax: 1, priceCOP: 160000, priceUSD: 50 }, // Price increase
+            { minPax: 2, maxPax: 2, priceCOP: 130000, priceUSD: 40 },
+            { minPax: 3, maxPax: 3, priceCOP: 110000, priceUSD: 35 },
+            { minPax: 4, maxPax: 8, priceCOP: 90000, priceUSD: 30 }
         ]
     });
     logResult(res);
@@ -117,8 +117,8 @@ async function runTests() {
     log('\n🎫 3. BOOKING FLOW');
 
     // 3.1 Create Booking (Join Public)
-    log('   [POST] /public/bookings - Joining Public Departure...');
-    res = await client.post('/public/bookings', {
+    log('   [POST] /public/bookings/join - Joining Public Departure...');
+    res = await client.post('/public/bookings/join', {
         tourId: state.tourId,
         date: nextMonth.toISOString().split('T')[0], // Same date as public dep
         pax: 2,
@@ -127,17 +127,18 @@ async function runTests() {
             email: 'john@example.com',
             phone: '+1234567890',
             document: '123456789'
-        }
+        },
+        departureId: state.publicDepartureId
     });
     logResult(res);
     if (res.status === 201) state.bookingId = res.data.bookingId;
 
     // 3.2 Create Booking (New Private)
-    log('   [POST] /public/bookings - Creating Private Departure...');
+    log('   [POST] /public/bookings/private - Creating Private Departure...');
     const privateDate = new Date();
     privateDate.setDate(privateDate.getDate() + 45);
 
-    res = await client.post('/public/bookings', {
+    res = await client.post('/public/bookings/private', {
         tourId: state.tourId,
         date: privateDate.toISOString().split('T')[0],
         pax: 4,
@@ -159,8 +160,8 @@ async function runTests() {
 
     if (state.bookingId) {
         // 4.1 Update Booking (Pax)
-        log(`   [PUT] /admin/bookings/${state.bookingId} - Updating Pax to 3...`);
-        res = await client.put(`/admin/bookings/${state.bookingId}`, {
+        log(`   [PUT] /admin/bookings/${state.bookingId}/pax - Updating Pax to 3...`);
+        res = await client.put(`/admin/bookings/${state.bookingId}/pax`, {
             pax: 3
         });
         logResult(res);

@@ -1,4 +1,4 @@
-const {DEPARTURE_TYPES} = require("../constants");
+const { DEPARTURE_TYPES } = require("../constants");
 
 /**
  * Validate Booking Input
@@ -8,39 +8,45 @@ const {DEPARTURE_TYPES} = require("../constants");
  * @return {void}
  */
 exports.validateBooking = (req, res, next) => {
-  const {tourId, date, pax, customer, type} = req.body;
+  const { tourId, date, pax, customer, type, departureId } = req.body;
 
   if (!tourId || typeof tourId !== "string") {
-    return res.status(400).json({error: "Invalid or missing 'tourId'"});
+    return res.status(400).json({ error: "Invalid or missing 'tourId'" });
   }
 
   if (!date || isNaN(new Date(date).getTime())) {
-    return res.status(400).json({error: "Invalid or missing 'date'"});
+    return res.status(400).json({ error: "Invalid or missing 'date'" });
   }
 
   if (!pax || typeof pax !== "number" || pax <= 0) {
-    return res.status(400).json({error: "Invalid or missing 'pax' (must be > 0)"});
+    return res.status(400).json({ error: "Invalid or missing 'pax' (must be > 0)" });
   }
 
   if (!customer || typeof customer !== "object") {
-    return res.status(400).json({error: "Missing 'customer' object"});
+    return res.status(400).json({ error: "Missing 'customer' object" });
   }
 
   const requiredCustomerFields = ["name", "email", "phone", "document"];
   for (const field of requiredCustomerFields) {
     if (!customer[field] || typeof customer[field] !== "string") {
-      return res.status(400).json({error: `Invalid or missing customer field: '${field}'`});
+      return res.status(400).json({ error: `Invalid or missing customer field: '${field}'` });
     }
   }
 
   // Basic Email Regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(customer.email)) {
-    return res.status(400).json({error: "Invalid email format"});
+    return res.status(400).json({ error: "Invalid email format" });
   }
 
+  // Type is optional, but if provided must be valid
   if (type && !Object.values(DEPARTURE_TYPES).includes(type)) {
-    return res.status(400).json({error: "Invalid 'type'. Must be 'private' or 'public'"});
+    return res.status(400).json({ error: "Invalid 'type'. Must be 'private' or 'public'" });
+  }
+
+  // DepartureId is optional, but if provided must be a string
+  if (departureId && typeof departureId !== "string") {
+    return res.status(400).json({ error: "Invalid 'departureId'. Must be a string" });
   }
 
   next();
@@ -54,32 +60,32 @@ exports.validateBooking = (req, res, next) => {
  * @return {void}
  */
 exports.validateTour = (req, res, next) => {
-  const {name, pricingTiers, itinerary} = req.body;
+  const { name, pricingTiers, itinerary } = req.body;
   const isCreate = req.method === "POST";
 
   // Name (Bilingual)
   if (isCreate && (!name || !name.es || !name.en)) {
-    return res.status(400).json({error: "Missing 'name' with 'es' and 'en' fields"});
+    return res.status(400).json({ error: "Missing 'name' with 'es' and 'en' fields" });
   }
   if (name && (!name.es || !name.en)) {
-    return res.status(400).json({error: "Invalid 'name': must have 'es' and 'en'"});
+    return res.status(400).json({ error: "Invalid 'name': must have 'es' and 'en'" });
   }
 
   // Pricing Tiers (Array of 4)
   if (isCreate && (!Array.isArray(pricingTiers) || pricingTiers.length !== 4)) {
-    return res.status(400).json({error: "'pricingTiers' must be an array of exactly 4 items"});
+    return res.status(400).json({ error: "'pricingTiers' must be an array of exactly 4 items" });
   }
 
   if (pricingTiers) {
     if (!Array.isArray(pricingTiers) || pricingTiers.length !== 4) {
-      return res.status(400).json({error: "'pricingTiers' must be an array of exactly 4 items"});
+      return res.status(400).json({ error: "'pricingTiers' must be an array of exactly 4 items" });
     }
 
     const requiredTiers = [
-      {min: 1, max: 1},
-      {min: 2, max: 2},
-      {min: 3, max: 3},
-      {min: 4, max: 8},
+      { min: 1, max: 1 },
+      { min: 2, max: 2 },
+      { min: 3, max: 3 },
+      { min: 4, max: 8 },
     ];
 
     // Check structure of each tier
@@ -104,7 +110,7 @@ exports.validateTour = (req, res, next) => {
   // Itinerary (Optional but if present must be valid)
   if (itinerary) {
     if (!itinerary.days || !Array.isArray(itinerary.days)) {
-      return res.status(400).json({error: "'itinerary' must contain a 'days' array"});
+      return res.status(400).json({ error: "'itinerary' must contain a 'days' array" });
     }
     // Could add deeper validation for days/activities here
   }

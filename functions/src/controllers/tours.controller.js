@@ -19,8 +19,8 @@ exports.createTour = async (req, res) => {
       ...tourData,
       isActive: true,
       version: 1,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const docRef = await db.collection(COLLECTIONS.TOURS).add(newTour);
@@ -111,7 +111,7 @@ exports.updateTour = async (req, res) => {
       t.update(tourRef, {
         ...updates,
         version: currentVersion + 1,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: new Date(),
       });
     });
 
@@ -134,7 +134,7 @@ exports.deleteTour = async (req, res) => {
 
     await db.collection(COLLECTIONS.TOURS).doc(id).update({
       isActive: false,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: new Date(),
     });
 
     return res.status(200).json({success: true, message: "Tour deactivated"});

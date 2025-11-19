@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const {COLLECTIONS, DEPARTURE_TYPES, DEPARTURE_STATUS} = require("../constants");
+const { COLLECTIONS, DEPARTURE_TYPES, DEPARTURE_STATUS } = require("../constants");
 
 const db = admin.firestore();
 
@@ -12,12 +12,12 @@ const db = admin.firestore();
  */
 exports.createDeparture = async (req, res) => {
   try {
-    const {tourId, date, type, maxPax} = req.body;
+    const { tourId, date, type, maxPax } = req.body;
 
     // Validate Tour exists
     const tourDoc = await db.collection(COLLECTIONS.TOURS).doc(tourId).get();
     if (!tourDoc.exists) {
-      return res.status(404).json({error: "Tour not found"});
+      return res.status(404).json({ error: "Tour not found" });
     }
     const tourData = tourDoc.data();
 
@@ -29,7 +29,7 @@ exports.createDeparture = async (req, res) => {
       maxPax: maxPax || (type === DEPARTURE_TYPES.PUBLIC ? 8 : 99),
       currentPax: 0,
       pricingSnapshot: tourData.pricingTiers, // Snapshot pricing
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: new Date(),
     };
 
     const docRef = await db.collection(COLLECTIONS.DEPARTURES).add(newDeparture);
@@ -41,7 +41,7 @@ exports.createDeparture = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating departure:", error);
-    return res.status(500).json({error: error.message});
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -53,13 +53,13 @@ exports.createDeparture = async (req, res) => {
  */
 exports.getDepartures = async (req, res) => {
   try {
-    const {start, end} = req.query;
+    const { start, end } = req.query;
     let query = db.collection(COLLECTIONS.DEPARTURES);
 
     if (start && end) {
       query = query
-          .where("date", ">=", new Date(start))
-          .where("date", "<=", new Date(end));
+        .where("date", ">=", new Date(start))
+        .where("date", "<=", new Date(end));
     }
 
     const snapshot = await query.get();
@@ -73,7 +73,7 @@ exports.getDepartures = async (req, res) => {
     return res.status(200).json(departures);
   } catch (error) {
     console.error("Error getting departures:", error);
-    return res.status(500).json({error: error.message});
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -85,7 +85,7 @@ exports.getDepartures = async (req, res) => {
  */
 exports.updateDeparture = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const updates = req.body;
 
     await db.runTransaction(async (t) => {
@@ -119,7 +119,7 @@ exports.updateDeparture = async (req, res) => {
           const newMax = updates.maxPax || 8;
           if (currentData.currentPax > newMax) {
             throw new Error(
-                `Cannot switch to Public: Current bookings (${currentData.currentPax}) exceed limit (${newMax})`,
+              `Cannot switch to Public: Current bookings (${currentData.currentPax}) exceed limit (${newMax})`,
             );
           }
           updates.maxPax = newMax;
@@ -132,10 +132,10 @@ exports.updateDeparture = async (req, res) => {
       t.update(depRef, updates);
     });
 
-    return res.status(200).json({success: true, message: "Departure updated"});
+    return res.status(200).json({ success: true, message: "Departure updated" });
   } catch (error) {
     console.error("Error updating departure:", error);
-    return res.status(500).json({error: error.message});
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -147,11 +147,11 @@ exports.updateDeparture = async (req, res) => {
  */
 exports.splitDeparture = async (req, res) => {
   try {
-    const {id} = req.params; // Departure ID
-    const {bookingId} = req.body;
+    const { id } = req.params; // Departure ID
+    const { bookingId } = req.body;
 
     if (!bookingId) {
-      return res.status(400).json({error: "bookingId is required"});
+      return res.status(400).json({ error: "bookingId is required" });
     }
 
     await db.runTransaction(async (t) => {
@@ -178,7 +178,7 @@ exports.splitDeparture = async (req, res) => {
         type: DEPARTURE_TYPES.PRIVATE,
         maxPax: 99, // Flexible for private
         currentPax: bookingData.pax,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: new Date(),
         // Keep same tour, date, pricing snapshot
       };
       // Remove ID if copied
@@ -187,21 +187,23 @@ exports.splitDeparture = async (req, res) => {
       t.set(newDepRef, newDepData);
 
       // 4. Update Original Departure (Reduce Pax)
+      const newCurrentPax = depData.currentPax - bookingData.pax;
       t.update(depRef, {
-        currentPax: admin.firestore.FieldValue.increment(-bookingData.pax),
+        currentPax: newCurrentPax,
+        updatedAt: new Date(),
       });
 
       // 5. Update Booking (Link to new Departure)
       t.update(bookingRef, {
         departureId: newDepRef.id,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: new Date(),
       });
     });
 
-    return res.status(200).json({success: true, message: "Departure split successfully"});
+    return res.status(200).json({ success: true, message: "Departure split successfully" });
   } catch (error) {
     console.error("Error splitting departure:", error);
-    return res.status(500).json({error: error.message});
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -214,7 +216,7 @@ exports.splitDeparture = async (req, res) => {
  */
 exports.deleteDeparture = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
 
     await db.runTransaction(async (t) => {
@@ -228,9 +230,9 @@ exports.deleteDeparture = async (req, res) => {
       t.delete(depRef);
     });
 
-    return res.status(200).json({success: true, message: "Departure deleted"});
+    return res.status(200).json({ success: true, message: "Departure deleted" });
   } catch (error) {
     console.error("Error deleting departure:", error);
-    return res.status(400).json({error: error.message});
+    return res.status(400).json({ error: error.message });
   }
 };

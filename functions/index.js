@@ -7,8 +7,8 @@ const cors = require("cors");
 // Initialize Admin SDK first
 admin.initializeApp();
 
-const {validateAdminKey} = require("./src/middleware/auth");
-const {validateBooking, validateTour} = require("./src/middleware/validation");
+const { validateAdminKey } = require("./src/middleware/auth");
+const { validateBooking, validateTour } = require("./src/middleware/validation");
 
 const toursController = require("./src/controllers/tours.controller");
 const departuresController = require("./src/controllers/departures.controller");
@@ -16,7 +16,7 @@ const bookingsController = require("./src/controllers/bookings.controller");
 const adminController = require("./src/controllers/admin.controller");
 
 const app = express();
-app.use(cors({origin: true}));
+app.use(cors({ origin: true }));
 app.use(express.json());
 
 // --- Admin Routes (Protected) ---
@@ -41,7 +41,11 @@ adminRouter.post("/departures/:id/split", departuresController.splitDeparture);
 adminRouter.delete("/departures/:id", departuresController.deleteDeparture);
 
 // Bookings
-adminRouter.put("/bookings/:id", bookingsController.updateBooking);
+adminRouter.post("/bookings", validateBooking, bookingsController.createBooking);
+adminRouter.put("/bookings/:id/status", bookingsController.updateBookingStatus);
+adminRouter.put("/bookings/:id/pax", bookingsController.updateBookingPax);
+adminRouter.put("/bookings/:id/details", bookingsController.updateBookingDetails);
+adminRouter.post("/bookings/:id/convert-type", bookingsController.convertBookingType);
 adminRouter.post("/bookings/:id/move", bookingsController.moveBooking);
 adminRouter.post("/bookings/:id/discount", bookingsController.applyDiscount);
 
@@ -56,10 +60,10 @@ publicRouter.get("/tours", async (req, res) => {
   try {
     const db = admin.firestore();
     const snapshot = await db.collection("tours").where("isActive", "==", true).get();
-    const tours = snapshot.docs.map((doc) => ({tourId: doc.id, ...doc.data()}));
+    const tours = snapshot.docs.map((doc) => ({ tourId: doc.id, ...doc.data() }));
     res.json(tours);
   } catch (error) {
-    res.status(500).json({error: error.message});
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -68,19 +72,22 @@ publicRouter.get("/departures", async (req, res) => {
   try {
     const db = admin.firestore();
     const snapshot = await db.collection("departures")
-        .where("type", "==", "public")
-        .where("status", "==", "open")
-        .where("date", ">=", new Date())
-        .get();
-    const deps = snapshot.docs.map((doc) => ({departureId: doc.id, ...doc.data()}));
+      .where("type", "==", "public")
+      .where("status", "==", "open")
+      .where("date", ">=", new Date())
+      .get();
+    const deps = snapshot.docs.map((doc) => ({ departureId: doc.id, ...doc.data() }));
     res.json(deps);
   } catch (error) {
-    res.status(500).json({error: error.message});
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Public Booking
-publicRouter.post("/bookings", validateBooking, bookingsController.createBooking);
+// Public Booking - Join Existing Departure
+publicRouter.post("/bookings/join", validateBooking, bookingsController.joinBooking);
+
+// Public Booking - Create Private Departure
+publicRouter.post("/bookings/private", validateBooking, bookingsController.createPrivateBooking);
 
 app.use("/public", publicRouter);
 
