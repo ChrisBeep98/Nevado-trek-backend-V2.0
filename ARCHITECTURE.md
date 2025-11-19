@@ -20,7 +20,12 @@ interface Tour {
   version: number;
   name: { es: string, en: string };
   description: { es: string, en: string };
-  pricingTiers: PricingTier[]; // [1pax, 2pax, 3pax, 4-8pax]
+  pricingTiers: [
+    { minPax: 1, maxPax: 1, priceCOP: number, priceUSD: number },
+    { minPax: 2, maxPax: 2, priceCOP: number, priceUSD: number },
+    { minPax: 3, maxPax: 3, priceCOP: number, priceUSD: number },
+    { minPax: 4, maxPax: 8, priceCOP: number, priceUSD: number }
+  ];
   itinerary: Itinerary; // Dynamic days/activities
   images: string[];
   // ... other details
@@ -48,10 +53,16 @@ Links a customer to a departure.
 interface Booking {
   bookingId: string;
   departureId: string;
-  customer: CustomerInfo;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+    document: string; // Required for insurance
+  };
   pax: number;
   originalPrice: number;
   finalPrice: number; // Allow admin discounts
+  discountReason?: string;
   status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
 }
 ```
@@ -72,6 +83,8 @@ interface Booking {
 | `DELETE` | `/admin/departures/:id` | **Safe Delete**: Only if empty |
 | `PUT` | `/admin/bookings/:id` | Update Booking (Price, Info) |
 | `POST` | `/admin/bookings/:id/move` | **Move**: Transfer to different Tour/Date |
+| `POST` | `/admin/bookings/:id/discount` | **Discount**: Apply discount to booking |
+| `GET` | `/admin/stats` | **Dashboard**: Get counts of tours, departures, bookings |
 
 ### Public Routes
 | Method | Endpoint | Description |

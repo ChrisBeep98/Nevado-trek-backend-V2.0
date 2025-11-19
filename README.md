@@ -44,7 +44,7 @@ firebase deploy --only functions
 ### Verification
 Run the test script to verify the core flows (Create Tour -> Create Booking -> Split -> Move):
 ```bash
-node test_new_logic.js
+node test_full_endpoints.js
 ```
 
 ## 🔐 Security
