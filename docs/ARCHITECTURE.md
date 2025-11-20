@@ -88,6 +88,7 @@ interface Tour {
   
   // Content
   type: 'multi-day' | 'single-day';
+  totalDays: number; // New field
   itinerary?: {
     days: Array<{
       dayNumber: number;
@@ -96,7 +97,20 @@ interface Tour {
     }>;
   };
   images?: string[];
+
+  // Key Details (New Fields)
+  difficulty: string;                      // e.g., "High" (Key or bilingual string)
+  altitude: { es: string, en: string };    // e.g., "5200 masl"
+  temperature: number;                     // e.g., 5 (degrees C)
+  distance: number;                        // e.g., 15 (km)
+  location: { es: string, en: string };    // Place from departure
   
+  // Lists (New Fields)
+  faqs: Array<{ question: { es: string, en: string }, answer: { es: string, en: string } }>;
+  recommendations: Array<{ es: string, en: string }>;
+  inclusions: Array<{ es: string, en: string }>;
+  exclusions: Array<{ es: string, en: string }>;
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
@@ -160,8 +174,9 @@ interface Booking {
   customer: {
     name: string;
     email: string; // Validated format
-    phone: string; // International format
-    document: string; // Required for insurance
+    phone: string; // Must start with '+'
+    document: string; // Alphanumeric
+    note?: string; // Optional user note
   };
   
   // Capacity

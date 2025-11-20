@@ -110,9 +110,9 @@ interface Tour {
   // Status & Metadata
   status: 'ACTIVE' | 'INACTIVE';
   category: string;
-  tags: string[];
+ 
 
-
+ tags: string[];
  
   // Timestamps
   createdAt: Date;

@@ -52,7 +52,18 @@ async function runTests() {
             { minPax: 3, maxPax: 3, priceCOP: 160000, priceUSD: 45 },
             { minPax: 4, maxPax: 8, priceCOP: 140000, priceUSD: 40 }
         ],
-        isActive: true
+        isActive: true,
+        // New Fields
+        totalDays: 3,
+        difficulty: 'Medium',
+        altitude: { en: '3000m', es: '3000m' },
+        temperature: 15,
+        distance: 20,
+        location: { en: 'Nevado', es: 'Nevado' },
+        faqs: [],
+        recommendations: [],
+        inclusions: [],
+        exclusions: []
     };
     let res = await client.post('/admin/tours', newTour);
     logResult(res);
@@ -133,7 +144,8 @@ async function runTests() {
             name: 'John Public',
             email: 'john.public@example.com',
             phone: '+1234567890',
-            document: '123456789'
+            document: '123456789',
+            note: 'Test note'
         },
         departureId: state.publicDepartureId
     });
