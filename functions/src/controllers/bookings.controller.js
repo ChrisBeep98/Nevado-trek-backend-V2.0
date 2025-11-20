@@ -729,3 +729,35 @@ exports.applyDiscount = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+/**
+ * Get Bookings (Admin)
+ * Optional filters: departureId, status
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.getBookings = async (req, res) => {
+  try {
+    const { departureId, status } = req.query;
+    const db = admin.firestore();
+    let query = db.collection(COLLECTIONS.BOOKINGS);
+
+    if (departureId) {
+      query = query.where("departureId", "==", departureId);
+    }
+
+    if (status) {
+      query = query.where("status", "==", status);
+    }
+
+    const snapshot = await query.get();
+    const bookings = snapshot.docs.map((doc) => ({ bookingId: doc.id, ...doc.data() }));
+
+    res.json(bookings);
+  } catch (error) {
+    console.error("Error getting bookings:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

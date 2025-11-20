@@ -41,6 +41,7 @@ adminRouter.post("/departures/:id/split", departuresController.splitDeparture);
 adminRouter.delete("/departures/:id", departuresController.deleteDeparture);
 
 // Bookings
+adminRouter.get("/bookings", bookingsController.getBookings);
 adminRouter.post("/bookings", validateBooking, bookingsController.createBooking);
 adminRouter.put("/bookings/:id/status", bookingsController.updateBookingStatus);
 adminRouter.put("/bookings/:id/pax", bookingsController.updateBookingPax);
