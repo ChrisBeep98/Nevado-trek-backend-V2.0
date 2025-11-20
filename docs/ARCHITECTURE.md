@@ -1,6 +1,11 @@
 # Nevado Trek Backend - Architecture Documentation V2.0
 
-## Overview
+> [!NOTE]
+> **Status**: Production-Ready
+> **Version**: 2.0
+> **Last Updated**: November 2025
+
+## 1. Overview
 
 The Nevado Trek backend is a **Departure-Centric** reservation management system built on **Firebase Cloud Functions (2nd Gen)** using **Node.js 22**. It implements a refined booking logic with proper cascade effects, separated admin/public flows, and full emulator compatibility.
 
@@ -14,57 +19,43 @@ The Nevado Trek backend is a **Departure-Centric** reservation management system
 
 ---
 
-## Core Architecture Principles
+## 2. Mental Model & Concepts
 
-### 1. Departure-Centric Model
-The system revolves around **Departures** as the operational anchor, not bookings. This ensures:
-- Departures exist independently of bookings
-- Clear separation between tour templates and actual trips
-- Proper capacity management at the departure level
-- Simplified date/tour change operations
+### The Core Shift: From "Events" to "Departures"
+In V1, "Events" mixed the concept of a "Trip Date" with a "Customer Reservation". V2.0 introduces a clean separation:
 
-### 2. Immutable Pricing Snapshots
-- Tours define pricing templates
-- Departures capture a **pricing snapshot** at creation time
-- Changing tour prices doesn't affect existing departures
-- Provides contractual protection for confirmed bookings
+1.  **The Product: `Tour`** (Template)
+    *   The catalog item (e.g., "Nevado Trek 3 Days").
+    *   Defines base content, itinerary, and **Pricing Tiers**.
+    *   Changes here affect *future* departures, not existing ones.
 
-### 3. Explicit Flow Separation
-- **Admin Flow**: Always creates new departures (no auto-join)
-- **Public Join Flow**: Joins specific existing public departures
-- **Public Private Flow**: Creates new private departures
-- Clear distinction prevents logic ambiguity
+2.  **The Instance: `Departure`** (The Anchor)
+    *   A specific trip happening on a specific date.
+    *   **Independent of Bookings**: Can exist with 0 people (Open) or 8 people (Full).
+    *   **Types**:
+        *   **Public**: Open to anyone. Max 8 pax. Visible on website.
+        *   **Private**: Exclusive group. Max 99 pax. Hidden.
+    *   **Pricing Snapshot**: Captures the Tour's prices *at creation time*.
 
-### 4. Cascade Effects
-All operations that affect capacity or status properly cascade to related entities:
-- Cancelling booking → Decrements departure capacity
-- Changing pax → Updates departure capacity + recalculates price
-- Moving booking → Updates both source and target departures
-- Type conversion → Handles all three scenarios correctly
+3.  **The Transaction: `Booking`** (Reservation)
+    *   A customer securing a spot on a specific `Departure`.
+    *   Must belong to a Departure.
+    *   Price calculated based on Departure's snapshot.
 
 ---
 
-## Data Model
+## 3. Data Model
 
-### Entity Relationship Diagram
-
-```
-TOUR (Template)
-  │
-  ├─→ DEPARTURE (Instance)
-  │     │
-  │     ├─→ BOOKING (Reservation)
-  │     ├─→ BOOKING
-  │     └─→ BOOKING
-  │
-  └─→ DEPARTURE
-        │
-        └─→ BOOKING
+### Entity Relationship
+```mermaid
+graph TD
+    Tour[TOUR Template] -->|Defines| Departure[DEPARTURE Instance]
+    Departure -->|Contains| Booking1[BOOKING 1]
+    Departure -->|Contains| Booking2[BOOKING 2]
 ```
 
 ### 1. Tours Collection (`tours`)
-
-**Purpose**: Master catalog of tour products. Defines the experience template.
+Master catalog of tour products.
 
 ```typescript
 interface Tour {
@@ -73,7 +64,7 @@ interface Tour {
   isActive: boolean;
   version: number;
   
-  // Bilingual Content
+  // Bilingual Content (es/en)
   name: { es: string, en: string };
   description: { es: string, en: string };
   shortDescription?: { es: string, en: string };
@@ -88,24 +79,24 @@ interface Tour {
   
   // Content
   type: 'multi-day' | 'single-day';
-  totalDays: number; // New field
+  totalDays: number;
   itinerary?: {
     days: Array<{
       dayNumber: number;
       title: { es: string, en: string };
-      activities: Array<{ es: string, en: string }>;
+      activities: Array<{ es: string, en: string }>; // Paragraphs
     }>;
   };
   images?: string[];
 
-  // Key Details (New Fields)
-  difficulty: string;                      // e.g., "High" (Key or bilingual string)
-  altitude: { es: string, en: string };    // e.g., "5200 masl"
-  temperature: number;                     // e.g., 5 (degrees C)
-  distance: number;                        // e.g., 15 (km)
-  location: { es: string, en: string };    // Place from departure
+  // Key Details
+  difficulty: string;
+  altitude: { es: string, en: string };
+  temperature: number;
+  distance: number;
+  location: { es: string, en: string };
   
-  // Lists (New Fields)
+  // Lists
   faqs: Array<{ question: { es: string, en: string }, answer: { es: string, en: string } }>;
   recommendations: Array<{ es: string, en: string }>;
   inclusions: Array<{ es: string, en: string }>;
@@ -117,376 +108,106 @@ interface Tour {
 }
 ```
 
-**Business Rules**:
-- Pricing tiers are strictly validated (exactly 4 tiers with specific ranges)
-- Bilingual content required for name and description
-- Soft delete via `isActive: false`
-- Version increments on significant changes
-
 ### 2. Departures Collection (`departures`)
-
-**Purpose**: Specific instances of a tour on a specific date. The operational anchor.
+Specific instances of a tour.
 
 ```typescript
 interface Departure {
-  // Identity
   departureId: string;
-  tourId: string; // Reference to tour
+  tourId: string;
+  date: Date;
   
-  // Scheduling
-  date: Date; // Departure date
-  
-  // Type & Status
   type: 'private' | 'public';
   status: 'open' | 'closed' | 'completed' | 'cancelled';
   
-  // Capacity Management
   maxPax: number; // 8 for public, 99 for private
-  currentPax: number; // Current occupied capacity
+  currentPax: number; // Managed via transactions
   
-  // Pricing Snapshot (Immutable)
-  pricingSnapshot: PricingTier[]; // Copied from tour at creation
+  // Immutable Pricing Snapshot
+  pricingSnapshot: PricingTier[]; 
   
-  // Metadata
   createdAt: Date;
   updatedAt?: Date;
 }
 ```
 
-**Business Rules**:
-- Public departures: `maxPax = 8`, visible on website
-- Private departures: `maxPax = 99`, not publicly listed
-- `currentPax` managed via transactions (prevents overbooking)
-- Pricing snapshot ensures price stability
-- Can convert between public/private types
-
 ### 3. Bookings Collection (`bookings`)
-
-**Purpose**: Individual customer reservations. Links customers to departures.
+Customer reservations.
 
 ```typescript
 interface Booking {
-  // Identity
   bookingId: string;
-  departureId: string; // Reference to departure
+  departureId: string;
   
-  // Customer Information (All Required)
   customer: {
     name: string;
-    email: string; // Validated format
+    email: string;
     phone: string; // Must start with '+'
-    document: string; // Alphanumeric
-    note?: string; // Optional user note
+    document: string;
+    note?: string;
   };
   
-  // Capacity
-  pax: number; // Number of passengers
+  pax: number;
   
-  // Pricing
+  // Financials
   originalPrice: number; // Calculated from tier
   finalPrice: number; // After discounts
-  discountReason?: string; // Optional discount explanation
+  discountReason?: string;
   
-  // Status
   status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
   
-  // Metadata
   createdAt: Date;
   updatedAt?: Date;
 }
 ```
 
-**Business Rules**:
-- All customer fields are required and validated
-- Price calculated from departure's pricing snapshot
-- Discounts preserved proportionally when pax changes
-- Status changes cascade to departure capacity
-- Pax changes cascade to departure capacity
+---
+
+## 4. Business Logic & Cascade Effects
+
+The system enforces strict rules to ensure data integrity across related entities.
+
+### Cascade Effects Matrix
+
+| Operation | Booking Changes | Departure Changes | Logic / Validation |
+|-----------|----------------|-------------------|-------------------|
+| **Create Booking (Admin)** | Created | **Creates NEW Departure** | Admin always creates new departure (Private/Public). |
+| **Join Booking (Public)** | Created | `currentPax += pax` | Validates capacity & Public status. |
+| **Create Private (Public)**| Created | **Creates NEW Private Dep** | Standard private flow. |
+| **Cancel Booking** | `status = 'cancelled'` | `currentPax -= pax` | Frees up capacity. |
+| **Un-cancel Booking** | `status = 'confirmed'` | `currentPax += pax` | Validates capacity availability. |
+| **Update Pax** | `pax`, `prices` | `currentPax += diff` | Recalculates price (preserves discount %). Validates capacity. |
+| **Move Booking** | `departureId` | Old: `-= pax`<br>New: `+= pax` | Atomically updates both departures. |
+| **Split Departure** | `departureId` | Old: `-= pax`<br>New: `+= pax` | Creates new Private Departure for specific booking. |
+| **Convert Type** | - | `type`, `maxPax` | **Private→Public**: Validates max 8 pax.<br>**Public→Private**: If multiple bookings, splits target. |
+
+### Key Logic Rules
+
+#### 1. Capacity Management
+*   **Transaction-Based**: All capacity changes happen inside Firestore Transactions.
+*   **Read-Before-Write**: We read the Departure, check `currentPax + newPax <= maxPax`, then write.
+*   **No Overbooking**: Mathematically impossible due to transactional locks.
+
+#### 2. Pricing Snapshots
+*   **Creation**: When a Departure is created, it copies `tour.pricingTiers` to `departure.pricingSnapshot`.
+*   **Calculation**: Bookings look up the price in `departure.pricingSnapshot`, NOT the Tour.
+*   **Benefit**: Changing global Tour prices does not affect existing Departures/Bookings.
+
+#### 3. Discount Preservation
+*   When `pax` changes (e.g., 3 -> 2), the system recalculates the `originalPrice` based on the new tier.
+*   It calculates the previous `discountRatio` (`final / original`).
+*   It applies that ratio to the new price, preserving the "10% off" logic automatically.
 
 ---
 
-## API Endpoints
-
-### Admin Routes (Protected)
-
-**Authentication**: Header `X-Admin-Secret-Key: ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
-
-#### Tours Management
-
-| Method | Endpoint | Description | Cascade Effects |
-|--------|----------|-------------|-----------------|
-| `POST` | `/admin/tours` | Create new tour | None |
-| `GET` | `/admin/tours` | List all tours (including inactive) | None |
-| `GET` | `/admin/tours/:id` | Get specific tour | None |
-| `PUT` | `/admin/tours/:id` | Update tour (increments version) | None (existing departures unaffected) |
-| `DELETE` | `/admin/tours/:id` | Soft delete tour | None |
-
-#### Departures Management
-
-| Method | Endpoint | Description | Cascade Effects |
-|--------|----------|-------------|-----------------|
-| `POST` | `/admin/departures` | Create departure | None |
-| `GET` | `/admin/departures` | Calendar view (query: start, end) | None |
-| `PUT` | `/admin/departures/:id` | Update departure properties | Updates all bookings if date changes |
-| `POST` | `/admin/departures/:id/split` | Split booking to new private departure | Updates both departures' capacity |
-| `DELETE` | `/admin/departures/:id` | Safe delete (only if empty) | Fails if bookings exist |
-
-#### Bookings Management
-
-| Method | Endpoint | Description | Cascade Effects |
-|--------|----------|-------------|-----------------|
-| `POST` | `/admin/bookings` | **Create booking (ALWAYS new departure)** | Creates new departure |
-| `PUT` | `/admin/bookings/:id/status` | Update booking status | Updates departure `currentPax` |
-| `PUT` | `/admin/bookings/:id/pax` | Update passenger count | Updates departure `currentPax`, recalculates price |
-| `PUT` | `/admin/bookings/:id/details` | Update customer information | None |
-| `POST` | `/admin/bookings/:id/discount` | Apply discount to booking | None |
-| `POST` | `/admin/bookings/:id/move` | Move booking to different date/tour | Updates both source and target departures |
-| `POST` | `/admin/bookings/:id/convert-type` | Convert departure type | Varies by scenario (see below) |
-
-#### Dashboard
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/admin/stats` | Get dashboard statistics (counts) |
-
-### Public Routes (Unprotected)
-
-#### Tours & Departures
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/public/tours` | List active tours only |
-| `GET` | `/public/departures` | List open public departures (future dates) |
-
-#### Bookings
-
-| Method | Endpoint | Description | Cascade Effects |
-|--------|----------|-------------|-----------------|
-| `POST` | `/public/bookings/join` | Join existing public departure | Updates departure `currentPax` |
-| `POST` | `/public/bookings/private` | Create new private departure | Creates new departure |
-
----
-
-## Business Logic Rules
-
-### 1. Admin Booking Creation
-
-**Rule**: Admin ALWAYS creates a new departure when creating a booking.
-
-**Flow**:
-1. Admin specifies `type` (public/private)
-2. System creates NEW departure with that type
-3. System creates booking linked to new departure
-4. Departure `currentPax` set to booking's `pax`
-
-**Why**: Prevents accidental joining of existing departures, gives admin full control.
-
-### 2. Public Booking Flows
-
-#### Join Flow (`POST /public/bookings/join`)
-- Requires `departureId` parameter
-- Validates departure is public and open
-- Validates capacity available
-- Updates departure `currentPax`
-
-#### Private Flow (`POST /public/bookings/private`)
-- Always creates new private departure
-- No search for existing departures
-- Sets `maxPax = 99`
-
-### 3. Departure Type Conversion
-
-**Endpoint**: `POST /admin/bookings/:id/convert-type`
-
-#### Scenario 1: Private → Public
-- Changes departure `type` to 'public'
-- Sets `maxPax = 8`
-- Validates `currentPax <= 8`
-- Opens for public joining
-
-#### Scenario 2: Public (with others) → Private (Split)
-- Creates NEW private departure
-- Moves selected booking to new departure
-- Updates old departure `currentPax` (decrements)
-- New departure gets booking's `pax`
-
-#### Scenario 3: Public (alone) → Private (Convert)
-- Changes departure `type` to 'private'
-- Sets `maxPax = 99`
-- No capacity changes needed
-
-### 4. Cascade Effects Matrix
-
-| Operation | Booking Changes | Departure Changes | Validation |
-|-----------|----------------|-------------------|------------|
-| **Create (Admin)** | All fields | Creates new departure | Tour exists |
-| **Join (Public)** | All fields | `currentPax += pax` | Capacity available |
-| **Private (Public)** | All fields | Creates new departure | Tour exists |
-| **Cancel Status** | `status = 'cancelled'` | `currentPax -= pax` | None |
-| **Un-cancel Status** | `status = 'confirmed'` | `currentPax += pax` | Capacity available |
-| **Increase Pax** | `pax`, prices | `currentPax += diff` | Capacity available |
-| **Decrease Pax** | `pax`, prices | `currentPax -= diff` | None |
-| **Update Details** | `customer` | None | Valid fields |
-| **Apply Discount** | `finalPrice`, `discountReason` | None | None |
-| **Move Booking** | `departureId` | Old: `-= pax`, New: `+= pax` | Capacity in new |
-| **Convert Type** | Varies | Varies by scenario | Varies |
-
-### 5. Capacity Management
-
-**Critical Rules**:
-- All capacity operations use Firestore transactions
-- Read-before-write pattern enforced
-- Manual calculations (no `FieldValue.increment()` for emulator compatibility)
-- Validation happens before any writes
-
-**Example Transaction Pattern**:
-```javascript
-await db.runTransaction(async (t) => {
-  // 1. ALL READS FIRST
-  const bookingDoc = await t.get(bookingRef);
-  const depDoc = await t.get(depRef);
-  
-  // 2. VALIDATE
-  const bookingData = bookingDoc.data();
-  const depData = depDoc.data();
-  if (depData.currentPax + pax > depData.maxPax) {
-    throw new Error("Insufficient capacity");
-  }
-  
-  // 3. CALCULATE NEW VALUES
-  const newCurrentPax = depData.currentPax + pax;
-  
-  // 4. ALL WRITES AT THE END
-  t.update(bookingRef, { ... });
-  t.update(depRef, { currentPax: newCurrentPax });
-});
-```
-
-### 6. Pricing Rules
-
-**Tier Selection**:
-- Based on `pax` count
-- Finds tier where `pax >= minPax && pax <= maxPax`
-- Uses departure's `pricingSnapshot` (not tour's current pricing)
-
-**Price Calculation**:
-```javascript
-const tier = pricingSnapshot.find(t => pax >= t.minPax && pax <= t.maxPax);
-const originalPrice = tier.priceCOP * pax;
-```
-
-**Discount Preservation**:
-When pax changes, discount ratio is preserved:
-```javascript
-const discountRatio = oldFinalPrice / oldOriginalPrice;
-const newFinalPrice = newOriginalPrice * discountRatio;
-```
-
----
-
-## Emulator Compatibility
-
-All code is compatible with Firebase Emulators:
-
-**Replaced**:
-- `admin.firestore.FieldValue.serverTimestamp()` → `new Date()`
-- `admin.firestore.FieldValue.increment(n)` → Manual calculation
-
-**Transaction Pattern**:
-- All reads BEFORE all writes
-- Manual calculations for all numeric updates
-- Explicit error handling
-
----
-
-## Deployment
-
-**Production URL**: `https://api-wgfhwjbpva-uc.a.run.app`
-
-**Deployment Command**:
-```bash
-firebase deploy --only functions
-```
-
-**Environment**:
-- Project: `nevadotrektest01`
-- Region: `us-central1`
-- Memory: 256 MB
-- Runtime: Node.js 22
-
----
-
-## Testing
-
-### Local Testing (Emulators)
-```bash
-# Start emulators
-firebase emulators:start
-
-# Run comprehensive tests
-node test_booking_logic.js
-node test_full_endpoints.js
-```
-
-### Test Coverage
-- ✅ Admin booking creation (always new departure)
-- ✅ Public join flow (capacity validation)
-- ✅ Public private flow (new departure creation)
-- ✅ Status update cascade (cancel/un-cancel)
-- ✅ Pax update cascade (increase/decrease)
-- ✅ Details update (no cascade)
-- ✅ Type conversion (all 3 scenarios)
-- ✅ Capacity validation (all operations)
-- ✅ Discount preservation (pax changes)
-- ✅ Move booking (dual capacity updates)
-
----
-
-## Migration Notes
-
-### From V1.0 to V2.0
-
-**Key Changes**:
-1. Removed generic `updateBooking` endpoint
-2. Added separated booking update endpoints
-3. Implemented proper cascade effects
-4. Added departure type conversion
-5. Fixed emulator compatibility
-
-**Breaking Changes**:
-- `POST /public/bookings` removed
-- `PUT /admin/bookings/:id` removed
-- New endpoints required for all booking updates
-
-**Data Migration**: Not required (schema compatible)
-
----
-
-## Future Considerations
-
-### Planned Features
-- Group entity for managing families/friends traveling together
-- Tour versioning for price change management
-- Recurring departure creation
-- Bulk operations on multiple bookings
-- Enhanced analytics and reporting
-
-### Scalability
-- Current architecture supports horizontal scaling
-- Firestore handles concurrent operations via transactions
-- Cloud Functions auto-scale based on load
-- No single points of failure
-
----
-
-## References
-
-- [Firebase Cloud Functions Documentation](https://firebase.google.com/docs/functions)
-- [Firestore Transactions](https://firebase.google.com/docs/firestore/manage-data/transactions)
-- [Express.js Guide](https://expressjs.com/en/guide/routing.html)
-
----
-
-**Document Version**: 2.0  
-**Last Updated**: November 19, 2025  
-**Status**: Production-Ready
+## 5. Deployment & Infrastructure
+
+*   **Production URL**: `https://api-wgfhwjbpva-uc.a.run.app`
+*   **Region**: `us-central1`
+*   **Memory**: 256 MB
+*   **Min Instances**: 0 (Scale to zero)
+
+### Emulator Compatibility
+The codebase is 100% compatible with Firebase Emulators.
+*   Uses `new Date()` instead of `serverTimestamp()`.
+*   Uses manual incrementing instead of `FieldValue.increment()`.
