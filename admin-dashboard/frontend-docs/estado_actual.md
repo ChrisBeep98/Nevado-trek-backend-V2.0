@@ -268,3 +268,308 @@ El Admin Dashboard está en un estado **muy avanzado** con:
 - ⚠️ **Falta principalmente:** 1 feature UI, error boundaries, y E2E tests
 
 **El dashboard es funcional y usable para la mayoría de casos de uso administrativos.**
+
+---
+
+## 📁 Estructura de Archivos
+
+### Directorio Principal
+```
+admin-dashboard/
+├── src/
+│   ├── __tests__/           # Tests unitarios e integración
+│   │   ├── unit/hooks/      # Tests de hooks
+│   │   └── integration/     # Tests contra backend real
+│   ├── components/          # Componentes React
+│   │   ├── modals/          # Modales (Tour, Departure, Booking)
+│   │   └── ui/              # Componentes UI reutilizables
+│   ├── context/             # Context providers (Auth)
+│   ├── hooks/               # Custom hooks (useTours, etc.)
+│   ├── layouts/             # Layouts (DashboardLayout)
+│   ├── lib/                 # Utilidades (api.ts, endpoints)
+│   ├── pages/               # Páginas principales
+│   ├── services/            # Capa de servicios API
+│   ├── types/               # TypeScript interfaces
+│   ├── test-utils.tsx       # Utilidades de testing
+│   ├── index.css            # Estilos globales + Tailwind
+│   └── main.tsx             # Entry point
+├── frontend-docs/           # Documentación
+│   ├── estado_actual.md     # Este archivo
+│   └── frontend_architecture_status.md
+├── vitest.config.ts         # Configuración Vitest
+├── playwright.config.ts     # Configuración Playwright
+└── package.json             # Dependencies
+```
+
+### Archivos Clave
+
+**Configuración:**
+- `vite.config.ts` - Configuración de Vite
+- `tsconfig.app.json` - TypeScript config (incluye types: node)
+- `tailwind.config.js` - Tailwind CSS v4
+- `vitest.config.ts` - Testing unitario
+- `playwright.config.ts` - Testing E2E
+
+**Core:**
+- `src/lib/api.ts` - Cliente Axios + endpoints
+- `src/context/AuthContext.tsx` - Autenticación
+- `src/types/index.ts` - Interfaces TypeScript completas
+- `src/test-utils.tsx` - Providers para testing
+
+---
+
+## 🛠️ Stack Tecnológico Completo
+
+### Core
+- **React** 18.3.1
+- **TypeScript** 5.6.2
+- **Vite** 7.2.4
+
+### UI/Styling
+- **Tailwind CSS** 4.1.0-alpha.32
+- **Radix UI** (Dialog, Tabs)
+- **Lucide React** 0.468.0 (iconos)
+- **FullCalendar** 6.1.15 (calendario)
+
+### State Management & Data
+- **TanStack Query** 5.62.7 (React Query)
+- **React Router DOM** 7.1.1
+- **Axios** 1.7.9
+
+### Forms & Validation
+- **React Hook Form** 7.54.2
+- **Zod** 3.24.1
+
+### Testing
+- **Vitest** 4.0.12
+- **@testing-library/react** 16.1.0
+- **Playwright** 1.49.1
+- **@types/node** (para integration tests)
+
+### Dev Tools
+- **ESLint** 9.17.0
+- **TypeScript ESLint** 8.18.2
+
+---
+
+## 🔧 Configuración del Proyecto
+
+### Variables de Entorno
+No se usan variables de entorno. La configuración está hardcoded:
+- **Backend URL:** `https://api-wgfhwjbpva-uc.a.run.app`
+- **Admin Key:** Se almacena en `localStorage` después del login
+
+### Scripts Disponibles
+```bash
+# Desarrollo
+npm run dev              # Servidor de desarrollo
+
+# Build
+npm run build            # Build de producción
+npm run preview          # Preview del build
+
+# Testing
+npm test                 # Tests en watch mode
+npm test -- run          # Tests una vez
+npm test -- run src/__tests__/unit  # Solo unit tests
+
+# Linting
+npm run lint             # ESLint
+```
+
+---
+
+## 🐛 Issues Conocidos Detallados
+
+### 1. Routing Issue: `/tours` vs `/admin-tours`
+**Descripción:** La ruta `/tours` causa redirect loops o crashes.  
+**Workaround:** Temporalmente renombrada a `/admin-tours`.  
+**Archivos afectados:**
+- `src/App.tsx` - Ruta definida como `/admin-tours`
+- `src/layouts/DashboardLayout.tsx` - Link en sidebar apunta a `/admin-tours`
+
+**Posible causa:** Conflicto con React Router o algún componente que intenta redirigir.  
+**Solución propuesta:** Investigar en `App.tsx` y verificar si hay algún redirect automático.
+
+### 2. Backend Validation Mismatch
+**Descripción:** El backend requiere TODOS los campos de Tour al crear (POST), incluso los opcionales.  
+**Campos problemáticos:**
+- `altitude` (opcional en frontend, requerido en backend)
+- `images` (opcional en frontend, requerido en backend)
+- `shortDescription` (opcional en frontend, requerido en backend)
+
+**Impacto:** Integration tests fallan al crear tours.  
+**Solución propuesta:** 
+- Opción A: Actualizar backend para hacer campos verdaderamente opcionales
+- Opción B: Actualizar frontend para incluir todos los campos con valores por defecto
+
+### 3. Convert-Type UI Missing
+**Descripción:** El servicio `convertBooking` existe pero no hay botón en la UI.  
+**Archivo:** `src/components/modals/BookingModal.tsx`  
+**Ubicación sugerida:** Tab "Actions"  
+**Implementación estimada:** 30-60 minutos
+
+### 4. No Error Boundaries
+**Descripción:** No hay error boundaries implementados.  
+**Riesgo:** Si un componente falla, toda la app se cae.  
+**Solución:** Crear `ErrorBoundary.tsx` y envolver rutas principales.
+
+---
+
+## 📝 Notas de Desarrollo
+
+### Convenciones de Código
+
+**Naming:**
+- Componentes: PascalCase (`TourModal.tsx`)
+- Hooks: camelCase con prefijo `use` (`useTours.ts`)
+- Servicios: camelCase con sufijo `.service` (`tours.service.ts`)
+- Types: PascalCase (`Tour`, `Booking`)
+
+**Imports:**
+- Absolute imports desde `src/`
+- Type imports con `import type`
+
+**Query Keys:**
+- Formato: `['resource', ...params]`
+- Ejemplo: `['tours']`, `['departures', start, end]`, `['bookings', departureId]`
+
+### Patrones Usados
+
+**Service Layer Pattern:**
+```typescript
+// services/tours.service.ts
+export const toursService = {
+    getAll: () => api.get<Tour[]>(endpoints.admin.tours),
+    create: (data) => api.post<Tour>(endpoints.admin.tours, data),
+    // ...
+}
+```
+
+**Custom Hook Pattern:**
+```typescript
+// hooks/useTours.ts
+export function useTours() {
+    return useQuery({
+        queryKey: ['tours'],
+        queryFn: async () => {
+            const { data } = await toursService.getAll();
+            return data;
+        }
+    });
+}
+```
+
+**Mutation Pattern:**
+```typescript
+const createTour = useMutation({
+    mutationFn: toursService.create,
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['tours'] });
+    }
+});
+```
+
+### Testing Patterns
+
+**Unit Test:**
+```typescript
+// Mock service
+vi.mock('../../../services/tours.service', () => ({
+    toursService: { getAll: vi.fn() }
+}));
+
+// Test hook
+const { result } = renderHook(() => useTours(), { 
+    wrapper: AllTheProviders 
+});
+```
+
+**Integration Test:**
+```typescript
+// Lee admin key de archivo
+const ADMIN_KEY = fs.readFileSync('secret_value.txt', 'utf-8').trim();
+
+// Usa fetch nativo
+const response = await fetch(`${API_BASE_URL}/admin/tours`, {
+    headers: { 'X-Admin-Secret-Key': ADMIN_KEY }
+});
+```
+
+---
+
+## 🔒 Seguridad
+
+### Admin Key
+- **Almacenamiento:** `localStorage.getItem('adminKey')`
+- **Inyección:** Axios interceptor en `src/lib/api.ts`
+- **Validación:** Al login, se verifica contra `/admin/stats`
+- **Logout:** Se elimina de localStorage
+
+### CORS
+- Backend configurado para aceptar requests del frontend
+- No hay issues de CORS reportados
+
+### Autenticación
+- No hay refresh tokens
+- No hay expiración de sesión
+- Admin key es permanente hasta logout manual
+
+---
+
+## 🎯 Roadmap Sugerido
+
+### Fase 1: Completar Funcionalidad (1-2 días)
+- [ ] Agregar UI para convert-type
+- [ ] Implementar error boundaries
+- [ ] Fix routing issue `/tours`
+
+### Fase 2: Testing (2-3 días)
+- [ ] Escribir E2E tests críticos
+- [ ] Aumentar cobertura de unit tests
+- [ ] Fix integration tests (backend validation)
+
+### Fase 3: Polish (1-2 días)
+- [ ] Browser testing exhaustivo
+- [ ] Performance optimization
+- [ ] Accessibility audit
+
+### Fase 4: Production Ready (1 día)
+- [ ] Documentación de deployment
+- [ ] Environment variables setup
+- [ ] Monitoring/error tracking setup
+
+---
+
+## 📚 Recursos Adicionales
+
+### Documentación Relacionada
+- `frontend-docs/frontend_architecture_status.md` - Versión en inglés
+- `README.md` - Setup inicial del proyecto
+
+### Enlaces Útiles
+- **Backend API:** https://api-wgfhwjbpva-uc.a.run.app
+- **TanStack Query Docs:** https://tanstack.com/query/latest
+- **Tailwind CSS v4:** https://tailwindcss.com/docs
+- **Radix UI:** https://www.radix-ui.com/
+
+### Comandos Útiles
+```bash
+# Ver estructura de archivos
+tree src/ -L 2
+
+# Buscar TODOs
+grep -r "TODO" src/
+
+# Ver tamaño del build
+npm run build && du -sh dist/
+
+# Limpiar node_modules y reinstalar
+rm -rf node_modules package-lock.json && npm install
+```
+
+---
+
+**Última actualización:** 20 de Noviembre, 2025  
+**Mantenido por:** Equipo de Desarrollo Nevado Trek
+
