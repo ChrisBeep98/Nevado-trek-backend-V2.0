@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { X, Users, MapPin, Settings, Trash2 } from 'lucide-react';
+import { X, Users, MapPin, Settings, Trash2, Calendar, Split } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { format } from 'date-fns';
 import type { Departure } from '../../types';
 import { useBookings } from '../../hooks/useBookings';
+import { useDepartureMutations } from '../../hooks/useDepartures';
 import { LiquidButton } from '../ui/LiquidButton';
 import { BookingModal } from './BookingModal';
-import { format } from 'date-fns';
 
 interface DepartureModalProps {
     isOpen: boolean;
@@ -14,21 +18,84 @@ interface DepartureModalProps {
     departure: Departure | null;
 }
 
+const editSchema = z.object({
+    date: z.string().min(1),
+    maxPax: z.number().min(1)
+});
+
+type EditFormValues = z.infer<typeof editSchema>;
+
 export function DepartureModal({ isOpen, onClose, departure }: DepartureModalProps) {
     const { data: bookings, isLoading } = useBookings(departure?.departureId);
+    const { updateDeparture, splitDeparture, deleteDeparture } = useDepartureMutations();
+
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState<string | undefined>();
+    const [splitMode, setSplitMode] = useState(false);
+    const [selectedBookingForSplit, setSelectedBookingForSplit] = useState<string | null>(null);
+
+    const { register, handleSubmit, reset } = useForm<EditFormValues>({
+        resolver: zodResolver(editSchema)
+    });
+
+    useEffect(() => {
+        if (departure) {
+            reset({
+                date: departure.date.split('T')[0],
+                maxPax: departure.maxPax
+            });
+        }
+    }, [departure, reset]);
 
     if (!departure) return null;
 
     const handleEditBooking = (bookingId: string) => {
-        setSelectedBookingId(bookingId);
-        setIsBookingModalOpen(true);
+        if (splitMode) {
+            setSelectedBookingForSplit(bookingId);
+        } else {
+            setSelectedBookingId(bookingId);
+            setIsBookingModalOpen(true);
+        }
     };
 
     const handleNewBooking = () => {
         setSelectedBookingId(undefined);
         setIsBookingModalOpen(true);
+    };
+
+    const onUpdateSubmit = (data: EditFormValues) => {
+        updateDeparture.mutate({
+            id: departure.departureId,
+            data: {
+                date: new Date(data.date).toISOString(),
+                maxPax: data.maxPax
+            }
+        }, {
+            onSuccess: () => onClose()
+        });
+    };
+
+    const handleSplit = () => {
+        if (selectedBookingForSplit) {
+            splitDeparture.mutate({
+                id: departure.departureId,
+                bookingId: selectedBookingForSplit
+            }, {
+                onSuccess: () => {
+                    setSplitMode(false);
+                    setSelectedBookingForSplit(null);
+                    onClose();
+                }
+            });
+        }
+    };
+
+    const handleDelete = () => {
+        if (confirm('Are you sure you want to delete this departure? This action cannot be undone.')) {
+            deleteDeparture.mutate(departure.departureId, {
+                onSuccess: () => onClose()
+            });
+        }
     };
 
     return (
@@ -101,14 +168,58 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                             </div>
                                         </div>
                                     </div>
+
+                                    <form onSubmit={handleSubmit(onUpdateSubmit)} className="glass-panel p-6 rounded-xl space-y-4">
+                                        <h3 className="text-white font-medium flex items-center gap-2">
+                                            <Calendar size={18} /> Edit Details
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-white/60 text-sm">Date</label>
+                                                <input
+                                                    type="date"
+                                                    {...register('date')}
+                                                    className="glass-input w-full"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-white/60 text-sm">Max Pax</label>
+                                                <input
+                                                    type="number"
+                                                    {...register('maxPax', { valueAsNumber: true })}
+                                                    className="glass-input w-full"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end">
+                                            <LiquidButton type="submit" isLoading={updateDeparture.isPending}>
+                                                Save Changes
+                                            </LiquidButton>
+                                        </div>
+                                    </form>
                                 </Tabs.Content>
 
                                 <Tabs.Content value="bookings" className="outline-none">
-                                    <div className="flex justify-end mb-4">
-                                        <LiquidButton size="sm" onClick={handleNewBooking}>
+                                    <div className="flex justify-between mb-4">
+                                        <LiquidButton
+                                            size="sm"
+                                            variant={splitMode ? "primary" : "ghost"}
+                                            onClick={() => setSplitMode(!splitMode)}
+                                            className={splitMode ? "bg-indigo-500 hover:bg-indigo-600" : ""}
+                                        >
+                                            <Split size={16} className="mr-2" />
+                                            {splitMode ? "Cancel Split" : "Split Departure"}
+                                        </LiquidButton>
+                                        <LiquidButton size="sm" onClick={handleNewBooking} disabled={splitMode}>
                                             + Add Booking
                                         </LiquidButton>
                                     </div>
+
+                                    {splitMode && (
+                                        <div className="mb-4 p-4 bg-indigo-500/20 border border-indigo-500/50 rounded-xl text-indigo-200 text-sm">
+                                            Select a booking to move to a new departure. This will create a new departure with the same details and move the selected booking to it.
+                                        </div>
+                                    )}
 
                                     <div className="flex flex-col gap-2">
                                         {isLoading ? (
@@ -120,7 +231,8 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                 <div
                                                     key={booking.bookingId}
                                                     onClick={() => handleEditBooking(booking.bookingId)}
-                                                    className="glass-panel p-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors flex items-center justify-between group"
+                                                    className={`glass-panel p-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors flex items-center justify-between group ${selectedBookingForSplit === booking.bookingId ? 'ring-2 ring-indigo-500 bg-indigo-500/10' : ''
+                                                        }`}
                                                 >
                                                     <div>
                                                         <div className="font-bold text-white">{booking.customer.name}</div>
@@ -133,12 +245,24 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                                 {booking.status.toUpperCase()}
                                                             </div>
                                                         </div>
-                                                        <Settings size={16} className="text-white/20 group-hover:text-white/60 transition-colors" />
+                                                        {splitMode ? (
+                                                            <Split size={16} className="text-indigo-400" />
+                                                        ) : (
+                                                            <Settings size={16} className="text-white/20 group-hover:text-white/60 transition-colors" />
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))
                                         )}
                                     </div>
+
+                                    {splitMode && selectedBookingForSplit && (
+                                        <div className="mt-4 flex justify-end">
+                                            <LiquidButton onClick={handleSplit} isLoading={splitDeparture.isPending}>
+                                                Confirm Split
+                                            </LiquidButton>
+                                        </div>
+                                    )}
                                 </Tabs.Content>
 
                                 <Tabs.Content value="settings" className="outline-none flex flex-col gap-4">
@@ -150,8 +274,12 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                         <p className="text-white/60 text-sm mb-4">
                                             Deleting a departure is only possible if there are no active bookings.
                                         </p>
-                                        <LiquidButton variant="danger" disabled={departure.currentPax > 0}>
-                                            Delete Departure
+                                        <LiquidButton
+                                            variant="danger"
+                                            disabled={departure.currentPax > 0 || deleteDeparture.isPending}
+                                            onClick={handleDelete}
+                                        >
+                                            {deleteDeparture.isPending ? 'Deleting...' : 'Delete Departure'}
                                         </LiquidButton>
                                     </div>
                                 </Tabs.Content>

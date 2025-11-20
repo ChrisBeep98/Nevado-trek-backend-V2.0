@@ -11,7 +11,7 @@ import { DepartureModal } from '../components/modals/DepartureModal';
 
 export default function Home() {
     const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | undefined>();
-    const { data: departures, isLoading } = useDepartures(dateRange?.start, dateRange?.end);
+    const { data: departures, isLoading } = useDepartures(dateRange?.start?.toISOString(), dateRange?.end?.toISOString());
     const [selectedDeparture, setSelectedDeparture] = useState<Departure | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 

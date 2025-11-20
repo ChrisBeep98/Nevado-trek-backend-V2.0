@@ -1,17 +1,90 @@
-import { useQuery } from '@tanstack/react-query';
-import { api, endpoints } from '../lib/api';
-import type { Booking } from '../types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { bookingsService } from '../services/bookings.service';
 
 export function useBookings(departureId?: string) {
   return useQuery({
     queryKey: ['bookings', departureId],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (departureId) params.append('departureId', departureId);
-
-      const { data } = await api.get<Booking[]>(endpoints.admin.bookings, { params });
+      if (departureId) {
+        const { data } = await bookingsService.getByDeparture(departureId);
+        return data;
+      }
+      const { data } = await bookingsService.getAll();
       return data;
-    },
-    enabled: !!departureId // Only fetch if departureId is provided (for now)
+    }
   });
+}
+
+export function useBookingMutations() {
+  const queryClient = useQueryClient();
+
+  const createBooking = useMutation({
+    mutationFn: bookingsService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['departures'] });
+    }
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      bookingsService.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['departures'] });
+    }
+  });
+
+  const updatePax = useMutation({
+    mutationFn: ({ id, pax }: { id: string; pax: number }) =>
+      bookingsService.updatePax(id, pax),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['departures'] });
+    }
+  });
+
+  const updateDetails = useMutation({
+    mutationFn: ({ id, customer }: { id: string; customer: any }) =>
+      bookingsService.updateDetails(id, customer),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    }
+  });
+
+  const applyDiscount = useMutation({
+    mutationFn: ({ id, amount, reason }: { id: string; amount: number; reason: string }) =>
+      bookingsService.applyDiscount(id, amount, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    }
+  });
+
+  const moveBooking = useMutation({
+    mutationFn: ({ id, newTourId, newDate }: { id: string; newTourId: string; newDate: string }) =>
+      bookingsService.move(id, newTourId, newDate),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['departures'] });
+    }
+  });
+
+  const convertType = useMutation({
+    mutationFn: ({ id, targetType }: { id: string; targetType: 'public' | 'private' }) =>
+      bookingsService.convertType(id, targetType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['departures'] });
+    }
+  });
+
+  return {
+    createBooking,
+    updateStatus,
+    updatePax,
+    updateDetails,
+    applyDiscount,
+    moveBooking,
+    convertType
+  };
 }

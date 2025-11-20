@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { api, endpoints } from '../lib/api';
-import type { Tour } from '../types';
+import { useTours } from '../hooks/useTours';
+
 import { GlassCard } from '../components/ui/GlassCard';
 import { LiquidButton } from '../components/ui/LiquidButton';
 import { Loader2, Plus, Map, Calendar, DollarSign } from 'lucide-react';
@@ -11,13 +10,7 @@ export default function Tours() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
 
-    const { data: tours, isLoading, isError, error } = useQuery({
-        queryKey: ['tours'],
-        queryFn: async () => {
-            const { data } = await api.get<Tour[]>(endpoints.admin.tours);
-            return data;
-        }
-    });
+    const { data: tours, isLoading, isError, error } = useTours();
 
     const handleEdit = (id: string) => {
         setSelectedTourId(id);

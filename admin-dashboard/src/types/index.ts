@@ -5,16 +5,45 @@ export interface PricingTier {
     priceUSD: number;
 }
 
+export interface BilingualContent {
+    es: string;
+    en: string;
+}
+
 export interface Tour {
     tourId: string;
-    name: { es: string; en: string };
-    description: { es: string; en: string };
+    name: BilingualContent;
+    description: BilingualContent;
+    shortDescription?: BilingualContent;
     type: 'multi-day' | 'single-day';
     totalDays: number;
     difficulty: string;
     isActive: boolean;
     pricingTiers: PricingTier[];
     version: number;
+
+    // Extended fields
+    altitude?: BilingualContent;
+    temperature?: number;
+    distance?: number;
+    location?: BilingualContent;
+    faqs?: Array<{
+        question: BilingualContent;
+        answer: BilingualContent;
+    }>;
+    recommendations?: BilingualContent[];
+    inclusions?: BilingualContent[];
+    exclusions?: BilingualContent[];
+    itinerary?: {
+        days: Array<{
+            dayNumber: number;
+            title: BilingualContent;
+            activities: BilingualContent[];
+        }>;
+    };
+    images?: string[];
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface Departure {
@@ -42,6 +71,7 @@ export interface Booking {
     pax: number;
     originalPrice: number;
     finalPrice: number;
+    discountReason?: string;
     status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
     createdAt: string;
 }

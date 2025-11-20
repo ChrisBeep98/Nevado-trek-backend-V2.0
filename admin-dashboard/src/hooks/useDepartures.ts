@@ -1,17 +1,56 @@
-import { useQuery } from '@tanstack/react-query';
-import { api, endpoints } from '../lib/api';
-import type { Departure } from '../types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { departuresService } from '../services/departures.service';
 
-export function useDepartures(start?: Date, end?: Date) {
+export function useDepartures(start?: string, end?: string) {
     return useQuery({
-        queryKey: ['departures', start?.toISOString(), end?.toISOString()],
+        queryKey: ['departures', start, end],
         queryFn: async () => {
-            const params = new URLSearchParams();
-            if (start) params.append('start', start.toISOString());
-            if (end) params.append('end', end.toISOString());
-
-            const { data } = await api.get<Departure[]>(endpoints.admin.departures, { params });
+            if (!start || !end) return [];
+            const { data } = await departuresService.getCalendar(start, end);
             return data;
         },
+        enabled: !!start && !!end
     });
+}
+
+export function useDepartureMutations() {
+    const queryClient = useQueryClient();
+
+    const createDeparture = useMutation({
+        mutationFn: departuresService.create,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+        }
+    });
+
+    const updateDeparture = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: any }) =>
+            departuresService.update(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+        }
+    });
+
+    const splitDeparture = useMutation({
+        mutationFn: ({ id, bookingId }: { id: string; bookingId: string }) =>
+            departuresService.split(id, bookingId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        }
+    });
+
+    const deleteDeparture = useMutation({
+        mutationFn: departuresService.delete,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+        }
+    });
+
+    return {
+        createDeparture,
+        updateDeparture,
+        splitDeparture,
+        deleteDeparture
+    };
 }

@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { api, endpoints } from '../lib/api';
-import type { Booking } from '../types';
+import { useBookings } from '../hooks/useBookings';
 import { GlassCard } from '../components/ui/GlassCard';
 import { LiquidButton } from '../components/ui/LiquidButton';
-import { Loader2, Search, Plus } from 'lucide-react';
-import { format } from 'date-fns';
 import { BookingModal } from '../components/modals/BookingModal';
+import { Search, Plus, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
 
 export default function Bookings() {
     const [search, setSearch] = useState('');
@@ -14,21 +12,16 @@ export default function Bookings() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState<string | undefined>();
 
-    const { data: bookings, isLoading } = useQuery({
-        queryKey: ['bookings', statusFilter],
-        queryFn: async () => {
-            const params = new URLSearchParams();
-            if (statusFilter) params.append('status', statusFilter);
-            const { data } = await api.get<Booking[]>(endpoints.admin.bookings, { params });
-            return data;
-        }
-    });
+    const { data: bookings, isLoading } = useBookings();
 
-    const filteredBookings = bookings?.filter(b =>
-        b.customer.name.toLowerCase().includes(search.toLowerCase()) ||
-        b.customer.email.toLowerCase().includes(search.toLowerCase()) ||
-        b.bookingId.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredBookings = bookings?.filter(b => {
+        const matchesSearch =
+            b.customer.name.toLowerCase().includes(search.toLowerCase()) ||
+            b.customer.email.toLowerCase().includes(search.toLowerCase()) ||
+            b.bookingId.toLowerCase().includes(search.toLowerCase());
+        const matchesStatus = statusFilter ? b.status === statusFilter : true;
+        return matchesSearch && matchesStatus;
+    });
 
     const handleEdit = (id: string) => {
         setSelectedBookingId(id);

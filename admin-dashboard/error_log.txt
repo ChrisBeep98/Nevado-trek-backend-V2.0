@@ -1,0 +1,4 @@
+Auth Test Failed: undefined - undefined
+Create Tour Test Failed: 400 - {"error":"Missing 'temperature' (number)"}
+Auth Test Failed: undefined - undefined
+Create Tour Test Failed: 400 - {"error":"Missing 'temperature' (number)"}
