@@ -67,6 +67,33 @@ describe.skipIf(!ADMIN_KEY)('Live Backend Integration Tests', () => {
             temperature: 15,
             distance: 20,
             location: { en: 'Nevado del Ruiz', es: 'Nevado del Ruiz' },
+            altitude: { en: '5000m', es: '5000m' },
+            faqs: [
+                {
+                    question: { en: 'What is the difficulty level?', es: '¿Cuál es el nivel de dificultad?' },
+                    answer: { en: 'This tour is rated as Easy and suitable for most fitness levels.', es: 'Este tour está clasificado como Fácil y es adecuado para la mayoría de niveles de fitness.' }
+                },
+                {
+                    question: { en: 'Do I need previous experience?', es: '¿Necesito experiencia previa?' },
+                    answer: { en: 'No previous experience is required for this tour.', es: 'No se requiere experiencia previa para este tour.' }
+                }
+            ],
+            recommendations: [
+                { en: 'Bring warm clothing', es: 'Traer ropa abrigada' },
+                { en: 'Stay hydrated', es: 'Mantenerse hidratado' },
+                { en: 'Use sunscreen', es: 'Usar protector solar' }
+            ],
+            inclusions: [
+                { en: 'Professional guide', es: 'Guía profesional' },
+                { en: 'Meals during the tour', es: 'Comidas durante el tour' },
+                { en: 'Transportation', es: 'Transporte' },
+                { en: 'Safety equipment', es: 'Equipo de seguridad' }
+            ],
+            exclusions: [
+                { en: 'Personal expenses', es: 'Gastos personales' },
+                { en: 'Travel insurance', es: 'Seguro de viaje' },
+                { en: 'Alcoholic beverages', es: 'Bebidas alcohólicas' }
+            ],
             pricingTiers: [
                 { minPax: 1, maxPax: 1, priceCOP: 100000, priceUSD: 30 },
                 { minPax: 2, maxPax: 2, priceCOP: 90000, priceUSD: 25 },
@@ -110,7 +137,14 @@ describe.skipIf(!ADMIN_KEY)('Live Backend Integration Tests', () => {
 
         expect(response.status).toBe(200);
         const data = await response.json();
-        expect(data.difficulty).toBe('Hard');
+        expect(data.success).toBe(true);
+
+        // Verify the update by fetching the tour
+        const verifyResponse = await fetch(`${API_BASE_URL}/admin/tours/${createdTourId}`, {
+            headers: authHeaders
+        });
+        const updatedTour = await verifyResponse.json();
+        expect(updatedTour.difficulty).toBe('Hard');
         console.log(`✓ Tour updated: ${createdTourId}`);
     });
 
