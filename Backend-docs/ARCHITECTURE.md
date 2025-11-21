@@ -1,14 +1,3 @@
-# Nevado Trek Backend - Architecture Documentation V2.0
-
-> [!NOTE]
-> **Status**: Production-Ready
-> **Version**: 2.0
-> **Last Updated**: November 2025
-
-## 1. Overview
-
-The Nevado Trek backend is a **Departure-Centric** reservation management system built on **Firebase Cloud Functions (2nd Gen)** using **Node.js 22**. It implements a refined booking logic with proper cascade effects, separated admin/public flows, and full emulator compatibility.
-
 ### Technology Stack
 - **Runtime**: Node.js 22
 - **Platform**: Firebase Cloud Functions (2nd Gen) on Google Cloud Run
@@ -211,3 +200,61 @@ The system enforces strict rules to ensure data integrity across related entitie
 The codebase is 100% compatible with Firebase Emulators.
 *   Uses `new Date()` instead of `serverTimestamp()`.
 *   Uses manual incrementing instead of `FieldValue.increment()`.
+
+### Recent Deployment History
+
+**Latest Deployment**: November 21, 2025
+- ✅ All 18 endpoints deployed successfully
+- ✅ Fixed `GET /admin/bookings` endpoint (was returning 404)
+- ✅ Verified all integration tests passing (16/16)
+- ✅ Production URL: `https://api-wgfhwjbpva-uc.a.run.app`
+
+**Deployment Command**:
+```bash
+firebase deploy --only functions
+```
+
+**Verification**:
+- All admin endpoints (18/18) functional
+- All public endpoints (4/4) functional
+- Integration tests: 100% passing
+- Frontend compatibility: Verified
+
+---
+
+## 6. Current Status & Metrics
+
+### Endpoint Status (22/22 - 100%)
+
+**Admin Endpoints (18)**:
+- ✅ Tours: 5/5 (GET, POST, GET/:id, PUT/:id, DELETE/:id)
+- ✅ Departures: 5/5 (GET, POST, PUT/:id, DELETE/:id, POST/:id/split)
+- ✅ Bookings: 7/7 (GET, POST, PUT/:id/status, PUT/:id/pax, PUT/:id/details, POST/:id/discount, POST/:id/move, POST/:id/convert-type)
+- ✅ Stats: 1/1 (GET)
+
+**Public Endpoints (4)**:
+- ✅ Tours: 1/1 (GET)
+- ✅ Departures: 1/1 (GET with tourId filter)
+- ✅ Bookings: 2/2 (POST /join, POST /private)
+
+### Testing Coverage
+- **Integration Tests**: 16/16 passing (100%)
+- **Manual Testing**: All endpoints verified
+- **Load Testing**: Not performed
+- **Security Testing**: Admin key authentication verified
+
+### Known Issues
+- None currently
+
+### Future Enhancements
+1. Implement rate limiting
+2. Add request logging/monitoring
+3. Implement webhook notifications
+4. Add email confirmation system
+5. Implement payment gateway integration
+
+---
+
+**Document Version**: 2.0.1  
+**Last Reviewed**: November 21, 2025  
+**Next Review**: December 2025

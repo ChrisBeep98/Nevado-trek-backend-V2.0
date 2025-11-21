@@ -2,7 +2,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
 const API_BASE_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
 const SECRET_FILE_PATH = path.resolve(__dirname, '../../../../secret_value.txt');
@@ -51,16 +50,18 @@ describe.skipIf(!ADMIN_KEY)('Live Backend Integration Tests', () => {
         });
 
         it('Fetches Dashboard Stats (GET /admin/stats)', async () => {
-            // HACK: Use child_process to run debug_stats.js because fetch/axios fails in Vitest for some reason
-            console.log('Running debug_stats.js via child_process...');
-            try {
-                const output = execSync('node ../debug_stats.js', { cwd: __dirname }).toString();
-                console.log('Debug Stats Output:', output);
-                expect(output).toContain('Status: 200');
-            } catch (e: any) {
-                console.error('Debug Stats Failed:', e.message);
-                throw e;
+            console.log(`Fetching: ${API_BASE_URL}/admin/stats`);
+            const response = await fetch(`${API_BASE_URL}/admin/stats`, { headers: authHeaders });
+
+            if (response.status !== 200) {
+                const text = await response.text();
+                console.error('Stats Error:', text);
             }
+
+            expect(response.status).toBe(200);
+            const data = await response.json();
+            expect(data).toHaveProperty('totalActiveBookings');
+            console.log('✓ Stats fetched successfully');
         });
     });
 
