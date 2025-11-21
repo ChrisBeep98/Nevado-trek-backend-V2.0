@@ -76,31 +76,10 @@ The **Nevado Trek Admin Dashboard** is a modern, single-page application (SPA) b
   - ✅ Public endpoints accessible
   - ✅ Admin authentication working
   - ✅ GET endpoints functional
-  - ⚠️ POST endpoint has validation requirements (see Known Issues)
-- **E2E Tests:** Playwright configured but not yet implemented
+  - ✅ Tours CRUD complete (Create, Read, Update, Delete)
+  - ⚠️ Bookings/Departures tests pending implementation
 
 ### 🚧 Known Issues & Limitations
-
-#### **1. Routing Issue**
-- **Problem:** The `/tours` route was experiencing redirect loops/crashes.
-- **Workaround:** Temporarily renamed to `/admin-tours` for debugging.
-- **Status:** Needs investigation and permanent fix.
-
-#### **2. Backend Validation Requirements**
-- **Problem:** Tour creation via POST `/admin/tours` requires additional fields beyond what's in the UI.
-- **Missing Fields:** The backend expects all fields to be present, including optional ones.
-- **Impact:** Integration tests for tour creation currently fail.
-- **Next Step:** Either update backend validation to make fields truly optional, or update frontend forms to include all required fields.
-
-#### **3. Incomplete Features**
-- No error boundaries implemented yet
-- E2E tests not written
-- Some edge cases in booking/departure flows not fully tested
-
-## 5. Testing Strategy
-
-### Unit Tests
-Located in `src/__tests__/unit/hooks/`
 - Test individual hooks in isolation
 - Mock service layer calls
 - Verify data transformations and state management

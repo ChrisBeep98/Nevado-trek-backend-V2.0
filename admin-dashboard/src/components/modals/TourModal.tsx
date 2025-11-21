@@ -27,17 +27,17 @@ const tourSchema = z.object({
         priceUSD: z.number()
     })).length(4),
     // Extended fields
-    location: bilingualSchema.optional(),
-    temperature: z.number().optional(),
-    distance: z.number().optional(),
-    altitude: bilingualSchema.optional(),
+    location: bilingualSchema,
+    temperature: z.number().min(-20).max(50),
+    distance: z.number().min(0),
+    altitude: bilingualSchema,
     faqs: z.array(z.object({
         question: bilingualSchema,
         answer: bilingualSchema
-    })).optional(),
-    inclusions: z.array(bilingualSchema).optional(),
-    exclusions: z.array(bilingualSchema).optional(),
-    recommendations: z.array(bilingualSchema).optional(),
+    })),
+    inclusions: z.array(bilingualSchema),
+    exclusions: z.array(bilingualSchema),
+    recommendations: z.array(bilingualSchema),
     itinerary: z.object({
         days: z.array(z.object({
             dayNumber: z.number(),
@@ -75,6 +75,10 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
             name: { es: '', en: '' },
             description: { es: '', en: '' },
             difficulty: 'Medium',
+            location: { es: '', en: '' },
+            temperature: 15,
+            distance: 10,
+            altitude: { es: '', en: '' },
             faqs: [],
             inclusions: [],
             exclusions: [],
@@ -109,6 +113,10 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                 name: { es: '', en: '' },
                 description: { es: '', en: '' },
                 difficulty: 'Medium',
+                location: { es: '', en: '' },
+                temperature: 15,
+                distance: 10,
+                altitude: { es: '', en: '' },
                 faqs: [],
                 inclusions: [],
                 exclusions: [],

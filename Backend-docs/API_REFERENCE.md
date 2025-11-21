@@ -125,6 +125,12 @@
 *   **URL**: `/admin/bookings/:id/details`
 *   **Body**: `{ "customer": { ... } }`
 
+#### Get All Bookings
+*   **Method**: `GET`
+*   **URL**: `/admin/bookings`
+*   **Query Params**: `departureId` (optional), `status` (optional)
+*   **Description**: Lists all bookings. Can be filtered by departure or status.
+
 #### Apply Discount
 *   **Method**: `POST`
 *   **URL**: `/admin/bookings/:id/discount`
