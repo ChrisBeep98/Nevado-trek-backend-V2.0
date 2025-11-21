@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
+export const API_BASE_URL = 'https://us-central1-nevadotrektest01.cloudfunctions.net/api';
 
 export const api = axios.create({
     baseURL: API_BASE_URL,

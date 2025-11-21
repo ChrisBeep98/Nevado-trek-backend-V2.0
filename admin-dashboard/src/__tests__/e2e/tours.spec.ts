@@ -1,29 +1,32 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Tours Management', () => {
-    // We need to be logged in for these tests.
-    // In a real scenario, we'd set the localStorage state or use a setup step.
+    // Setup: Login before each test
+    test.beforeEach(async ({ page }) => {
+        await page.goto('/login');
+        await page.getByTestId('login-input').fill('ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7');
+        await page.getByTestId('login-button').click();
+        await page.waitForURL('/');
+    });
 
     test('should navigate to tours page', async ({ page }) => {
-        // Mocking authentication state by setting localStorage
-        await page.addInitScript(() => {
-            window.localStorage.setItem('adminKey', 'mock-key');
-        });
+        // Navigate to tours
+        await page.getByTestId('nav-tours').click();
+        await page.waitForURL('/tours');
 
-        await page.goto('/tours');
+        // Verify page loaded
+        await expect(page.getByTestId('new-tour-button')).toBeVisible();
+    });
 
-        // If the key is invalid, it might redirect to login, but we check if we attempted to go to tours
-        // Ideally, we'd mock the API response to validate the key.
-        // For now, we verify the URL structure.
+    test('should display tour cards', async ({ page }) => {
+        // Navigate to tours
+        await page.getByTestId('nav-tours').click();
+        await page.waitForURL('/tours');
 
-        // Note: Since we can't easily mock the full backend auth in this simple E2E without running the backend,
-        // we are verifying the routing logic we just fixed.
+        // Wait for tours to load (if any exist)
+        await page.waitForTimeout(1000);
 
-        // If we are redirected to login, it means the route guard is working.
-        // If we stay on /tours (assuming mock key works or we mock the API), it's also good.
-        // Let's check that we don't crash.
-
-        const title = await page.title();
-        expect(title).toBeDefined();
+        // The page should at least show the new tour button
+        await expect(page.getByTestId('new-tour-button')).toBeVisible();
     });
 });

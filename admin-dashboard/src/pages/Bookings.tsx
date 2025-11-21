@@ -5,6 +5,7 @@ import { LiquidButton } from '../components/ui/LiquidButton';
 import { BookingModal } from '../components/modals/BookingModal';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { firestoreTimestampToDate } from '../utils/dates';
 
 export default function Bookings() {
     const [search, setSearch] = useState('');
@@ -117,7 +118,7 @@ export default function Bookings() {
                                             </span>
                                         </td>
                                         <td className="py-3 px-4 text-white/60 text-sm">
-                                            {format(new Date(booking.createdAt), 'MMM d, yyyy')}
+                                            {format(firestoreTimestampToDate(booking.createdAt), 'MMM d, yyyy')}
                                         </td>
                                         <td className="py-3 px-4 text-right">
                                             <LiquidButton variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">

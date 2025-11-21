@@ -46,6 +46,7 @@ export default function Login() {
                             placeholder="X-Admin-Secret-Key"
                             className="glass-input w-full text-center tracking-widest"
                             autoFocus
+                            data-testid="login-input"
                         />
                         {error && <span className="text-rose-400 text-xs text-center">{error}</span>}
                     </div>
@@ -54,6 +55,7 @@ export default function Login() {
                         type="submit"
                         disabled={isLoading || !key}
                         className="liquid-button w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        data-testid="login-button"
                     >
                         {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                             <>

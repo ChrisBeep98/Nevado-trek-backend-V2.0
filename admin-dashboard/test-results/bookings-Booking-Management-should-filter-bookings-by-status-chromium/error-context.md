@@ -1,0 +1,341 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: "N"
+      - navigation [ref=e8]:
+        - link "Calendar" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic: Calendar
+        - link "Bookings" [active] [ref=e12] [cursor=pointer]:
+          - /url: /bookings
+          - img [ref=e13]
+          - generic: Bookings
+        - link "Tours" [ref=e15] [cursor=pointer]:
+          - /url: /tours
+          - img [ref=e16]
+          - generic: Tours
+        - link "Stats" [ref=e18] [cursor=pointer]:
+          - /url: /stats
+          - img [ref=e19]
+          - generic: Stats
+    - button "Logout" [ref=e21]:
+      - img [ref=e22]
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - heading "Dashboard" [level=1] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - img [ref=e31]
+          - textbox "Search..." [ref=e34]
+        - img [ref=e36]
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - heading "Bookings" [level=2] [ref=e42]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - img [ref=e45]
+            - textbox "Search bookings..." [ref=e48]
+          - combobox [ref=e49]:
+            - option "All Status" [selected]
+            - option "Pending"
+            - option "Confirmed"
+            - option "Paid"
+            - option "Cancelled"
+          - button "New Booking" [ref=e50]:
+            - img [ref=e51]
+            - generic [ref=e52]: New Booking
+      - table [ref=e55]:
+        - rowgroup [ref=e56]:
+          - row "Customer Pax Total Status Created" [ref=e57]:
+            - cell "Customer" [ref=e58]
+            - cell "Pax" [ref=e59]
+            - cell "Total" [ref=e60]
+            - cell "Status" [ref=e61]
+            - cell "Created" [ref=e62]
+            - cell [ref=e63]
+        - rowgroup [ref=e64]:
+          - row "Test User test@example.com 2 $550,000 PENDING Nov 18, 2025 Edit" [ref=e65] [cursor=pointer]:
+            - cell "Test User test@example.com" [ref=e66]:
+              - generic [ref=e67]: Test User
+              - generic [ref=e68]: test@example.com
+            - cell "2" [ref=e69]
+            - cell "$550,000" [ref=e70]
+            - cell "PENDING" [ref=e71]
+            - cell "Nov 18, 2025" [ref=e72]
+            - cell "Edit" [ref=e73]:
+              - button "Edit" [ref=e74]
+          - row "Jane Doe jane.doe@test.com 3 $430,000 CONFIRMED Nov 20, 2025 Edit" [ref=e75] [cursor=pointer]:
+            - cell "Jane Doe jane.doe@test.com" [ref=e76]:
+              - generic [ref=e77]: Jane Doe
+              - generic [ref=e78]: jane.doe@test.com
+            - cell "3" [ref=e79]
+            - cell "$430,000" [ref=e80]
+            - cell "CONFIRMED" [ref=e81]
+            - cell "Nov 20, 2025" [ref=e82]
+            - cell "Edit" [ref=e83]:
+              - button "Edit" [ref=e84]
+          - row "John Doe john@example.com 3 $170,000 PENDING Nov 18, 2025 Edit" [ref=e85] [cursor=pointer]:
+            - cell "John Doe john@example.com" [ref=e86]:
+              - generic [ref=e87]: John Doe
+              - generic [ref=e88]: john@example.com
+            - cell "3" [ref=e89]
+            - cell "$170,000" [ref=e90]
+            - cell "PENDING" [ref=e91]
+            - cell "Nov 18, 2025" [ref=e92]
+            - cell "Edit" [ref=e93]:
+              - button "Edit" [ref=e94]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 21, 2025 Edit" [ref=e95] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e96]:
+              - generic [ref=e97]: Updated Name
+              - generic [ref=e98]: test@example.com
+            - cell "3" [ref=e99]
+            - cell "$239,990" [ref=e100]
+            - cell "CONFIRMED" [ref=e101]
+            - cell "Nov 21, 2025" [ref=e102]
+            - cell "Edit" [ref=e103]:
+              - button "Edit" [ref=e104]
+          - row "John Doe john@example.com 3 $170,000 PENDING Nov 18, 2025 Edit" [ref=e105] [cursor=pointer]:
+            - cell "John Doe john@example.com" [ref=e106]:
+              - generic [ref=e107]: John Doe
+              - generic [ref=e108]: john@example.com
+            - cell "3" [ref=e109]
+            - cell "$170,000" [ref=e110]
+            - cell "PENDING" [ref=e111]
+            - cell "Nov 18, 2025" [ref=e112]
+            - cell "Edit" [ref=e113]:
+              - button "Edit" [ref=e114]
+          - row "John Doe john@example.com 3 $170,000 PENDING Nov 18, 2025 Edit" [ref=e115] [cursor=pointer]:
+            - cell "John Doe john@example.com" [ref=e116]:
+              - generic [ref=e117]: John Doe
+              - generic [ref=e118]: john@example.com
+            - cell "3" [ref=e119]
+            - cell "$170,000" [ref=e120]
+            - cell "PENDING" [ref=e121]
+            - cell "Nov 18, 2025" [ref=e122]
+            - cell "Edit" [ref=e123]:
+              - button "Edit" [ref=e124]
+          - row "Jane Smith jane@example.com 4 $360,000 PENDING Nov 18, 2025 Edit" [ref=e125] [cursor=pointer]:
+            - cell "Jane Smith jane@example.com" [ref=e126]:
+              - generic [ref=e127]: Jane Smith
+              - generic [ref=e128]: jane@example.com
+            - cell "4" [ref=e129]
+            - cell "$360,000" [ref=e130]
+            - cell "PENDING" [ref=e131]
+            - cell "Nov 18, 2025" [ref=e132]
+            - cell "Edit" [ref=e133]:
+              - button "Edit" [ref=e134]
+          - row "Jane Private jane.private@example.com 4 $600,000 PENDING Nov 19, 2025 Edit" [ref=e135] [cursor=pointer]:
+            - cell "Jane Private jane.private@example.com" [ref=e136]:
+              - generic [ref=e137]: Jane Private
+              - generic [ref=e138]: jane.private@example.com
+            - cell "4" [ref=e139]
+            - cell "$600,000" [ref=e140]
+            - cell "PENDING" [ref=e141]
+            - cell "Nov 19, 2025" [ref=e142]
+            - cell "Edit" [ref=e143]:
+              - button "Edit" [ref=e144]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e145] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e146]:
+              - generic [ref=e147]: Updated Name
+              - generic [ref=e148]: test@example.com
+            - cell "3" [ref=e149]
+            - cell "$239,990" [ref=e150]
+            - cell "CONFIRMED" [ref=e151]
+            - cell "Nov 20, 2025" [ref=e152]
+            - cell "Edit" [ref=e153]:
+              - button "Edit" [ref=e154]
+          - row "John Doe john@example.com 3 $170,000 PENDING Nov 18, 2025 Edit" [ref=e155] [cursor=pointer]:
+            - cell "John Doe john@example.com" [ref=e156]:
+              - generic [ref=e157]: John Doe
+              - generic [ref=e158]: john@example.com
+            - cell "3" [ref=e159]
+            - cell "$170,000" [ref=e160]
+            - cell "PENDING" [ref=e161]
+            - cell "Nov 18, 2025" [ref=e162]
+            - cell "Edit" [ref=e163]:
+              - button "Edit" [ref=e164]
+          - row "Jane Doe jane.doe@test.com 3 $430,000 CONFIRMED Nov 20, 2025 Edit" [ref=e165] [cursor=pointer]:
+            - cell "Jane Doe jane.doe@test.com" [ref=e166]:
+              - generic [ref=e167]: Jane Doe
+              - generic [ref=e168]: jane.doe@test.com
+            - cell "3" [ref=e169]
+            - cell "$430,000" [ref=e170]
+            - cell "CONFIRMED" [ref=e171]
+            - cell "Nov 20, 2025" [ref=e172]
+            - cell "Edit" [ref=e173]:
+              - button "Edit" [ref=e174]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e175] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e176]:
+              - generic [ref=e177]: Updated Name
+              - generic [ref=e178]: test@example.com
+            - cell "3" [ref=e179]
+            - cell "$239,990" [ref=e180]
+            - cell "CONFIRMED" [ref=e181]
+            - cell "Nov 20, 2025" [ref=e182]
+            - cell "Edit" [ref=e183]:
+              - button "Edit" [ref=e184]
+          - row "John Doe john@example.com 3 $170,000 PENDING Nov 18, 2025 Edit" [ref=e185] [cursor=pointer]:
+            - cell "John Doe john@example.com" [ref=e186]:
+              - generic [ref=e187]: John Doe
+              - generic [ref=e188]: john@example.com
+            - cell "3" [ref=e189]
+            - cell "$170,000" [ref=e190]
+            - cell "PENDING" [ref=e191]
+            - cell "Nov 18, 2025" [ref=e192]
+            - cell "Edit" [ref=e193]:
+              - button "Edit" [ref=e194]
+          - row "Jane Smith jane@example.com 4 $360,000 PENDING Nov 18, 2025 Edit" [ref=e195] [cursor=pointer]:
+            - cell "Jane Smith jane@example.com" [ref=e196]:
+              - generic [ref=e197]: Jane Smith
+              - generic [ref=e198]: jane@example.com
+            - cell "4" [ref=e199]
+            - cell "$360,000" [ref=e200]
+            - cell "PENDING" [ref=e201]
+            - cell "Nov 18, 2025" [ref=e202]
+            - cell "Edit" [ref=e203]:
+              - button "Edit" [ref=e204]
+          - row "Jane Private jane.private@example.com 4 $600,000 PENDING Nov 19, 2025 Edit" [ref=e205] [cursor=pointer]:
+            - cell "Jane Private jane.private@example.com" [ref=e206]:
+              - generic [ref=e207]: Jane Private
+              - generic [ref=e208]: jane.private@example.com
+            - cell "4" [ref=e209]
+            - cell "$600,000" [ref=e210]
+            - cell "PENDING" [ref=e211]
+            - cell "Nov 19, 2025" [ref=e212]
+            - cell "Edit" [ref=e213]:
+              - button "Edit" [ref=e214]
+          - row "John Public Updated john.updated@example.com 3 $460,000 CONFIRMED Nov 19, 2025 Edit" [ref=e215] [cursor=pointer]:
+            - cell "John Public Updated john.updated@example.com" [ref=e216]:
+              - generic [ref=e217]: John Public Updated
+              - generic [ref=e218]: john.updated@example.com
+            - cell "3" [ref=e219]
+            - cell "$460,000" [ref=e220]
+            - cell "CONFIRMED" [ref=e221]
+            - cell "Nov 19, 2025" [ref=e222]
+            - cell "Edit" [ref=e223]:
+              - button "Edit" [ref=e224]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e225] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e226]:
+              - generic [ref=e227]: Updated Name
+              - generic [ref=e228]: test@example.com
+            - cell "3" [ref=e229]
+            - cell "$239,990" [ref=e230]
+            - cell "CONFIRMED" [ref=e231]
+            - cell "Nov 20, 2025" [ref=e232]
+            - cell "Edit" [ref=e233]:
+              - button "Edit" [ref=e234]
+          - row "John Public Updated john.updated@example.com 3 $460,000 CONFIRMED Nov 19, 2025 Edit" [ref=e235] [cursor=pointer]:
+            - cell "John Public Updated john.updated@example.com" [ref=e236]:
+              - generic [ref=e237]: John Public Updated
+              - generic [ref=e238]: john.updated@example.com
+            - cell "3" [ref=e239]
+            - cell "$460,000" [ref=e240]
+            - cell "CONFIRMED" [ref=e241]
+            - cell "Nov 19, 2025" [ref=e242]
+            - cell "Edit" [ref=e243]:
+              - button "Edit" [ref=e244]
+          - row "John Doe john.doe@test.com 2 $360,000 PENDING Nov 20, 2025 Edit" [ref=e245] [cursor=pointer]:
+            - cell "John Doe john.doe@test.com" [ref=e246]:
+              - generic [ref=e247]: John Doe
+              - generic [ref=e248]: john.doe@test.com
+            - cell "2" [ref=e249]
+            - cell "$360,000" [ref=e250]
+            - cell "PENDING" [ref=e251]
+            - cell "Nov 20, 2025" [ref=e252]
+            - cell "Edit" [ref=e253]:
+              - button "Edit" [ref=e254]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e255] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e256]:
+              - generic [ref=e257]: Updated Name
+              - generic [ref=e258]: test@example.com
+            - cell "3" [ref=e259]
+            - cell "$239,990" [ref=e260]
+            - cell "CONFIRMED" [ref=e261]
+            - cell "Nov 20, 2025" [ref=e262]
+            - cell "Edit" [ref=e263]:
+              - button "Edit" [ref=e264]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 21, 2025 Edit" [ref=e265] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e266]:
+              - generic [ref=e267]: Updated Name
+              - generic [ref=e268]: test@example.com
+            - cell "3" [ref=e269]
+            - cell "$239,990" [ref=e270]
+            - cell "CONFIRMED" [ref=e271]
+            - cell "Nov 21, 2025" [ref=e272]
+            - cell "Edit" [ref=e273]:
+              - button "Edit" [ref=e274]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e275] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e276]:
+              - generic [ref=e277]: Updated Name
+              - generic [ref=e278]: test@example.com
+            - cell "3" [ref=e279]
+            - cell "$239,990" [ref=e280]
+            - cell "CONFIRMED" [ref=e281]
+            - cell "Nov 20, 2025" [ref=e282]
+            - cell "Edit" [ref=e283]:
+              - button "Edit" [ref=e284]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e285] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e286]:
+              - generic [ref=e287]: Updated Name
+              - generic [ref=e288]: test@example.com
+            - cell "3" [ref=e289]
+            - cell "$239,990" [ref=e290]
+            - cell "CONFIRMED" [ref=e291]
+            - cell "Nov 20, 2025" [ref=e292]
+            - cell "Edit" [ref=e293]:
+              - button "Edit" [ref=e294]
+          - row "Jane Smith jane@example.com 4 $360,000 PENDING Nov 18, 2025 Edit" [ref=e295] [cursor=pointer]:
+            - cell "Jane Smith jane@example.com" [ref=e296]:
+              - generic [ref=e297]: Jane Smith
+              - generic [ref=e298]: jane@example.com
+            - cell "4" [ref=e299]
+            - cell "$360,000" [ref=e300]
+            - cell "PENDING" [ref=e301]
+            - cell "Nov 18, 2025" [ref=e302]
+            - cell "Edit" [ref=e303]:
+              - button "Edit" [ref=e304]
+          - row "Jane Doe jane.doe@test.com 3 $430,000 CONFIRMED Nov 20, 2025 Edit" [ref=e305] [cursor=pointer]:
+            - cell "Jane Doe jane.doe@test.com" [ref=e306]:
+              - generic [ref=e307]: Jane Doe
+              - generic [ref=e308]: jane.doe@test.com
+            - cell "3" [ref=e309]
+            - cell "$430,000" [ref=e310]
+            - cell "CONFIRMED" [ref=e311]
+            - cell "Nov 20, 2025" [ref=e312]
+            - cell "Edit" [ref=e313]:
+              - button "Edit" [ref=e314]
+          - row "Updated Name test@example.com 3 $239,990 CONFIRMED Nov 20, 2025 Edit" [ref=e315] [cursor=pointer]:
+            - cell "Updated Name test@example.com" [ref=e316]:
+              - generic [ref=e317]: Updated Name
+              - generic [ref=e318]: test@example.com
+            - cell "3" [ref=e319]
+            - cell "$239,990" [ref=e320]
+            - cell "CONFIRMED" [ref=e321]
+            - cell "Nov 20, 2025" [ref=e322]
+            - cell "Edit" [ref=e323]:
+              - button "Edit" [ref=e324]
+          - row "Jane Smith jane@example.com 4 $360,000 PENDING Nov 18, 2025 Edit" [ref=e325] [cursor=pointer]:
+            - cell "Jane Smith jane@example.com" [ref=e326]:
+              - generic [ref=e327]: Jane Smith
+              - generic [ref=e328]: jane@example.com
+            - cell "4" [ref=e329]
+            - cell "$360,000" [ref=e330]
+            - cell "PENDING" [ref=e331]
+            - cell "Nov 18, 2025" [ref=e332]
+            - cell "Edit" [ref=e333]:
+              - button "Edit" [ref=e334]
+          - row "Jane Smith jane@example.com 4 $360,000 PENDING Nov 18, 2025 Edit" [ref=e335] [cursor=pointer]:
+            - cell "Jane Smith jane@example.com" [ref=e336]:
+              - generic [ref=e337]: Jane Smith
+              - generic [ref=e338]: jane@example.com
+            - cell "4" [ref=e339]
+            - cell "$360,000" [ref=e340]
+            - cell "PENDING" [ref=e341]
+            - cell "Nov 18, 2025" [ref=e342]
+            - cell "Edit" [ref=e343]:
+              - button "Edit" [ref=e344]
+```

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
+import { firestoreTimestampToDate } from '../../utils/dates';
 import type { Departure } from '../../types';
 import { useBookings } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
@@ -115,7 +116,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                     </span>
                                 </Dialog.Title>
                                 <Dialog.Description className="text-white/60 text-sm mt-1">
-                                    {format(new Date(departure.date), 'PPP')} • {departure.currentPax}/{departure.maxPax} Pax
+                                    {format(firestoreTimestampToDate(departure.date), 'PPP')} • {departure.currentPax}/{departure.maxPax} Pax
                                 </Dialog.Description>
                             </div>
                             <Dialog.Close className="text-white/60 hover:text-white transition-colors">
@@ -180,6 +181,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                     type="date"
                                                     {...register('date')}
                                                     className="glass-input w-full"
+                                                    data-testid="input-date"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -188,11 +190,12 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                     type="number"
                                                     {...register('maxPax', { valueAsNumber: true })}
                                                     className="glass-input w-full"
+                                                    data-testid="input-max-pax"
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex justify-end">
-                                            <LiquidButton type="submit" isLoading={updateDeparture.isPending}>
+                                            <LiquidButton type="submit" isLoading={updateDeparture.isPending} data-testid="save-departure-button">
                                                 Save Changes
                                             </LiquidButton>
                                         </div>
@@ -206,11 +209,12 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                             variant={splitMode ? "primary" : "ghost"}
                                             onClick={() => setSplitMode(!splitMode)}
                                             className={splitMode ? "bg-indigo-500 hover:bg-indigo-600" : ""}
+                                            data-testid="split-departure-button"
                                         >
                                             <Split size={16} className="mr-2" />
                                             {splitMode ? "Cancel Split" : "Split Departure"}
                                         </LiquidButton>
-                                        <LiquidButton size="sm" onClick={handleNewBooking} disabled={splitMode}>
+                                        <LiquidButton size="sm" onClick={handleNewBooking} disabled={splitMode} data-testid="add-booking-button">
                                             + Add Booking
                                         </LiquidButton>
                                     </div>
@@ -233,6 +237,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                     onClick={() => handleEditBooking(booking.bookingId)}
                                                     className={`glass-panel p-4 rounded-xl hover:bg-white/5 cursor-pointer transition-colors flex items-center justify-between group ${selectedBookingForSplit === booking.bookingId ? 'ring-2 ring-indigo-500 bg-indigo-500/10' : ''
                                                         }`}
+                                                    data-testid={`booking-item-${booking.bookingId}`}
                                                 >
                                                     <div>
                                                         <div className="font-bold text-white">{booking.customer.name}</div>
@@ -278,6 +283,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                             variant="danger"
                                             disabled={departure.currentPax > 0 || deleteDeparture.isPending}
                                             onClick={handleDelete}
+                                            data-testid="delete-departure-button"
                                         >
                                             {deleteDeparture.isPending ? 'Deleting...' : 'Delete Departure'}
                                         </LiquidButton>

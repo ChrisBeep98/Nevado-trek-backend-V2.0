@@ -26,7 +26,7 @@ export default function Tours() {
         <div className="flex flex-col gap-6 h-full">
             <div className="flex items-center justify-between shrink-0">
                 <h2 className="text-2xl font-bold text-white">Tours</h2>
-                <LiquidButton onClick={handleNew}>
+                <LiquidButton onClick={handleNew} data-testid="new-tour-button">
                     <Plus size={18} />
                     <span>New Tour</span>
                 </LiquidButton>
@@ -50,6 +50,7 @@ export default function Tours() {
                         key={tour.tourId}
                         className="p-0 flex flex-col h-full cursor-pointer group"
                         onClick={() => handleEdit(tour.tourId)}
+                        data-testid={`tour-card-${tour.tourId}`}
                     >
                         <div className="h-40 bg-white/5 relative overflow-hidden">
                             {/* Placeholder for image */}

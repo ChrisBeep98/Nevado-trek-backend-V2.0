@@ -81,6 +81,8 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     }, [booking, bookingId, reset, isOpen]);
 
+    const [manualDepartureId, setManualDepartureId] = useState('');
+
     const onSubmit = (data: BookingFormValues) => {
         if (bookingId) {
             // Update existing booking details
@@ -89,14 +91,17 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                 updatePax.mutate({ id: bookingId, pax: data.pax });
             }
             onClose();
-        } else if (departureId) {
-            // Create new booking for departure
-            createBooking.mutate({
-                departureId,
-                ...data,
-                date: new Date().toISOString(), // Backend handles date from departure usually, but required by schema
-                type: 'public' // Default for now
-            }, { onSuccess: onClose });
+        } else {
+            const targetDepartureId = departureId || manualDepartureId;
+            if (targetDepartureId) {
+                // Create new booking for departure
+                createBooking.mutate({
+                    departureId: targetDepartureId,
+                    ...data,
+                    date: new Date().toISOString(), // Backend handles date from departure usually, but required by schema
+                    type: 'public' // Default for now
+                }, { onSuccess: onClose });
+            }
         }
     };
 
@@ -122,8 +127,6 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     };
 
-
-
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Portal>
@@ -134,7 +137,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                         <Dialog.Title className="text-xl font-bold text-white">
                             {bookingId ? 'Manage Booking' : 'New Booking'}
                         </Dialog.Title>
-                        <Dialog.Close className="text-white/60 hover:text-white transition-colors">
+                        <Dialog.Close className="text-white/60 hover:text-white transition-colors" data-testid="close-modal-button">
                             <X size={24} />
                         </Dialog.Close>
                     </div>
@@ -142,15 +145,15 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                     <Tabs.Root defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
                         <div className="px-6 border-b border-white/10">
                             <Tabs.List className="flex gap-6">
-                                <Tabs.Trigger value="details" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
+                                <Tabs.Trigger value="details" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors" data-testid="tab-details">
                                     Details
                                 </Tabs.Trigger>
                                 {bookingId && (
                                     <>
-                                        <Tabs.Trigger value="status" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
+                                        <Tabs.Trigger value="status" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors" data-testid="tab-status">
                                             Status & Type
                                         </Tabs.Trigger>
-                                        <Tabs.Trigger value="actions" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
+                                        <Tabs.Trigger value="actions" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors" data-testid="tab-actions">
                                             Actions
                                         </Tabs.Trigger>
                                     </>
@@ -161,29 +164,43 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                         <div className="flex-1 overflow-y-auto p-6">
                             <Tabs.Content value="details" className="outline-none">
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                    {!bookingId && !departureId && (
+                                        <div className="space-y-2 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                                            <label className="text-amber-200 text-sm font-medium">Departure ID (Required)</label>
+                                            <input
+                                                value={manualDepartureId}
+                                                onChange={(e) => setManualDepartureId(e.target.value)}
+                                                placeholder="Enter Departure ID"
+                                                className="glass-input w-full"
+                                                data-testid="input-departure-id"
+                                            />
+                                            <p className="text-xs text-amber-200/60">Enter the ID of the departure to add this booking to.</p>
+                                        </div>
+                                    )}
+
                                     <div className="space-y-4">
                                         <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider flex items-center gap-2">
                                             <User size={16} /> Customer Info
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="col-span-2">
-                                                <input {...register('customer.name')} placeholder="Full Name" className="glass-input w-full" />
+                                                <input data-testid="input-customer-name" {...register('customer.name')} placeholder="Full Name" className="glass-input w-full" />
                                                 {errors.customer?.name && <span className="text-rose-400 text-xs">{errors.customer.name.message}</span>}
                                             </div>
                                             <div>
-                                                <input {...register('customer.email')} placeholder="Email" className="glass-input w-full" />
+                                                <input data-testid="input-customer-email" {...register('customer.email')} placeholder="Email" className="glass-input w-full" />
                                                 {errors.customer?.email && <span className="text-rose-400 text-xs">{errors.customer.email.message}</span>}
                                             </div>
                                             <div>
-                                                <input {...register('customer.phone')} placeholder="Phone (+57...)" className="glass-input w-full" />
+                                                <input data-testid="input-customer-phone" {...register('customer.phone')} placeholder="Phone (+57...)" className="glass-input w-full" />
                                                 {errors.customer?.phone && <span className="text-rose-400 text-xs">{errors.customer.phone.message}</span>}
                                             </div>
                                             <div className="col-span-2">
-                                                <input {...register('customer.document')} placeholder="Document ID" className="glass-input w-full" />
+                                                <input data-testid="input-customer-document" {...register('customer.document')} placeholder="Document ID" className="glass-input w-full" />
                                                 {errors.customer?.document && <span className="text-rose-400 text-xs">{errors.customer.document.message}</span>}
                                             </div>
                                             <div className="col-span-2">
-                                                <textarea {...register('customer.note')} placeholder="Notes..." className="glass-input w-full h-20 resize-none" />
+                                                <textarea data-testid="input-customer-note" {...register('customer.note')} placeholder="Notes..." className="glass-input w-full h-20 resize-none" />
                                             </div>
                                         </div>
                                     </div>
@@ -191,12 +208,12 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                     <div className="space-y-4 border-t border-white/10 pt-4">
                                         <div className="flex items-center justify-between">
                                             <label className="text-white font-medium">Pax Count</label>
-                                            <input type="number" {...register('pax', { valueAsNumber: true })} className="glass-input w-24 text-center" min={1} />
+                                            <input data-testid="input-pax" type="number" {...register('pax', { valueAsNumber: true })} className="glass-input w-24 text-center" min={1} />
                                         </div>
                                     </div>
 
                                     <div className="flex justify-end gap-3 pt-4">
-                                        <LiquidButton type="submit" isLoading={updateDetails.isPending || updatePax.isPending || createBooking.isPending}>
+                                        <LiquidButton type="submit" isLoading={updateDetails.isPending || updatePax.isPending || createBooking.isPending} data-testid="submit-booking-button">
                                             {bookingId ? 'Save Changes' : 'Create Booking'}
                                         </LiquidButton>
                                     </div>
@@ -220,6 +237,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                             ? 'bg-indigo-500/20 border-indigo-500 text-indigo-200'
                                                             : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
                                                             }`}
+                                                        data-testid={`status-button-${status}`}
                                                     >
                                                         {status.charAt(0).toUpperCase() + status.slice(1)}
                                                     </button>
@@ -236,6 +254,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     variant="ghost"
                                                     className="flex-1"
                                                     onClick={() => convertType.mutate({ id: bookingId, targetType: 'public' })}
+                                                    data-testid="convert-public-button"
                                                 >
                                                     Convert to Public
                                                 </LiquidButton>
@@ -243,6 +262,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     variant="ghost"
                                                     className="flex-1"
                                                     onClick={() => convertType.mutate({ id: bookingId, targetType: 'private' })}
+                                                    data-testid="convert-private-button"
                                                 >
                                                     Convert to Private
                                                 </LiquidButton>
@@ -263,6 +283,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     className="glass-input w-full"
                                                     value={discountAmount || ''}
                                                     onChange={e => setDiscountAmount(Number(e.target.value))}
+                                                    data-testid="input-discount-amount"
                                                 />
                                                 <input
                                                     type="text"
@@ -270,6 +291,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     className="glass-input w-full"
                                                     value={discountReason}
                                                     onChange={e => setDiscountReason(e.target.value)}
+                                                    data-testid="input-discount-reason"
                                                 />
                                             </div>
                                             <div className="flex justify-end">
@@ -278,6 +300,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     onClick={handleApplyDiscount}
                                                     isLoading={applyDiscount.isPending}
                                                     disabled={!discountAmount || !discountReason}
+                                                    data-testid="apply-discount-button"
                                                 >
                                                     Apply Discount
                                                 </LiquidButton>
@@ -297,12 +320,14 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     className="glass-input w-full"
                                                     value={moveTourId}
                                                     onChange={e => setMoveTourId(e.target.value)}
+                                                    data-testid="input-move-tour-id"
                                                 />
                                                 <input
                                                     type="date"
                                                     className="glass-input w-full"
                                                     value={moveDate}
                                                     onChange={e => setMoveDate(e.target.value)}
+                                                    data-testid="input-move-date"
                                                 />
                                             </div>
                                             <div className="flex justify-end">
@@ -312,6 +337,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     onClick={handleMoveBooking}
                                                     isLoading={moveBooking.isPending}
                                                     disabled={!moveTourId || !moveDate}
+                                                    data-testid="move-booking-button"
                                                 >
                                                     Move Booking
                                                 </LiquidButton>

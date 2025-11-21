@@ -33,6 +33,7 @@ export default function DashboardLayout() {
                             <NavLink
                                 key={item.path}
                                 to={item.path}
+                                data-testid={`nav-${item.label.toLowerCase()}`}
                                 className={({ isActive }) =>
                                     clsx(
                                         "p-3 rounded-xl transition-all duration-300 group relative",
@@ -55,6 +56,7 @@ export default function DashboardLayout() {
                     onClick={handleLogout}
                     className="p-3 text-white/60 hover:text-rose-400 hover:bg-white/5 rounded-xl transition-all"
                     title="Logout"
+                    data-testid="logout-button"
                 >
                     <LogOut size={24} />
                 </button>

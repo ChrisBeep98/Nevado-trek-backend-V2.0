@@ -38,7 +38,7 @@ export default function Home() {
                         <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-rose-500"></div> Public Full</span>
                         <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-violet-500"></div> Private</span>
                     </div>
-                    <LiquidButton>
+                    <LiquidButton onClick={() => setIsModalOpen(true)} data-testid="new-departure-button">
                         <Plus size={18} />
                         <span>New Departure</span>
                     </LiquidButton>
@@ -65,7 +65,7 @@ export default function Home() {
                         datesSet={handleDatesSet}
                         height="100%"
                         eventContent={(arg) => (
-                            <div className="flex flex-col gap-1 p-1">
+                            <div className="flex flex-col gap-1 p-1" data-testid={`event-${arg.event.id}`}>
                                 <div className="text-xs font-bold">{arg.event.title}</div>
                                 <div className="text-[10px] opacity-80 truncate">
                                     {arg.event.extendedProps.type === 'private' ? 'Private' : 'Public'}

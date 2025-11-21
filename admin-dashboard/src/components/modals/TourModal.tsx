@@ -172,12 +172,12 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Name (ES)</label>
-                                            <input {...register('name.es')} className="glass-input w-full" placeholder="Nombre del tour" />
+                                            <input data-testid="input-name-es" {...register('name.es')} className="glass-input w-full" placeholder="Nombre del tour" />
                                             {errors.name?.es && <span className="text-rose-400 text-xs">{errors.name.es.message}</span>}
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Name (EN)</label>
-                                            <input {...register('name.en')} className="glass-input w-full" placeholder="Tour Name" />
+                                            <input data-testid="input-name-en" {...register('name.en')} className="glass-input w-full" placeholder="Tour Name" />
                                             {errors.name?.en && <span className="text-rose-400 text-xs">{errors.name.en.message}</span>}
                                         </div>
                                     </div>
@@ -275,11 +275,11 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <label className="text-white/60 text-sm">Location (ES)</label>
-                                                <input {...register('location.es')} className="glass-input w-full" />
+                                                <input data-testid="input-location-es" {...register('location.es')} className="glass-input w-full" />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-white/60 text-sm">Location (EN)</label>
-                                                <input {...register('location.en')} className="glass-input w-full" />
+                                                <input data-testid="input-location-en" {...register('location.en')} className="glass-input w-full" />
                                             </div>
                                             <div className="space-y-2">
                                                 <label className="text-white/60 text-sm">Temperature (°C)</label>
@@ -288,6 +288,16 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                             <div className="space-y-2">
                                                 <label className="text-white/60 text-sm">Distance (km)</label>
                                                 <input type="number" {...register('distance', { valueAsNumber: true })} className="glass-input w-full" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-white/60 text-sm">Altitude (ES)</label>
+                                                <input {...register('altitude.es')} className="glass-input w-full" data-testid="input-altitude-es" />
+                                                {errors.altitude?.es && <span className="text-rose-400 text-xs">{errors.altitude.es.message}</span>}
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-white/60 text-sm">Altitude (EN)</label>
+                                                <input {...register('altitude.en')} className="glass-input w-full" data-testid="input-altitude-en" />
+                                                {errors.altitude?.en && <span className="text-rose-400 text-xs">{errors.altitude.en.message}</span>}
                                             </div>
                                         </div>
                                     </div>
@@ -394,14 +404,14 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
 
                             <div className="p-6 border-t border-white/10 flex justify-end gap-3 shrink-0">
                                 <LiquidButton type="button" variant="ghost" onClick={onClose}>Cancel</LiquidButton>
-                                <LiquidButton type="submit" isLoading={isCreating || isUpdating}>
+                                <LiquidButton type="submit" isLoading={isCreating || isUpdating} data-testid="submit-tour-button">
                                     {tourId ? 'Update Tour' : 'Create Tour'}
                                 </LiquidButton>
                             </div>
                         </Tabs.Root>
-                    </form>
-                </Dialog.Content>
-            </Dialog.Portal>
-        </Dialog.Root>
+                    </form >
+                </Dialog.Content >
+            </Dialog.Portal >
+        </Dialog.Root >
     );
 }

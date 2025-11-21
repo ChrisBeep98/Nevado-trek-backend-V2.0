@@ -10,12 +10,27 @@ test.describe('Authentication Flow', () => {
         await page.goto('/login');
 
         // Fill in the secret key
-        // Note: In a real test environment, we'd use an env var. 
-        // For this setup, we'll assume the user manually inputs or we mock the API.
-        // Since we can't easily type the real secret key in CI without env vars,
-        // we will check for the presence of the input and button.
+        await page.getByTestId('login-input').fill('ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7');
+        await page.getByTestId('login-button').click();
 
-        await expect(page.getByPlaceholder('Enter Admin Secret Key')).toBeVisible();
-        await expect(page.getByRole('button', { name: 'Access Dashboard' })).toBeVisible();
+        // Should redirect to dashboard
+        await page.waitForURL('/');
+
+        // Verify we're on the dashboard
+        await expect(page.getByText('Dashboard')).toBeVisible();
+    });
+
+    test('should logout successfully', async ({ page }) => {
+        // Login first
+        await page.goto('/login');
+        await page.getByTestId('login-input').fill('ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7');
+        await page.getByTestId('login-button').click();
+        await page.waitForURL('/');
+
+        // Logout
+        await page.getByTestId('logout-button').click();
+
+        // Should redirect to login
+        await page.waitForURL('/login');
     });
 });
