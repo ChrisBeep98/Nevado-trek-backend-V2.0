@@ -15,7 +15,7 @@ export default function DashboardLayout() {
     const navItems = [
         { icon: Calendar, label: 'Calendar', path: '/' },
         { icon: Ticket, label: 'Bookings', path: '/bookings' },
-        { icon: Mountain, label: 'Tours', path: '/admin-tours' },
+        { icon: Mountain, label: 'Tours', path: '/tours' },
         { icon: BarChart3, label: 'Stats', path: '/stats' },
     ];
 

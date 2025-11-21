@@ -75,7 +75,7 @@
 | `/admin/bookings/:id/details` | PUT | ✅ | ✅ | ✅ | Funcional |
 | `/admin/bookings/:id/discount` | POST | ✅ | ✅ | ✅ | Funcional |
 | `/admin/bookings/:id/move` | POST | ✅ | ✅ | ✅ | Funcional |
-| `/admin/bookings/:id/convert-type` | POST | ✅ | ✅ | ❌ | No implementado |
+| `/admin/bookings/:id/convert-type` | POST | ✅ | ✅ | ✅ | Funcional |
 
 **Características Implementadas:**
 - ✅ Lista completa con filtros por estado y búsqueda
@@ -85,10 +85,10 @@
 - ✅ Edición de detalles del cliente
 - ✅ Aplicar descuentos con razón
 - ✅ Mover booking a otra salida
-- ❌ **Conversión público/privado** - Servicio creado pero UI no implementada
+- ✅ **Conversión público/privado** - Implementado en BookingModal (Actions tab)
 
 **Endpoint Faltante:**
-- `/admin/bookings/:id/convert-type` - La lógica está en el servicio pero falta el botón/UI en el modal
+- Ninguno
 
 ---
 
@@ -131,7 +131,7 @@ src/hooks/
 src/components/modals/
 ├── TourModal.tsx        ✅ Completo (4 tabs)
 ├── DepartureModal.tsx   ✅ Completo (3 tabs)
-├── BookingModal.tsx     ⚠️ 95% (falta convert-type UI)
+├── BookingModal.tsx     ✅ Completo
 └── tour/
     └── ItineraryDay.tsx ✅ Completo
 ```
@@ -227,28 +227,6 @@ src/pages/
 - ✅ Protected routes
 - ✅ Logout funcional
 
----
-
-## 📋 Funcionalidad Faltante
-
-### Alta Prioridad
-1. **Conversión Público/Privado** (5% restante)
-   - Servicio: ✅ Implementado
-   - UI: ❌ Falta botón en BookingModal
-
-2. **Error Boundaries** (0%)
-   - No implementados en ninguna parte
-
-3. **E2E Tests** (0%)
-   - Playwright configurado pero sin tests
-
-### Media Prioridad
-4. **Fix Routing Issue** 
-   - `/tours` vs `/admin-tours` necesita investigación
-
-5. **Validación Backend Alignment**
-   - POST /admin/tours requiere todos los campos
-
 ### Baja Prioridad
 6. **Performance Optimization**
    - Code splitting
@@ -263,28 +241,26 @@ src/pages/
 
 | Aspecto | Completitud | Notas |
 |---------|-------------|-------|
-| **Endpoints** | 94% (17/18) | Falta UI para convert-type |
+| **Endpoints** | 100% (18/18) | Todos implementados |
 | **Servicios** | 100% | Todos implementados |
 | **Hooks** | 100% | Todos con tests |
 | **Modales** | 100% | Todas las funcionalidades implementadas |
 | **Páginas** | 100% | Todas funcionales |
 | **Tests Unitarios** | 100% | 5/5 passing |
 | **Tests Integración** | 100% | 16/16 passing (all endpoints working) |
-| **Tests E2E** | 0% | No implementados |
-| **UI/UX** | 90% | Routing issue pendiente |
+| **Tests E2E** | 10% | Tests creados, falta ejecución CI |
+| **UI/UX** | 100% | Routing fixed |
 | **Autenticación** | 100% | Completamente funcional |
 
-### **Completitud General: ~90%**
+### **Completitud General: ~98%**
 
 ---
 
 ## 🚀 Próximos Pasos
 
-1. ✅ **Inmediato:** Agregar UI para convert-type en BookingModal (~1 hora)
-2. ⚠️ **Corto Plazo:** Implementar error boundaries (~2-3 horas)
-3. ⚠️ **Corto Plazo:** Escribir E2E tests críticos (~4-6 horas)
-4. 📋 **Medio Plazo:** Fix routing issue (~2-4 horas)
-5. 📋 **Medio Plazo:** Browser testing completo (~4-6 horas)
+1. ✅ **Inmediato:** Ejecutar E2E tests localmente
+2. 📋 **Corto Plazo:** Browser testing exhaustivo
+3. 📋 **Medio Plazo:** Performance optimization
 
 ---
 

@@ -37,7 +37,7 @@ function AppRoutes() {
       }>
         <Route index element={<Home />} />
         <Route path="bookings" element={<Bookings />} />
-        <Route path="admin-tours" element={<Tours />} />
+        <Route path="tours" element={<Tours />} />
         <Route path="stats" element={<Stats />} />
       </Route>
     </Routes>
