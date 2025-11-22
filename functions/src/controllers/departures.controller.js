@@ -353,7 +353,7 @@ exports.updateDepartureTour = async (req, res) => {
         );
 
         if (tier) {
-          const newOriginalPrice = tier.priceCOP * pax;
+          const newOriginalPrice = tier.priceCOP; // tier is TOTAL price for pax range
           const discountRatio = bookingData.finalPrice / bookingData.originalPrice;
           const newFinalPrice = Math.round(newOriginalPrice * discountRatio);
 

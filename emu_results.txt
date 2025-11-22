@@ -1,0 +1,146 @@
+﻿
+[31m[1m!!  emulators:[22m[39m firebase-tools will 
+drop support for Java version < 21 soon in 
+firebase-tools@15. Please install a JDK at version 21 
+or above to get a compatible runtime.
+[36m[1mi  emulators:[22m[39m Starting emulators: 
+functions, firestore, extensions
+[33m[1m!  functions:[22m[39m The following 
+emulators are not running, calls to these services 
+from the Functions emulator will affect production: 
+[1mapphosting, auth, database, hosting, pubsub, 
+storage, dataconnect[22m
+[36m[1mi  firestore:[22m[39m Firestore Emulator 
+logging to [1mfirestore-debug.log[22m
+[32m[1m+  firestore:[22m[39m Firestore Emulator 
+UI websocket is running on 9150.
+[36m[1mi  functions:[22m[39m Watching "D:\Nevado 
+Trek Development\nevado-trek-backend\functions" for 
+Cloud Functions...
+[33m[1m! [22m[39m [1m[33mfunctions: 
+[39m[22mpackage.json indicates an outdated version 
+of firebase-functions. Please upgrade using [1mnpm 
+install --save firebase-functions@latest[22m in your 
+functions directory.
+[33m[1m! [22m[39m [1m[33mfunctions: 
+[39m[22mPlease note that there will be breaking 
+changes when you upgrade.
+[33m[1m!  functions:[22m[39m Your requested 
+"node" version "22" doesn't match your global version 
+"24". Using node@24 from host.
+[36m[1mi [22m[39m [36m[1mfunctions: 
+[22m[39mLoaded environment variables from 
+.env.nevadotrektest01.
+Serving at port 8699
+
+[32m[1m+  functions:[22m[39m Loaded functions 
+definitions from source: api.
+[32m[1m+  functions[us-central1-api]:[22m[39m 
+[1mhttp[22m function initialized (http://127.0.0.1:5
+001/nevadotrektest01/us-central1/api).
+[36m[1mi [22m[39m Running script: [1mnode 
+functions\test_emulator.js[22m
+======================================================
+==========================
+EMULATOR BOOKING ENDPOINTS TEST
+======================================================
+==========================
+
+­ƒôï SETUP: Creating Tour
+[36m[1mi [22m[39m [36m[1mfunctions: 
+[22m[39mLoaded environment variables from 
+.env.nevadotrektest01.
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 1152.9893ms
+   Ô£à Tour created: 1FgPPnPVJOAx2nQyjq15
+
+TEST 1: joinBooking Type Field
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 43.4355ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 72.2257ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 13.6481ms
+Ô£à 1.1 Public booking has type field
+Ô£à 1.2 Public booking type = PUBLIC
+
+TEST 2: Convert Booking Type Field Update
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 52.7127ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 18.0153ms
+Ô£à 2.1 Booking type changed to PRIVATE
+
+TEST 3: Price Recalculation on Tour Update
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 37.9341ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 9.3864ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 143.6732ms
+[36m[1mi  functions:[22m[39m Beginning execution 
+of "us-central1-api"
+[36m[1mi  functions:[22m[39m Finished 
+"us-central1-api" in 13.6504ms
+ÔØî 3.1 Price recalculated correctly: Expected 
+180000, got 360000
+
+======================================================
+==========================
+TEST SUMMARY
+======================================================
+==========================
+Ô£à Passed: 3
+ÔØî Failed: 1
+
+Failed Tests:
+  - 3.1 Price recalculated correctly: Expected 
+180000, got 360000
+======================================================
+==========================
+[33m[1m! [22m[39m Script exited unsuccessfully 
+(code 1)
+[36m[1mi  emulators:[22m[39m Shutting down 
+emulators.
+[36m[1mi  extensions:[22m[39m Stopping Extensions 
+Emulator
+[36m[1mi  functions:[22m[39m Stopping Functions 
+Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore 
+Emulator
+[33m[1m! [22m[39m Firestore Emulator has exited 
+upon receiving signal: SIGINT
+[36m[1mi  eventarc:[22m[39m Stopping Eventarc 
+Emulator
+[36m[1mi  tasks:[22m[39m Stopping Cloud Tasks 
+Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging 
+Emulator
+[33m[1m!  emulators:[22m[39m firebase-tools will 
+drop support for Java version < 21 soon in 
+firebase-tools@15. Please install a JDK at version 21 
+or above to get a compatible runtime.
+
+[1m[31mError:[39m[22m Script "[1mnode 
+functions\test_emulator.js[22m" exited with code 1
+
+

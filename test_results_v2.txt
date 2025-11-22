@@ -1,0 +1,56 @@
+﻿================================================================================
+BOOKING ENDPOINTS COMPREHENSIVE TEST
+================================================================================
+
+­ƒôï SETUP: Creating Tour
+   Tour created: j5o4pny0wfj84wb47WmW
+
+TEST 1: Create Private Booking
+Ô£à 1.1 Private booking created
+Ô£à 1.2 Private departure created
+   Booking: YJo9fBjV8kPu0g3oZJXS, Departure: WxyJQJSP2McloyLg6avP
+
+TEST 2: Update Date for Private Booking
+Ô£à 2.1 Date updated successfully
+Ô£à 2.2 Tour ID unchanged
+
+TEST 3: Update Tour for Private Booking
+Ô£à 3.1 Tour ID updated
+Ô£à 3.2 Date unchanged
+ÔØî 3.3 Price recalculated: Expected 180000, got 360000
+
+TEST 4: Create Public Departure
+   Public Departure created: h0J2KspBIYe1sZlokzDP
+Ô£à 4.1 Public departure created
+Ô£à 4.2 First public booking created
+Ô£à 4.3 Second public booking created
+
+TEST 5: Verify Public Booking Restrictions
+Ô£à 5.1 Public departure date CAN be updated (affects all bookings)
+ÔØî 5.2 Booking type is PUBLIC
+Ô£à 5.3 Booking has shared departureId
+
+TEST 6: Convert Public Booking to Private
+ÔØî 6.1 Booking type changed to PRIVATE
+Ô£à 6.2 New private departure created
+Ô£à 6.3 Original public departure unchanged
+   New private departure: M8k4bQXxCrEGsqZYhhnS
+
+TEST 7: Verify Converted Booking Can Update
+Ô£à 7.1 Converted booking date updated
+Ô£à 7.2 Converted booking tour updated
+
+­ƒº╣ CLEANUP
+   Cleanup complete
+
+================================================================================
+TEST SUMMARY
+================================================================================
+Ô£à Passed: 15
+ÔØî Failed: 3
+
+Failed Tests:
+  - 3.3 Price recalculated: Expected 180000, got 360000
+  - 5.2 Booking type is PUBLIC: 
+  - 6.1 Booking type changed to PRIVATE: 
+================================================================================

@@ -143,6 +143,7 @@ exports.joinBooking = async (req, res) => {
       // 5. Create Booking
       const newBooking = {
         departureId: departureId,
+        type: DEPARTURE_TYPES.PUBLIC,
         customer,
         pax,
         originalPrice: pricePerPax * pax,
@@ -516,6 +517,12 @@ exports.convertBookingType = async (req, res) => {
           maxPax: 8,
           updatedAt: new Date(),
         });
+
+        // Update booking type
+        t.update(bookingRef, {
+          type: DEPARTURE_TYPES.PUBLIC,
+          updatedAt: new Date(),
+        });
       } else {
         // Departure is PUBLIC
         if (depData.currentPax > bookingData.pax) {
@@ -548,6 +555,7 @@ exports.convertBookingType = async (req, res) => {
           // Update booking to point to new departure
           t.update(bookingRef, {
             departureId: newDepRef.id,
+            type: DEPARTURE_TYPES.PRIVATE,
             updatedAt: new Date(),
           });
         } else {
@@ -558,6 +566,12 @@ exports.convertBookingType = async (req, res) => {
           t.update(depRef, {
             type: DEPARTURE_TYPES.PRIVATE,
             maxPax: 99,
+            updatedAt: new Date(),
+          });
+
+          // Update booking type
+          t.update(bookingRef, {
+            type: DEPARTURE_TYPES.PRIVATE,
             updatedAt: new Date(),
           });
         }

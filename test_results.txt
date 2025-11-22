@@ -1,0 +1,74 @@
+﻿================================================================================
+BOOKING ENDPOINTS COMPREHENSIVE TEST
+================================================================================
+
+­ƒôï SETUP: Creating Tour
+   Tour created: vANAnkY2SMNfBOjnOkBD
+
+TEST 1: Create Private Booking
+Ô£à 1.1 Private booking created
+Ô£à 1.2 Private departure created
+   Booking: AqcpYHInyjJvHmrzdiDQ, Departure: nu504odpV4MUivtThB5L
+
+TEST 2: Update Date for Private Booking
+Ô£à 2.1 Date updated successfully
+Ô£à 2.2 Tour ID unchanged
+
+TEST 3: Update Tour for Private Booking
+Ô£à 3.1 Tour ID updated
+Ô£à 3.2 Date unchanged
+ÔØî 3.3 Price recalculated: Expected 180000, got 360000
+
+TEST 4: Create Public Departure
+   Public Departure created: L3eI6Yw4SUQJYX9G02jO
+node : 
+En línea: 1 Carácter: 1
++ node functions\test_booking_endpoints.js 2>&1 | 
+Out-File -FilePath te ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) 
+    [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ÔØî TEST SUITE FAILED:
+Error: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot POST /public/bookings</pre>
+</body>
+</html>
+
+Stack: AxiosError: Request failed with status code 404
+    at settle (D:\Nevado Trek Development\nevado-trek-
+backend\functions\node_modules\axios\dist\node\axios.c
+js:2106:12)
+    at IncomingMessage.handleStreamEnd (D:\Nevado 
+Trek Development\nevado-trek-backend\functions\node_mo
+dules\axios\dist\node\axios.cjs:3491:11)
+    at IncomingMessage.emit (node:events:520:35)
+    at endReadableNT 
+(node:internal/streams/readable:1701:12)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:90:21)
+    at Axios.request (D:\Nevado Trek Development\nevad
+o-trek-backend\functions\node_modules\axios\dist\node\
+axios.cjs:4731:41)
+    at process.processTicksAndRejections 
+(node:internal/process/task_queues:105:5)
+    at async runTests (D:\Nevado Trek Development\neva
+do-trek-backend\functions\test_booking_endpoints.js:16
+7:32)
+================================================================================
+TEST SUMMARY
+================================================================================
+Ô£à Passed: 6
+ÔØî Failed: 2
+
+Failed Tests:
+  - 3.3 Price recalculated: Expected 180000, got 360000
+  - SUITE: Request failed with status code 404
+================================================================================
