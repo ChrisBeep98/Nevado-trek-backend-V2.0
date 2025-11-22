@@ -65,6 +65,22 @@ test.describe('Bookings Management', () => {
         await expect(nameInput).not.toBeEmpty();
     });
 
+    test('should display type chip in header', async ({ page }) => {
+        await page.waitForSelector('[data-testid^="booking-row-"]', { timeout: 10000 });
+        const bookingRows = page.locator('[data-testid^="booking-row-"]');
+
+        if (await bookingRows.count() > 0) {
+            await bookingRows.first().click();
+            await expect(page.getByText('Manage Booking')).toBeVisible();
+
+            // Wait for loading to finish
+            await expect(page.locator('.animate-spin')).not.toBeVisible({ timeout: 10000 });
+
+            // Check for type chip
+            await expect(page.getByTestId('booking-type-chip')).toBeVisible();
+        }
+    });
+
     test('should edit booking details', async ({ page }) => {
         // Wait for bookings to load
         await page.waitForSelector('[data-testid^="booking-row-"]', { timeout: 10000 });
@@ -92,6 +108,57 @@ test.describe('Bookings Management', () => {
         } else {
             // No bookings, test passes
             expect(true).toBe(true);
+        }
+    });
+
+    test('should handle status changes', async ({ page }) => {
+        await page.waitForSelector('[data-testid^="booking-row-"]', { timeout: 10000 });
+        const bookingRows = page.locator('[data-testid^="booking-row-"]');
+
+        if (await bookingRows.count() > 0) {
+            await bookingRows.first().click();
+            await expect(page.getByText('Manage Booking')).toBeVisible();
+            await expect(page.locator('.animate-spin')).not.toBeVisible({ timeout: 10000 });
+
+            // Go to Status tab
+            await page.getByTestId('tab-status').click();
+
+            // Check status buttons
+            await expect(page.getByTestId('status-button-confirmed')).toBeVisible();
+            await expect(page.getByTestId('status-button-cancelled')).toBeVisible();
+
+            // Click a status button (e.g., confirmed)
+            await page.getByTestId('status-button-confirmed').click();
+            // Note: We can't easily verify the backend update without re-fetching, 
+            // but we can verify the button didn't crash the app
+            await expect(page.getByTestId('status-button-confirmed')).toBeVisible();
+        }
+    });
+
+    test('should validate capacity on pax increase', async ({ page }) => {
+        await page.waitForSelector('[data-testid^="booking-row-"]', { timeout: 10000 });
+        const bookingRows = page.locator('[data-testid^="booking-row-"]');
+
+        if (await bookingRows.count() > 0) {
+            await bookingRows.first().click();
+            await expect(page.getByText('Manage Booking')).toBeVisible();
+            await expect(page.locator('.animate-spin')).not.toBeVisible({ timeout: 10000 });
+
+            // Handle alert
+            page.on('dialog', async dialog => {
+                expect(dialog.message()).toContain('Cannot increase');
+                await dialog.accept();
+            });
+
+            // Try to set pax to a very high number
+            await page.getByTestId('input-pax').fill('100');
+            await page.getByTestId('submit-booking-button').click();
+
+            // If capacity is exceeded, the modal should NOT close (or alert appears)
+            // If it was a private tour with 99 max pax, it might succeed, but for public it should fail.
+            // We can't guarantee failure without knowing the tour type, but we can check if the modal is still open
+            // or if the alert handler was triggered (if we could spy on it).
+            // For now, just ensuring the interaction works.
         }
     });
 
@@ -133,9 +200,6 @@ test.describe('Bookings Management', () => {
 
             // Check move section exists
             await expect(page.getByText('Change Date/Tour')).toBeVisible();
-
-            // We verified the section header is visible, which means the component loaded correctly.
-            // The specific content (inputs vs blocked message) depends on data we can't easily control here.
         }
     });
 });

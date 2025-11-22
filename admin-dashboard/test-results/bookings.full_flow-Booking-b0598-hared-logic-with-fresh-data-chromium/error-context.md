@@ -1,0 +1,687 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: "N"
+      - navigation [ref=e8]:
+        - link "Calendar" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic: Calendar
+        - link "Bookings" [ref=e12] [cursor=pointer]:
+          - /url: /bookings
+          - img [ref=e13]
+          - generic: Bookings
+        - link "Tours" [active] [ref=e15] [cursor=pointer]:
+          - /url: /tours
+          - img [ref=e16]
+          - generic: Tours
+        - link "Stats" [ref=e18] [cursor=pointer]:
+          - /url: /stats
+          - img [ref=e19]
+          - generic: Stats
+    - button "Logout" [ref=e21]:
+      - img [ref=e22]
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - heading "Dashboard" [level=1] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - img [ref=e31]
+          - textbox "Search..." [ref=e34]
+        - img [ref=e36]
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - heading "Tours" [level=2] [ref=e42]
+        - button "New Tour" [ref=e43]:
+          - img [ref=e44]
+          - generic [ref=e45]: New Tour
+      - generic [ref=e46]:
+        - generic [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]:
+            - img [ref=e50]
+            - generic [ref=e52]: Active
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - heading "tour to the nevado" [level=3] [ref=e55]
+              - paragraph [ref=e56]: nevado description long
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - img [ref=e59]
+                - generic [ref=e61]: 4 Days
+              - generic [ref=e62]:
+                - img [ref=e63]
+                - generic [ref=e65]: From $15
+        - generic [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]:
+            - img [ref=e69]
+            - generic [ref=e71]: Active
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - heading "cocora tour" [level=3] [ref=e74]
+              - paragraph [ref=e75]: cocora tour description
+            - generic [ref=e76]:
+              - generic [ref=e77]:
+                - img [ref=e78]
+                - generic [ref=e80]: 3 Days
+              - generic [ref=e81]:
+                - img [ref=e82]
+                - generic [ref=e84]: From $15
+        - generic [ref=e85] [cursor=pointer]:
+          - generic [ref=e86]:
+            - img [ref=e88]
+            - generic [ref=e90]: Inactive
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - heading "Test Tour" [level=3] [ref=e93]
+              - paragraph [ref=e94]: A test tour
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - img [ref=e97]
+                - generic [ref=e99]: 0 Days
+              - generic [ref=e100]:
+                - img [ref=e101]
+                - generic [ref=e103]: From $28
+        - generic [ref=e104] [cursor=pointer]:
+          - generic [ref=e105]:
+            - img [ref=e107]
+            - generic [ref=e109]: Active
+          - generic [ref=e110]:
+            - generic [ref=e111]:
+              - heading "Complex Tour" [level=3] [ref=e112]
+              - paragraph [ref=e113]: No description available.
+            - generic [ref=e114]:
+              - generic [ref=e115]:
+                - img [ref=e116]
+                - generic [ref=e118]: 0 Days
+              - generic [ref=e119]:
+                - img [ref=e120]
+                - generic [ref=e122]: From $60
+        - generic [ref=e123] [cursor=pointer]:
+          - generic [ref=e124]:
+            - img [ref=e126]
+            - generic [ref=e128]: Inactive
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - heading "Integration Test Tour" [level=3] [ref=e131]
+              - paragraph [ref=e132]: Test Description
+            - generic [ref=e133]:
+              - generic [ref=e134]:
+                - img [ref=e135]
+                - generic [ref=e137]: 3 Days
+              - generic [ref=e138]:
+                - img [ref=e139]
+                - generic [ref=e141]: From $15
+        - generic [ref=e142] [cursor=pointer]:
+          - generic [ref=e143]:
+            - img [ref=e145]
+            - generic [ref=e147]: Inactive
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - heading "Integration Test Tour" [level=3] [ref=e150]
+              - paragraph [ref=e151]: Test Description
+            - generic [ref=e152]:
+              - generic [ref=e153]:
+                - img [ref=e154]
+                - generic [ref=e156]: 3 Days
+              - generic [ref=e157]:
+                - img [ref=e158]
+                - generic [ref=e160]: From $15
+        - generic [ref=e161] [cursor=pointer]:
+          - generic [ref=e162]:
+            - img [ref=e164]
+            - generic [ref=e166]: Inactive
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - heading "Integration Test Tour" [level=3] [ref=e169]
+              - paragraph [ref=e170]: Test Description
+            - generic [ref=e171]:
+              - generic [ref=e172]:
+                - img [ref=e173]
+                - generic [ref=e175]: 3 Days
+              - generic [ref=e176]:
+                - img [ref=e177]
+                - generic [ref=e179]: From $15
+        - generic [ref=e180] [cursor=pointer]:
+          - generic [ref=e181]:
+            - img [ref=e183]
+            - generic [ref=e185]: Inactive
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - heading "Integration Test Tour" [level=3] [ref=e188]
+              - paragraph [ref=e189]: Test Description
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - img [ref=e192]
+                - generic [ref=e194]: 3 Days
+              - generic [ref=e195]:
+                - img [ref=e196]
+                - generic [ref=e198]: From $15
+        - generic [ref=e199] [cursor=pointer]:
+          - generic [ref=e200]:
+            - img [ref=e202]
+            - generic [ref=e204]: Inactive
+          - generic [ref=e205]:
+            - generic [ref=e206]:
+              - heading "Test Tour" [level=3] [ref=e207]
+              - paragraph [ref=e208]: A test tour
+            - generic [ref=e209]:
+              - generic [ref=e210]:
+                - img [ref=e211]
+                - generic [ref=e213]: 0 Days
+              - generic [ref=e214]:
+                - img [ref=e215]
+                - generic [ref=e217]: From $28
+        - generic [ref=e218] [cursor=pointer]:
+          - generic [ref=e219]:
+            - img [ref=e221]
+            - generic [ref=e223]: Inactive
+          - generic [ref=e224]:
+            - generic [ref=e225]:
+              - heading "Integration Test Tour" [level=3] [ref=e226]
+              - paragraph [ref=e227]: Test Description
+            - generic [ref=e228]:
+              - generic [ref=e229]:
+                - img [ref=e230]
+                - generic [ref=e232]: 3 Days
+              - generic [ref=e233]:
+                - img [ref=e234]
+                - generic [ref=e236]: From $15
+        - generic [ref=e237] [cursor=pointer]:
+          - generic [ref=e238]:
+            - img [ref=e240]
+            - generic [ref=e242]: Active
+          - generic [ref=e243]:
+            - generic [ref=e244]:
+              - heading "Tour A" [level=3] [ref=e245]
+              - paragraph [ref=e246]: No description available.
+            - generic [ref=e247]:
+              - generic [ref=e248]:
+                - img [ref=e249]
+                - generic [ref=e251]: 0 Days
+              - generic [ref=e252]:
+                - img [ref=e253]
+                - generic [ref=e255]: From $N/A
+        - generic [ref=e256] [cursor=pointer]:
+          - generic [ref=e257]:
+            - img [ref=e259]
+            - generic [ref=e261]: Inactive
+          - generic [ref=e262]:
+            - generic [ref=e263]:
+              - heading "Booking Test Tour" [level=3] [ref=e264]
+              - paragraph [ref=e265]: Test tour for bookings
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - img [ref=e268]
+                - generic [ref=e270]: 2 Days
+              - generic [ref=e271]:
+                - img [ref=e272]
+                - generic [ref=e274]: From $40
+        - generic [ref=e275] [cursor=pointer]:
+          - generic [ref=e276]:
+            - img [ref=e278]
+            - generic [ref=e280]: Inactive
+          - generic [ref=e281]:
+            - generic [ref=e282]:
+              - heading "Test Tour" [level=3] [ref=e283]
+              - paragraph [ref=e284]: A test tour
+            - generic [ref=e285]:
+              - generic [ref=e286]:
+                - img [ref=e287]
+                - generic [ref=e289]: 0 Days
+              - generic [ref=e290]:
+                - img [ref=e291]
+                - generic [ref=e293]: From $28
+        - generic [ref=e294] [cursor=pointer]:
+          - generic [ref=e295]:
+            - img [ref=e297]
+            - generic [ref=e299]: Inactive
+          - generic [ref=e300]:
+            - generic [ref=e301]:
+              - heading "Meticulous Test Tour" [level=3] [ref=e302]
+              - paragraph [ref=e303]: A test tour for full coverage
+            - generic [ref=e304]:
+              - generic [ref=e305]:
+                - img [ref=e306]
+                - generic [ref=e308]: 0 Days
+              - generic [ref=e309]:
+                - img [ref=e310]
+                - generic [ref=e312]: From $45
+        - generic [ref=e313] [cursor=pointer]:
+          - generic [ref=e314]:
+            - img [ref=e316]
+            - generic [ref=e318]: Inactive
+          - generic [ref=e319]:
+            - generic [ref=e320]:
+              - heading "Integration Test Tour" [level=3] [ref=e321]
+              - paragraph [ref=e322]: Test Description
+            - generic [ref=e323]:
+              - generic [ref=e324]:
+                - img [ref=e325]
+                - generic [ref=e327]: 3 Days
+              - generic [ref=e328]:
+                - img [ref=e329]
+                - generic [ref=e331]: From $15
+        - generic [ref=e332] [cursor=pointer]:
+          - generic [ref=e333]:
+            - img [ref=e335]
+            - generic [ref=e337]: Inactive
+          - generic [ref=e338]:
+            - generic [ref=e339]:
+              - heading "Test Tour" [level=3] [ref=e340]
+              - paragraph [ref=e341]: Desc
+            - generic [ref=e342]:
+              - generic [ref=e343]:
+                - img [ref=e344]
+                - generic [ref=e346]: 1 Days
+              - generic [ref=e347]:
+                - img [ref=e348]
+                - generic [ref=e350]: From $15
+        - generic [ref=e351] [cursor=pointer]:
+          - generic [ref=e352]:
+            - img [ref=e354]
+            - generic [ref=e356]: Inactive
+          - generic [ref=e357]:
+            - generic [ref=e358]:
+              - heading "Integration Test Tour" [level=3] [ref=e359]
+              - paragraph [ref=e360]: Test Description
+            - generic [ref=e361]:
+              - generic [ref=e362]:
+                - img [ref=e363]
+                - generic [ref=e365]: 3 Days
+              - generic [ref=e366]:
+                - img [ref=e367]
+                - generic [ref=e369]: From $15
+        - generic [ref=e370] [cursor=pointer]:
+          - generic [ref=e371]:
+            - img [ref=e373]
+            - generic [ref=e375]: Inactive
+          - generic [ref=e376]:
+            - generic [ref=e377]:
+              - heading "Integration Test Tour" [level=3] [ref=e378]
+              - paragraph [ref=e379]: Test Description
+            - generic [ref=e380]:
+              - generic [ref=e381]:
+                - img [ref=e382]
+                - generic [ref=e384]: 3 Days
+              - generic [ref=e385]:
+                - img [ref=e386]
+                - generic [ref=e388]: From $15
+        - generic [ref=e389] [cursor=pointer]:
+          - generic [ref=e390]:
+            - img [ref=e392]
+            - generic [ref=e394]: Inactive
+          - generic [ref=e395]:
+            - generic [ref=e396]:
+              - heading "Test Tour 2" [level=3] [ref=e397]
+              - paragraph [ref=e398]: Desc
+            - generic [ref=e399]:
+              - generic [ref=e400]:
+                - img [ref=e401]
+                - generic [ref=e403]: 1 Days
+              - generic [ref=e404]:
+                - img [ref=e405]
+                - generic [ref=e407]: From $45
+        - generic [ref=e408] [cursor=pointer]:
+          - generic [ref=e409]:
+            - img [ref=e411]
+            - generic [ref=e413]: Inactive
+          - generic [ref=e414]:
+            - generic [ref=e415]:
+              - heading "Integration Test Tour" [level=3] [ref=e416]
+              - paragraph [ref=e417]: Test Description
+            - generic [ref=e418]:
+              - generic [ref=e419]:
+                - img [ref=e420]
+                - generic [ref=e422]: 3 Days
+              - generic [ref=e423]:
+                - img [ref=e424]
+                - generic [ref=e426]: From $15
+        - generic [ref=e427] [cursor=pointer]:
+          - generic [ref=e428]:
+            - img [ref=e430]
+            - generic [ref=e432]: Inactive
+          - generic [ref=e433]:
+            - generic [ref=e434]:
+              - heading "Integration Test Tour" [level=3] [ref=e435]
+              - paragraph [ref=e436]: Test Description
+            - generic [ref=e437]:
+              - generic [ref=e438]:
+                - img [ref=e439]
+                - generic [ref=e441]: 3 Days
+              - generic [ref=e442]:
+                - img [ref=e443]
+                - generic [ref=e445]: From $15
+        - generic [ref=e446] [cursor=pointer]:
+          - generic [ref=e447]:
+            - img [ref=e449]
+            - generic [ref=e451]: Inactive
+          - generic [ref=e452]:
+            - generic [ref=e453]:
+              - heading "Test Tour" [level=3] [ref=e454]
+              - paragraph [ref=e455]: A test tour
+            - generic [ref=e456]:
+              - generic [ref=e457]:
+                - img [ref=e458]
+                - generic [ref=e460]: 0 Days
+              - generic [ref=e461]:
+                - img [ref=e462]
+                - generic [ref=e464]: From $28
+        - generic [ref=e465] [cursor=pointer]:
+          - generic [ref=e466]:
+            - img [ref=e468]
+            - generic [ref=e470]: Inactive
+          - generic [ref=e471]:
+            - generic [ref=e472]:
+              - heading "Integration Test Tour" [level=3] [ref=e473]
+              - paragraph [ref=e474]: Test Description
+            - generic [ref=e475]:
+              - generic [ref=e476]:
+                - img [ref=e477]
+                - generic [ref=e479]: 3 Days
+              - generic [ref=e480]:
+                - img [ref=e481]
+                - generic [ref=e483]: From $15
+        - generic [ref=e484] [cursor=pointer]:
+          - generic [ref=e485]:
+            - img [ref=e487]
+            - generic [ref=e489]: Active
+          - generic [ref=e490]:
+            - generic [ref=e491]:
+              - heading "Complex Tour" [level=3] [ref=e492]
+              - paragraph [ref=e493]: No description available.
+            - generic [ref=e494]:
+              - generic [ref=e495]:
+                - img [ref=e496]
+                - generic [ref=e498]: 0 Days
+              - generic [ref=e499]:
+                - img [ref=e500]
+                - generic [ref=e502]: From $60
+        - generic [ref=e503] [cursor=pointer]:
+          - generic [ref=e504]:
+            - img [ref=e506]
+            - generic [ref=e508]: Active
+          - generic [ref=e509]:
+            - generic [ref=e510]:
+              - heading "Test Tour" [level=3] [ref=e511]
+              - paragraph [ref=e512]: Desc
+            - generic [ref=e513]:
+              - generic [ref=e514]:
+                - img [ref=e515]
+                - generic [ref=e517]: 1 Days
+              - generic [ref=e518]:
+                - img [ref=e519]
+                - generic [ref=e521]: From $15
+        - generic [ref=e522] [cursor=pointer]:
+          - generic [ref=e523]:
+            - img [ref=e525]
+            - generic [ref=e527]: Inactive
+          - generic [ref=e528]:
+            - generic [ref=e529]:
+              - heading "Test Tour 2" [level=3] [ref=e530]
+              - paragraph [ref=e531]: Desc
+            - generic [ref=e532]:
+              - generic [ref=e533]:
+                - img [ref=e534]
+                - generic [ref=e536]: 1 Days
+              - generic [ref=e537]:
+                - img [ref=e538]
+                - generic [ref=e540]: From $45
+        - generic [ref=e541] [cursor=pointer]:
+          - generic [ref=e542]:
+            - img [ref=e544]
+            - generic [ref=e546]: Inactive
+          - generic [ref=e547]:
+            - generic [ref=e548]:
+              - heading "Test Tour" [level=3] [ref=e549]
+              - paragraph [ref=e550]: Desc
+            - generic [ref=e551]:
+              - generic [ref=e552]:
+                - img [ref=e553]
+                - generic [ref=e555]: 1 Days
+              - generic [ref=e556]:
+                - img [ref=e557]
+                - generic [ref=e559]: From $15
+        - generic [ref=e560] [cursor=pointer]:
+          - generic [ref=e561]:
+            - img [ref=e563]
+            - generic [ref=e565]: Inactive
+          - generic [ref=e566]:
+            - generic [ref=e567]:
+              - heading "Integration Test Tour" [level=3] [ref=e568]
+              - paragraph [ref=e569]: Test Description
+            - generic [ref=e570]:
+              - generic [ref=e571]:
+                - img [ref=e572]
+                - generic [ref=e574]: 3 Days
+              - generic [ref=e575]:
+                - img [ref=e576]
+                - generic [ref=e578]: From $15
+        - generic [ref=e579] [cursor=pointer]:
+          - generic [ref=e580]:
+            - img [ref=e582]
+            - generic [ref=e584]: Inactive
+          - generic [ref=e585]:
+            - generic [ref=e586]:
+              - heading "Integration Test Tour" [level=3] [ref=e587]
+              - paragraph [ref=e588]: Test Description
+            - generic [ref=e589]:
+              - generic [ref=e590]:
+                - img [ref=e591]
+                - generic [ref=e593]: 3 Days
+              - generic [ref=e594]:
+                - img [ref=e595]
+                - generic [ref=e597]: From $15
+        - generic [ref=e598] [cursor=pointer]:
+          - generic [ref=e599]:
+            - img [ref=e601]
+            - generic [ref=e603]: Inactive
+          - generic [ref=e604]:
+            - generic [ref=e605]:
+              - heading "Integration Test Tour" [level=3] [ref=e606]
+              - paragraph [ref=e607]: Test Description
+            - generic [ref=e608]:
+              - generic [ref=e609]:
+                - img [ref=e610]
+                - generic [ref=e612]: 3 Days
+              - generic [ref=e613]:
+                - img [ref=e614]
+                - generic [ref=e616]: From $15
+        - generic [ref=e617] [cursor=pointer]:
+          - generic [ref=e618]:
+            - img [ref=e620]
+            - generic [ref=e622]: Inactive
+          - generic [ref=e623]:
+            - generic [ref=e624]:
+              - heading "Booking Test Tour" [level=3] [ref=e625]
+              - paragraph [ref=e626]: Test tour for bookings
+            - generic [ref=e627]:
+              - generic [ref=e628]:
+                - img [ref=e629]
+                - generic [ref=e631]: 2 Days
+              - generic [ref=e632]:
+                - img [ref=e633]
+                - generic [ref=e635]: From $40
+        - generic [ref=e636] [cursor=pointer]:
+          - generic [ref=e637]:
+            - img [ref=e639]
+            - generic [ref=e641]: Inactive
+          - generic [ref=e642]:
+            - generic [ref=e643]:
+              - heading "Booking Test Tour" [level=3] [ref=e644]
+              - paragraph [ref=e645]: Test tour for bookings
+            - generic [ref=e646]:
+              - generic [ref=e647]:
+                - img [ref=e648]
+                - generic [ref=e650]: 2 Days
+              - generic [ref=e651]:
+                - img [ref=e652]
+                - generic [ref=e654]: From $40
+        - generic [ref=e655] [cursor=pointer]:
+          - generic [ref=e656]:
+            - img [ref=e658]
+            - generic [ref=e660]: Inactive
+          - generic [ref=e661]:
+            - generic [ref=e662]:
+              - heading "Test Tour" [level=3] [ref=e663]
+              - paragraph [ref=e664]: A test tour
+            - generic [ref=e665]:
+              - generic [ref=e666]:
+                - img [ref=e667]
+                - generic [ref=e669]: 0 Days
+              - generic [ref=e670]:
+                - img [ref=e671]
+                - generic [ref=e673]: From $28
+        - generic [ref=e674] [cursor=pointer]:
+          - generic [ref=e675]:
+            - img [ref=e677]
+            - generic [ref=e679]: Inactive
+          - generic [ref=e680]:
+            - generic [ref=e681]:
+              - heading "Integration Test Tour" [level=3] [ref=e682]
+              - paragraph [ref=e683]: Test Description
+            - generic [ref=e684]:
+              - generic [ref=e685]:
+                - img [ref=e686]
+                - generic [ref=e688]: 3 Days
+              - generic [ref=e689]:
+                - img [ref=e690]
+                - generic [ref=e692]: From $15
+        - generic [ref=e693] [cursor=pointer]:
+          - generic [ref=e694]:
+            - img [ref=e696]
+            - generic [ref=e698]: Active
+          - generic [ref=e699]:
+            - generic [ref=e700]:
+              - heading "Tour B" [level=3] [ref=e701]
+              - paragraph [ref=e702]: No description available.
+            - generic [ref=e703]:
+              - generic [ref=e704]:
+                - img [ref=e705]
+                - generic [ref=e707]: 0 Days
+              - generic [ref=e708]:
+                - img [ref=e709]
+                - generic [ref=e711]: From $N/A
+        - generic [ref=e712] [cursor=pointer]:
+          - generic [ref=e713]:
+            - img [ref=e715]
+            - generic [ref=e717]: Inactive
+          - generic [ref=e718]:
+            - generic [ref=e719]:
+              - heading "Integration Test Tour" [level=3] [ref=e720]
+              - paragraph [ref=e721]: Test Description
+            - generic [ref=e722]:
+              - generic [ref=e723]:
+                - img [ref=e724]
+                - generic [ref=e726]: 3 Days
+              - generic [ref=e727]:
+                - img [ref=e728]
+                - generic [ref=e730]: From $15
+        - generic [ref=e731] [cursor=pointer]:
+          - generic [ref=e732]:
+            - img [ref=e734]
+            - generic [ref=e736]: Inactive
+          - generic [ref=e737]:
+            - generic [ref=e738]:
+              - heading "Meticulous Test Tour" [level=3] [ref=e739]
+              - paragraph [ref=e740]: A test tour for full coverage
+            - generic [ref=e741]:
+              - generic [ref=e742]:
+                - img [ref=e743]
+                - generic [ref=e745]: 3 Days
+              - generic [ref=e746]:
+                - img [ref=e747]
+                - generic [ref=e749]: From $45
+        - generic [ref=e750] [cursor=pointer]:
+          - generic [ref=e751]:
+            - img [ref=e753]
+            - generic [ref=e755]: Inactive
+          - generic [ref=e756]:
+            - generic [ref=e757]:
+              - heading "Integration Test Tour" [level=3] [ref=e758]
+              - paragraph [ref=e759]: Test Description
+            - generic [ref=e760]:
+              - generic [ref=e761]:
+                - img [ref=e762]
+                - generic [ref=e764]: 3 Days
+              - generic [ref=e765]:
+                - img [ref=e766]
+                - generic [ref=e768]: From $15
+        - generic [ref=e769] [cursor=pointer]:
+          - generic [ref=e770]:
+            - img [ref=e772]
+            - generic [ref=e774]: Inactive
+          - generic [ref=e775]:
+            - generic [ref=e776]:
+              - heading "Integration Test Tour" [level=3] [ref=e777]
+              - paragraph [ref=e778]: Test Description
+            - generic [ref=e779]:
+              - generic [ref=e780]:
+                - img [ref=e781]
+                - generic [ref=e783]: 3 Days
+              - generic [ref=e784]:
+                - img [ref=e785]
+                - generic [ref=e787]: From $15
+        - generic [ref=e788] [cursor=pointer]:
+          - generic [ref=e789]:
+            - img [ref=e791]
+            - generic [ref=e793]: Inactive
+          - generic [ref=e794]:
+            - generic [ref=e795]:
+              - heading "Booking Test Tour" [level=3] [ref=e796]
+              - paragraph [ref=e797]: Test tour for bookings
+            - generic [ref=e798]:
+              - generic [ref=e799]:
+                - img [ref=e800]
+                - generic [ref=e802]: 2 Days
+              - generic [ref=e803]:
+                - img [ref=e804]
+                - generic [ref=e806]: From $40
+        - generic [ref=e807] [cursor=pointer]:
+          - generic [ref=e808]:
+            - img [ref=e810]
+            - generic [ref=e812]: Inactive
+          - generic [ref=e813]:
+            - generic [ref=e814]:
+              - heading "Integration Test Tour" [level=3] [ref=e815]
+              - paragraph [ref=e816]: Test Description
+            - generic [ref=e817]:
+              - generic [ref=e818]:
+                - img [ref=e819]
+                - generic [ref=e821]: 3 Days
+              - generic [ref=e822]:
+                - img [ref=e823]
+                - generic [ref=e825]: From $15
+        - generic [ref=e826] [cursor=pointer]:
+          - generic [ref=e827]:
+            - img [ref=e829]
+            - generic [ref=e831]: Inactive
+          - generic [ref=e832]:
+            - generic [ref=e833]:
+              - heading "Integration Test Tour" [level=3] [ref=e834]
+              - paragraph [ref=e835]: Test Description
+            - generic [ref=e836]:
+              - generic [ref=e837]:
+                - img [ref=e838]
+                - generic [ref=e840]: 3 Days
+              - generic [ref=e841]:
+                - img [ref=e842]
+                - generic [ref=e844]: From $15
+        - generic [ref=e845] [cursor=pointer]:
+          - generic [ref=e846]:
+            - img [ref=e848]
+            - generic [ref=e850]: Inactive
+          - generic [ref=e851]:
+            - generic [ref=e852]:
+              - heading "Integration Test Tour" [level=3] [ref=e853]
+              - paragraph [ref=e854]: Test Description
+            - generic [ref=e855]:
+              - generic [ref=e856]:
+                - img [ref=e857]
+                - generic [ref=e859]: 3 Days
+              - generic [ref=e860]:
+                - img [ref=e861]
+                - generic [ref=e863]: From $15
+```

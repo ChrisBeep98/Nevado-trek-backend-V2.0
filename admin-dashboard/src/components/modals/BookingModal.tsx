@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { X, User, Calendar, CreditCard, ArrowRightLeft, Tag } from 'lucide-react';
+import { X, User, Calendar, CreditCard, Tag, ArrowRightLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -68,13 +68,6 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         queryKey: ['departure', booking?.departureId],
         queryFn: async () => {
             if (!booking?.departureId) return null;
-            const { data } = await api.get(endpoints.admin.departures);
-            // Handle both single departure response and list response if needed, 
-            // but here we likely need to fetch specific departure or find it in list
-            // For safety, let's assume we might need to fetch specific if list doesn't have it,
-            // but the endpoint is /admin/departures (calendar). 
-            // Let's try to fetch specific departure if possible or find in list.
-            // Actually, api.ts has departure(id) endpoint.
             const res = await api.get(endpoints.admin.departure(booking.departureId));
             return res.data;
         },
@@ -138,7 +131,22 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         if (bookingId) {
             // Update existing booking details
             updateDetails.mutate({ id: bookingId, customer: data.customer });
-            if (booking?.pax !== data.pax) {
+
+            // Update PAX with capacity validation
+            if (booking?.pax !== data.pax && departure && booking) {
+                // Calculate available space
+                // If we are increasing pax, we need to check if there is space
+                // The current departure.currentPax includes our current booking.pax
+                // So available space is maxPax - (currentPax - ourPax)
+                const otherBookingsPax = departure.currentPax - booking.pax;
+                const availableSpace = departure.maxPax - otherBookingsPax;
+
+                if (data.pax > availableSpace) {
+                    // Show error - not enough capacity
+                    alert(`Cannot increase to ${data.pax} pax. Only ${availableSpace} space(s) available in this departure.`);
+                    return;
+                }
+
                 updatePax.mutate({ id: bookingId, pax: data.pax });
             }
             onClose();
@@ -202,9 +210,19 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                         <Dialog.Title className="text-xl font-bold text-white">
                             {bookingId ? 'Manage Booking' : 'New Booking'}
                         </Dialog.Title>
-                        <Dialog.Close className="text-white/60 hover:text-white transition-colors" data-testid="close-modal-button">
-                            <X size={24} />
-                        </Dialog.Close>
+                        <div className="flex items-center gap-3">
+                            {departure && (
+                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${departure.type === 'private'
+                                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                        : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                    }`} data-testid="booking-type-chip">
+                                    {departure.type === 'private' ? 'Private' : 'Public'}
+                                </div>
+                            )}
+                            <Dialog.Close className="text-white/60 hover:text-white transition-colors" data-testid="close-modal-button">
+                                <X size={24} />
+                            </Dialog.Close>
+                        </div>
                     </div>
 
                     {booking && departure && tour && (
@@ -367,7 +385,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                         <Tabs.Content value="status" className="outline-none space-y-6">
                                             <div className="glass-panel p-4 rounded-xl space-y-4">
                                                 <h3 className="text-white font-medium flex items-center gap-2">
-                                                    <CreditCard size={18} /> Payment Status
+                                                    <CreditCard size={18} /> Booking Status
                                                 </h3>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     {['pending', 'confirmed', 'paid', 'cancelled'].map((status) => (
@@ -384,55 +402,6 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                             {status.charAt(0).toUpperCase() + status.slice(1)}
                                                         </button>
                                                     ))}
-                                                </div>
-                                            </div>
-
-                                            <div className="glass-panel p-4 rounded-xl space-y-4">
-                                                <h3 className="text-white font-medium flex items-center gap-2">
-                                                    <ArrowRightLeft size={18} /> Convert Type
-                                                </h3>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    {departure?.type === 'private' ? (
-                                                        <div className="space-y-2">
-                                                            <p className="text-xs text-white/60">
-                                                                Current: Private Departure
-                                                            </p>
-                                                            <LiquidButton
-                                                                size="sm"
-                                                                onClick={() => convertType.mutate({ id: bookingId, targetType: 'public' })}
-                                                                isLoading={convertType.isPending}
-                                                                disabled={booking?.pax > 8}
-                                                                data-testid="convert-public-button"
-                                                            >
-                                                                Convert to Public
-                                                            </LiquidButton>
-                                                            {booking?.pax > 8 && (
-                                                                <p className="text-xs text-amber-400">
-                                                                    ⚠️ Cannot convert: {booking.pax} pax exceeds public limit (8)
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="space-y-2">
-                                                            <p className="text-xs text-white/60">
-                                                                Current: Public Departure
-                                                                {relatedBookings.length > 0 && ` (${relatedBookings.length + 1} bookings)`}
-                                                            </p>
-                                                            <LiquidButton
-                                                                size="sm"
-                                                                onClick={() => convertType.mutate({ id: bookingId, targetType: 'private' })}
-                                                                isLoading={convertType.isPending}
-                                                                data-testid="convert-private-button"
-                                                            >
-                                                                Convert to Private
-                                                            </LiquidButton>
-                                                            {relatedBookings.length > 0 && (
-                                                                <p className="text-xs text-blue-400">
-                                                                    ℹ️ Will split to new private departure
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         </Tabs.Content>

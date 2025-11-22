@@ -19,6 +19,20 @@ export default function Home() {
         setDateRange({ start: arg.start, end: arg.end });
     };
 
+    const handleNewDeparture = () => {
+        setSelectedDeparture({
+            departureId: '',
+            tourId: '',
+            date: new Date().toISOString(), // Will be converted to YYYY-MM-DD in modal
+            maxPax: 10,
+            currentPax: 0,
+            type: 'public',
+            status: 'open',
+            price: 0
+        } as Departure);
+        setIsModalOpen(true);
+    };
+
     const events = departures?.map((dep: Departure) => ({
         id: dep.departureId,
         title: `${Math.max(0, dep.currentPax)}/${dep.maxPax} Pax`,
@@ -38,7 +52,7 @@ export default function Home() {
                         <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-rose-500"></div> Public Full</span>
                         <span className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-violet-500"></div> Private</span>
                     </div>
-                    <LiquidButton onClick={() => setIsModalOpen(true)} data-testid="new-departure-button">
+                    <LiquidButton onClick={handleNewDeparture} data-testid="new-departure-button">
                         <Plus size={18} />
                         <span>New Departure</span>
                     </LiquidButton>
