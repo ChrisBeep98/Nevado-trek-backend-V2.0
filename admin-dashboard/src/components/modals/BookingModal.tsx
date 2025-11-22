@@ -64,23 +64,33 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
     });
 
     // Fetch departure info
-    const { data: departure } = useQuery({
+    const { data: departure, isLoading: isLoadingDeparture } = useQuery({
         queryKey: ['departure', booking?.departureId],
         queryFn: async () => {
             if (!booking?.departureId) return null;
-            const res = await api.get(endpoints.admin.departure(booking.departureId));
-            return res.data;
+            try {
+                const res = await api.get(endpoints.admin.departure(booking.departureId));
+                return res.data;
+            } catch (error) {
+                console.error("Failed to fetch departure", error);
+                return null;
+            }
         },
         enabled: !!booking?.departureId
     });
 
     // Fetch tour info
-    const { data: tour } = useQuery({
+    const { data: tour, isLoading: isLoadingTour } = useQuery({
         queryKey: ['tour', departure?.tourId],
         queryFn: async () => {
             if (!departure?.tourId) return null;
-            const { data } = await api.get(endpoints.admin.tour(departure.tourId));
-            return data.tour || data;
+            try {
+                const { data } = await api.get(endpoints.admin.tour(departure.tourId));
+                return data.tour || data;
+            } catch (error) {
+                console.error("Failed to fetch tour", error);
+                return null;
+            }
         },
         enabled: !!departure?.tourId
     });
@@ -200,6 +210,9 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     };
 
+    // FIX: Use explicit loading flags instead of derived logic
+    const isLoading = isLoadingBooking || isLoadingDeparture || isLoadingTour;
+
     return (
         <Dialog.Root open={isOpen} onOpenChange={onClose}>
             <Dialog.Portal>
@@ -211,89 +224,109 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                             {bookingId ? 'Manage Booking' : 'New Booking'}
                         </Dialog.Title>
                         <div className="flex items-center gap-3">
-                            {departure && (
+                            {isLoading ? (
+                                <div className="h-6 w-20 bg-white/10 rounded-full animate-pulse" />
+                            ) : departure ? (
                                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${departure.type === 'private'
-                                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                                        : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                    : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                                     }`} data-testid="booking-type-chip">
                                     {departure.type === 'private' ? 'Private' : 'Public'}
                                 </div>
-                            )}
+                            ) : bookingId ? (
+                                <div className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    No Departure
+                                </div>
+                            ) : null}
                             <Dialog.Close className="text-white/60 hover:text-white transition-colors" data-testid="close-modal-button">
                                 <X size={24} />
                             </Dialog.Close>
                         </div>
                     </div>
 
-                    {booking && departure && tour && (
+                    {/* Context Section */}
+                    {(bookingId || departureId) && (
                         <div className="p-4 bg-slate-800/50 border-b border-white/10 space-y-2">
-                            <div className="flex items-center justify-between">
-                                <div data-testid="booking-context-tour">
-                                    <p className="text-sm text-white/60">Tour</p>
-                                    <p className="text-white font-medium">{tour.name?.es || tour.name}</p>
-                                </div>
-                                <div data-testid="booking-context-date">
-                                    <p className="text-sm text-white/60">Date</p>
-                                    <p className="text-white font-medium">
-                                        {new Date(departure.date).toLocaleDateString()}
-                                    </p>
-                                </div>
-                                <div data-testid="booking-context-type">
-                                    <p className="text-sm text-white/60">Type</p>
-                                    <p className={`font-medium ${departure.type === 'private' ? 'text-purple-400' : 'text-blue-400'
-                                        }`}>
-                                        {departure.type === 'private' ? 'Private' : 'Public'}
-                                    </p>
-                                </div>
-                                {departure.type === 'public' && (
-                                    <div data-testid="booking-context-capacity">
-                                        <p className="text-sm text-white/60">Capacity</p>
-                                        <p className="text-white font-medium">
-                                            {departure.currentPax}/{departure.maxPax} pax
-                                        </p>
+                            {isLoading ? (
+                                <div className="space-y-2">
+                                    <div className="flex justify-between">
+                                        <div className="h-10 w-24 bg-white/5 rounded animate-pulse" />
+                                        <div className="h-10 w-24 bg-white/5 rounded animate-pulse" />
+                                        <div className="h-10 w-24 bg-white/5 rounded animate-pulse" />
                                     </div>
-                                )}
-                            </div>
-
-                            {/* Show other bookings if public */}
-                            {departure.type === 'public' && relatedBookings.length > 0 && (
-                                <div className="pt-2 border-t border-white/10">
-                                    <p className="text-xs text-white/60 mb-1">
-                                        Other bookings in this departure:
-                                    </p>
-                                    <div className="space-y-1">
-                                        {relatedBookings.map((b: Booking) => (
-                                            <div key={b.bookingId} className="text-xs text-white/80">
-                                                • {b.customer.name} ({b.pax} pax)
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex items-center justify-between">
+                                        <div data-testid="booking-context-tour">
+                                            <p className="text-sm text-white/60">Tour</p>
+                                            <p className="text-white font-medium">{tour?.name?.es || tour?.name || 'Unknown Tour'}</p>
+                                        </div>
+                                        <div data-testid="booking-context-date">
+                                            <p className="text-sm text-white/60">Date</p>
+                                            <p className="text-white font-medium">
+                                                {departure?.date ? new Date(departure.date).toLocaleDateString() : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div data-testid="booking-context-type">
+                                            <p className="text-sm text-white/60">Type</p>
+                                            <p className={`font-medium ${departure?.type === 'private' ? 'text-purple-400' : 'text-blue-400'}`}>
+                                                {departure?.type === 'private' ? 'Private' : (departure?.type === 'public' ? 'Public' : 'N/A')}
+                                            </p>
+                                        </div>
+                                        {departure?.type === 'public' && (
+                                            <div data-testid="booking-context-capacity">
+                                                <p className="text-sm text-white/60">Capacity</p>
+                                                <p className="text-white font-medium">
+                                                    {departure.currentPax}/{departure.maxPax} pax
+                                                </p>
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
-                                </div>
-                            )}
 
-                            {/* Price info */}
-                            <div className="pt-2 border-t border-white/10 flex gap-4 text-sm">
-                                <div>
-                                    <span className="text-white/60">Original:</span>
-                                    <span className="text-white ml-2">
-                                        ${booking.originalPrice.toLocaleString()} COP
-                                    </span>
-                                </div>
-                                <div>
-                                    <span className="text-white/60">Final:</span>
-                                    <span className="text-green-400 ml-2 font-medium">
-                                        ${booking.finalPrice.toLocaleString()} COP
-                                    </span>
-                                </div>
-                                {booking.discountReason && (
-                                    <div>
-                                        <span className="text-white/60">Discount:</span>
-                                        <span className="text-amber-400 ml-2">
-                                            ${(booking.originalPrice - booking.finalPrice).toLocaleString()}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
+                                    {/* Show other bookings if public */}
+                                    {departure?.type === 'public' && relatedBookings.length > 0 && (
+                                        <div className="pt-2 border-t border-white/10">
+                                            <p className="text-xs text-white/60 mb-1">
+                                                Other bookings in this departure:
+                                            </p>
+                                            <div className="space-y-1">
+                                                {relatedBookings.map((b: Booking) => (
+                                                    <div key={b.bookingId} className="text-xs text-white/80">
+                                                        • {b.customer.name} ({b.pax} pax)
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Price info */}
+                                    {booking && (
+                                        <div className="pt-2 border-t border-white/10 flex gap-4 text-sm">
+                                            <div>
+                                                <span className="text-white/60">Original:</span>
+                                                <span className="text-white ml-2">
+                                                    ${booking.originalPrice?.toLocaleString() || 0} COP
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span className="text-white/60">Final:</span>
+                                                <span className="text-green-400 ml-2 font-medium">
+                                                    ${booking.finalPrice?.toLocaleString() || 0} COP
+                                                </span>
+                                            </div>
+                                            {booking.discountReason && (
+                                                <div>
+                                                    <span className="text-white/60">Discount:</span>
+                                                    <span className="text-amber-400 ml-2">
+                                                        ${((booking.originalPrice || 0) - (booking.finalPrice || 0)).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     )}
 

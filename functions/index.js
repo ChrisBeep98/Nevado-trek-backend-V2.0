@@ -36,6 +36,7 @@ adminRouter.delete("/tours/:id", toursController.deleteTour);
 // Departures
 adminRouter.post("/departures", departuresController.createDeparture);
 adminRouter.get("/departures", departuresController.getDepartures); // Calendar view
+adminRouter.get("/departures/:id", departuresController.getDeparture); // Get single departure
 adminRouter.put("/departures/:id", departuresController.updateDeparture);
 adminRouter.post("/departures/:id/split", departuresController.splitDeparture);
 adminRouter.delete("/departures/:id", departuresController.deleteDeparture);

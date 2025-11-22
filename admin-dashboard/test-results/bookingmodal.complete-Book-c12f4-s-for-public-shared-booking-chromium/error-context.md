@@ -1,0 +1,376 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - generic: "N"
+          - navigation:
+            - link:
+              - /url: /
+              - img
+              - generic: Calendar
+            - link:
+              - /url: /bookings
+              - img
+              - generic: Bookings
+            - link:
+              - /url: /tours
+              - img
+              - generic: Tours
+            - link:
+              - /url: /stats
+              - img
+              - generic: Stats
+        - button:
+          - img
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Dashboard
+          - generic:
+            - generic:
+              - img
+              - textbox:
+                - /placeholder: Search...
+            - generic:
+              - img
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=2]: Calendar
+              - generic:
+                - generic:
+                  - generic: Public Open
+                  - generic: Public Full
+                  - generic: Private
+                - button:
+                  - img
+                  - generic: New Departure
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - button:
+                          - img: 
+                        - button:
+                          - img: 
+                      - button [disabled]: today
+                    - generic:
+                      - heading [level=2]: November 2025
+                    - generic:
+                      - generic:
+                        - button [pressed]: month
+                        - button: week
+                  - generic:
+                    - generic:
+                      - grid:
+                        - rowgroup:
+                          - generic:
+                            - generic:
+                              - row:
+                                - columnheader:
+                                  - generic:
+                                    - generic: Sun
+                                - columnheader:
+                                  - generic:
+                                    - generic: Mon
+                                - columnheader:
+                                  - generic:
+                                    - generic: Tue
+                                - columnheader:
+                                  - generic:
+                                    - generic: Wed
+                                - columnheader:
+                                  - generic:
+                                    - generic: Thu
+                                - columnheader:
+                                  - generic:
+                                    - generic: Fri
+                                - columnheader:
+                                  - generic:
+                                    - generic: Sat
+                        - rowgroup:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "26"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "27"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "28"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "29"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "30"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "31"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "1"
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "2"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "3"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "4"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "5"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "6"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "7"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "8"
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "9"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "10"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "11"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "12"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "13"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "14"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "15"
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "16"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "17"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "18"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "19"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "20"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "21"
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Private
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Private
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Public
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "22"
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "23"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "24"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "25"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "26"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "27"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "28"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "29"
+                                - row:
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "30"
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Private
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "1"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "2"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "3"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "4"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "5"
+                                  - gridcell:
+                                    - generic:
+                                      - generic:
+                                        - generic: "6"
+  - dialog:
+    - generic:
+      - generic:
+        - heading [level=2]:
+          - generic: Departure Details
+          - generic: PRIVATE
+        - paragraph: November 30th, 2025 • 0/10 Pax
+      - button:
+        - img
+    - generic:
+      - generic:
+        - tablist:
+          - tab: Overview
+          - tab [selected]: Bookings (0)
+          - tab: Tools
+      - generic:
+        - tabpanel:
+          - generic:
+            - button:
+              - img
+              - text: Split Departure
+            - button: + Add Booking
+          - generic:
+            - generic: No bookings yet
+  - dialog "New Booking" [active] [ref=e3]:
+    - generic [ref=e4]:
+      - heading "New Booking" [level=2] [ref=e5]
+      - button [ref=e7]:
+        - img [ref=e8]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - paragraph [ref=e14]: Tour
+        - paragraph [ref=e15]: Unknown Tour
+      - generic [ref=e16]:
+        - paragraph [ref=e17]: Date
+        - paragraph [ref=e18]: N/A
+      - generic [ref=e19]:
+        - paragraph [ref=e20]: Type
+        - paragraph [ref=e21]: N/A
+    - generic [ref=e22]:
+      - tablist [ref=e24]:
+        - tab "Details" [selected] [ref=e25]
+      - tabpanel "Details" [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - heading "Customer Info" [level=3] [ref=e30]:
+              - img [ref=e31]
+              - text: Customer Info
+            - generic [ref=e34]:
+              - textbox "Full Name" [ref=e36]: Test Public 1
+              - textbox "Email" [ref=e38]: tp1@test.com
+              - textbox "Phone (+57...)" [ref=e40]: "+123"
+              - textbox "Document ID" [ref=e42]: "123"
+              - textbox "Notes..." [ref=e44]
+          - generic [ref=e46]:
+            - generic [ref=e47]: Pax Count
+            - spinbutton [ref=e48]: "1"
+          - button "Create Booking" [ref=e50]
+```

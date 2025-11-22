@@ -78,6 +78,34 @@ exports.getDepartures = async (req, res) => {
 };
 
 /**
+ * Get Single Departure
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.getDeparture = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const doc = await db.collection(COLLECTIONS.DEPARTURES).doc(id).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Departure not found" });
+    }
+
+    const data = doc.data();
+    return res.status(200).json({
+      departureId: doc.id,
+      ...data,
+      // Convert Timestamp to ISO string for JSON
+      date: data.date.toDate().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error getting departure:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+/**
  * Update Departure
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
