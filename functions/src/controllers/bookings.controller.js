@@ -298,7 +298,7 @@ exports.updateBookingStatus = async (req, res) => {
 
       // Changing TO cancelled: free up space
       if (status === BOOKING_STATUS.CANCELLED && oldStatus !== BOOKING_STATUS.CANCELLED) {
-        newCurrentPax = depData.currentPax - bookingData.pax;
+        newCurrentPax = Math.max(0, depData.currentPax - bookingData.pax);
       }
 
       // Changing FROM cancelled: occupy space
@@ -407,7 +407,7 @@ exports.updateBookingPax = async (req, res) => {
       // 6. Update Departure capacity
       const newCurrentPax = depData.currentPax + diff;
       t.update(depRef, {
-        currentPax: newCurrentPax,
+        currentPax: Math.max(0, newCurrentPax),
         updatedAt: new Date(),
       });
     });
@@ -761,3 +761,25 @@ exports.getBookings = async (req, res) => {
   }
 };
 
+/**
+ * Get Single Booking
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @return {Promise<void>}
+ */
+exports.getBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = admin.firestore();
+    const doc = await db.collection(COLLECTIONS.BOOKINGS).doc(id).get();
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    res.json({ bookingId: doc.id, ...doc.data() });
+  } catch (error) {
+    console.error("Error getting booking:", error);
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -204,8 +204,9 @@ The codebase is 100% compatible with Firebase Emulators.
 ### Recent Deployment History
 
 **Latest Deployment**: November 21, 2025
-- ✅ All 18 endpoints deployed successfully
-- ✅ Fixed `GET /admin/bookings` endpoint (was returning 404)
+- ✅ All 19 admin endpoints deployed successfully
+- ✅ Added `GET /admin/bookings/:id` endpoint for fetching single booking details
+- ✅ Added `currentPax` safeguards to prevent negative capacity
 - ✅ Verified all integration tests passing (16/16)
 - ✅ Production URL: `https://api-wgfhwjbpva-uc.a.run.app`
 
@@ -224,12 +225,12 @@ firebase deploy --only functions
 
 ## 6. Current Status & Metrics
 
-### Endpoint Status (22/22 - 100%)
+### Endpoint Status (23/23 - 100%)
 
-**Admin Endpoints (18)**:
+**Admin Endpoints (19)**:
 - ✅ Tours: 5/5 (GET, POST, GET/:id, PUT/:id, DELETE/:id)
 - ✅ Departures: 5/5 (GET, POST, PUT/:id, DELETE/:id, POST/:id/split)
-- ✅ Bookings: 7/7 (GET, POST, PUT/:id/status, PUT/:id/pax, PUT/:id/details, POST/:id/discount, POST/:id/move, POST/:id/convert-type)
+- ✅ Bookings: 8/8 (GET, GET/:id, POST, PUT/:id/status, PUT/:id/pax, PUT/:id/details, POST/:id/discount, POST/:id/move, POST/:id/convert-type)
 - ✅ Stats: 1/1 (GET)
 
 **Public Endpoints (4)**:

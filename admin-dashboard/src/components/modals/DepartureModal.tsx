@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { X, Users, MapPin, Settings, Trash2, Calendar, Split } from 'lucide-react';
+import { X, Users, MapPin, Settings, Trash2, Calendar, Split, ArrowRightLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,6 +10,7 @@ import { firestoreTimestampToDate } from '../../utils/dates';
 import type { Departure } from '../../types';
 import { useBookings } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
+import { useTours } from '../../hooks/useTours';
 import { LiquidButton } from '../ui/LiquidButton';
 import { BookingModal } from './BookingModal';
 
@@ -21,7 +22,8 @@ interface DepartureModalProps {
 
 const editSchema = z.object({
     date: z.string().min(1),
-    maxPax: z.number().min(1)
+    maxPax: z.number().min(1),
+    tourId: z.string().min(1)
 });
 
 type EditFormValues = z.infer<typeof editSchema>;
@@ -29,6 +31,7 @@ type EditFormValues = z.infer<typeof editSchema>;
 export function DepartureModal({ isOpen, onClose, departure }: DepartureModalProps) {
     const { data: bookings, isLoading } = useBookings(departure?.departureId);
     const { updateDeparture, splitDeparture, deleteDeparture } = useDepartureMutations();
+    const { data: tours, isLoading: isLoadingTours } = useTours();
 
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState<string | undefined>();
@@ -42,8 +45,9 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
     useEffect(() => {
         if (departure) {
             reset({
-                date: departure.date.split('T')[0],
-                maxPax: departure.maxPax
+                date: departure.date ? new Date(firestoreTimestampToDate(departure.date)).toISOString().split('T')[0] : '',
+                maxPax: departure.maxPax,
+                tourId: departure.tourId
             });
         }
     }, [departure, reset]);
@@ -69,7 +73,8 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
             id: departure.departureId,
             data: {
                 date: new Date(data.date).toISOString(),
-                maxPax: data.maxPax
+                maxPax: data.maxPax,
+                tourId: data.tourId
             }
         }, {
             onSuccess: () => onClose()
@@ -99,6 +104,9 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
         }
     };
 
+    const tourName = tours?.find(t => t.tourId === departure.tourId)?.name.en || departure.tourId;
+    const currentPax = departure.currentPax < 0 ? 0 : departure.currentPax; // Fix negative capacity
+
     return (
         <>
             <Dialog.Root open={isOpen} onOpenChange={onClose}>
@@ -116,7 +124,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                     </span>
                                 </Dialog.Title>
                                 <Dialog.Description className="text-white/60 text-sm mt-1">
-                                    {format(firestoreTimestampToDate(departure.date), 'PPP')} • {departure.currentPax}/{departure.maxPax} Pax
+                                    {format(firestoreTimestampToDate(departure.date), 'PPP')} • {currentPax}/{departure.maxPax} Pax
                                 </Dialog.Description>
                             </div>
                             <Dialog.Close className="text-white/60 hover:text-white transition-colors">
@@ -125,7 +133,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                         </div>
 
                         {/* Tabs */}
-                        <Tabs.Root defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
+                        <Tabs.Root defaultValue="overview" className="flex-1 flex flex-col overflow-hidden min-h-0">
                             <div className="px-6 border-b border-white/10">
                                 <Tabs.List className="flex gap-6">
                                     <Tabs.Trigger value="overview" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
@@ -149,12 +157,12 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                 <span className="text-sm">Capacity</span>
                                             </div>
                                             <div className="text-2xl font-bold text-white">
-                                                {departure.currentPax} <span className="text-sm text-white/40">/ {departure.maxPax}</span>
+                                                {currentPax} <span className="text-sm text-white/40">/ {departure.maxPax}</span>
                                             </div>
                                             <div className="w-full bg-white/10 h-2 rounded-full mt-3 overflow-hidden">
                                                 <div
                                                     className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500"
-                                                    style={{ width: `${(departure.currentPax / departure.maxPax) * 100}%` }}
+                                                    style={{ width: `${(currentPax / departure.maxPax) * 100}%` }}
                                                 />
                                             </div>
                                         </div>
@@ -162,10 +170,10 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                         <div className="glass-panel p-4 rounded-xl">
                                             <div className="flex items-center gap-2 text-white/60 mb-2">
                                                 <MapPin size={16} />
-                                                <span className="text-sm">Tour ID</span>
+                                                <span className="text-sm">Tour</span>
                                             </div>
-                                            <div className="text-lg font-bold text-white truncate" title={departure.tourId}>
-                                                {departure.tourId}
+                                            <div className="text-lg font-bold text-white truncate" title={tourName}>
+                                                {tourName}
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +202,25 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                 />
                                             </div>
                                         </div>
-                                        <div className="flex justify-end">
+
+                                        <div className="space-y-2 pt-4 border-t border-white/10">
+                                            <label className="text-white/60 text-sm flex items-center gap-2">
+                                                <ArrowRightLeft size={14} /> Change Tour
+                                            </label>
+                                            <select {...register('tourId')} className="glass-input w-full [&>option]:bg-slate-900" disabled={isLoadingTours}>
+                                                {isLoadingTours ? (
+                                                    <option>Loading tours...</option>
+                                                ) : (
+                                                    tours?.map(tour => (
+                                                        <option key={tour.tourId} value={tour.tourId}>
+                                                            {tour.name.en}
+                                                        </option>
+                                                    ))
+                                                )}
+                                            </select>
+                                        </div>
+
+                                        <div className="flex justify-end pt-4">
                                             <LiquidButton type="submit" isLoading={updateDeparture.isPending} data-testid="save-departure-button">
                                                 Save Changes
                                             </LiquidButton>

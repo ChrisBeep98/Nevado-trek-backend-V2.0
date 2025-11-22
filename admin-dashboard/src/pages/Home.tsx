@@ -21,7 +21,7 @@ export default function Home() {
 
     const events = departures?.map((dep: Departure) => ({
         id: dep.departureId,
-        title: `${dep.currentPax}/${dep.maxPax} Pax`,
+        title: `${Math.max(0, dep.currentPax)}/${dep.maxPax} Pax`,
         start: dep.date,
         backgroundColor: dep.type === 'private' ? '#8b5cf6' : (dep.currentPax >= dep.maxPax ? '#f43f5e' : '#10b981'),
         borderColor: 'transparent',

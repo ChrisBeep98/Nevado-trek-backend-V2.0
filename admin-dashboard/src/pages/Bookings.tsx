@@ -47,12 +47,14 @@ export default function Bookings() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="glass-input pl-10 w-64"
+                            data-testid="search-bookings-input"
                         />
                     </div>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="glass-input"
+                        data-testid="status-filter-select"
                     >
                         <option value="">All Status</option>
                         <option value="pending">Pending</option>
@@ -60,7 +62,7 @@ export default function Bookings() {
                         <option value="paid">Paid</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-                    <LiquidButton onClick={handleNew}>
+                    <LiquidButton onClick={handleNew} data-testid="new-booking-button">
                         <Plus size={18} />
                         <span>New Booking</span>
                     </LiquidButton>
@@ -99,6 +101,7 @@ export default function Bookings() {
                                         key={booking.bookingId}
                                         className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
                                         onClick={() => handleEdit(booking.bookingId)}
+                                        data-testid={`booking-row-${booking.bookingId}`}
                                     >
                                         <td className="py-3 px-4">
                                             <div className="font-medium text-white">{booking.customer.name}</div>

@@ -196,18 +196,18 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                     <div className="grid grid-cols-3 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Type</label>
-                                            <select {...register('type')} className="glass-input w-full">
+                                            <select {...register('type')} className="glass-input w-full" data-testid="select-type">
                                                 <option value="multi-day">Multi-Day</option>
                                                 <option value="single-day">Single-Day</option>
                                             </select>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Total Days</label>
-                                            <input type="number" {...register('totalDays', { valueAsNumber: true })} className="glass-input w-full" />
+                                            <input type="number" {...register('totalDays', { valueAsNumber: true })} className="glass-input w-full" data-testid="input-total-days" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Difficulty</label>
-                                            <input {...register('difficulty')} className="glass-input w-full" />
+                                            <input {...register('difficulty')} className="glass-input w-full" data-testid="input-difficulty" />
                                         </div>
                                     </div>
 
@@ -231,8 +231,8 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                             <div key={field.id} className="grid grid-cols-5 gap-4">
                                                 <input type="number" {...register(`pricingTiers.${index}.minPax`, { valueAsNumber: true })} className="glass-input w-full" readOnly />
                                                 <input type="number" {...register(`pricingTiers.${index}.maxPax`, { valueAsNumber: true })} className="glass-input w-full" readOnly />
-                                                <input type="number" {...register(`pricingTiers.${index}.priceCOP`, { valueAsNumber: true })} className="glass-input w-full" placeholder="COP" />
-                                                <input type="number" {...register(`pricingTiers.${index}.priceUSD`, { valueAsNumber: true })} className="glass-input w-full" placeholder="USD" />
+                                                <input type="number" {...register(`pricingTiers.${index}.priceCOP`, { valueAsNumber: true })} className="glass-input w-full" placeholder="COP" data-testid={`input-tier-${index}-price-cop`} />
+                                                <input type="number" {...register(`pricingTiers.${index}.priceUSD`, { valueAsNumber: true })} className="glass-input w-full" placeholder="USD" data-testid={`input-tier-${index}-price-usd`} />
                                             </div>
                                         ))}
                                     </div>
