@@ -46,6 +46,12 @@ List all departures with optional date filtering.
 - **Query**: `?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
 - **Response**: `{ departures: Departure[] }`
 
+#### GET /admin/departures/:id
+**NEW** - Get a specific departure by ID.
+- **Response**: `{ departure: Departure }`
+- **Use Case**: Used by BookingModal to fetch departure data when displaying booking details
+- **Date Format**: Returns date as ISO string for JSON compatibility
+
 #### POST /admin/departures
 Create a new departure.
 - **Body**: 
@@ -239,12 +245,15 @@ Request a new private departure.
 
 ---
 
-## Recent Changes (November 21, 2025)
+## Recent Changes (November 21, 2025 - Evening Update)
 
 ### New Features
-- ✅ **GET /admin/bookings/:id**: Added endpoint to fetch single booking details
-- ✅ **PUT /admin/departures/:id/date**: Added endpoint to update departure date
-- ✅ **PUT /admin/departures/:id/tour**: Added endpoint to update departure tour (with price recalculation)
+- ✅ **GET /admin/departures/:id**: Added endpoint to fetch single departure details
+  - Returns departure with properly formatted date (ISO string)
+  - Used by frontend BookingModal for displaying departure type, date, tour info
+- ✅ **GET /admin/bookings/:id**: Already documented
+- ✅ **PUT /admin/departures/:id/date**: Already documented
+- ✅ **PUT /admin/departures/:id/tour**: Already documented
 
 ### Bug Fixes
 - ✅ **Negative Capacity Prevention**: Added `Math.max(0, ...)` safeguards in:
@@ -253,7 +262,7 @@ Request a new private departure.
   - Ensures `currentPax` never goes below 0
 
 ### Deployment
-- ✅ All 25 endpoints deployed to production
+- ✅ All 26 endpoints deployed to production (November 21, 2025 23:20 COT)
 - ✅ Backend URL: `https://api-wgfhwjbpva-uc.a.run.app`
 - ✅ Integration tests: 100% passing
 
@@ -264,10 +273,10 @@ Request a new private departure.
 | Category | Admin | Public | Total |
 |----------|-------|--------|-------|
 | Tours | 5 | 1 | 6 |
-| Departures | 7 | 1 | 8 |
+| Departures | 8 | 1 | 9 |
 | Bookings | 8 | 2 | 10 |
 | Stats | 1 | 0 | 1 |
-| **Total** | **21** | **4** | **25** |
+| **Total** | **22** | **4** | **26** |
 
 **Status**: ✅ All endpoints operational (100%)
 

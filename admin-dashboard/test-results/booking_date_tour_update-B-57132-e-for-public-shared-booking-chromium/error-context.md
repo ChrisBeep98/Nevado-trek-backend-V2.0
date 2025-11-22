@@ -1,7 +1,7 @@
 # Page snapshot
 
 ```yaml
-- generic [active]:
+- generic:
   - generic:
     - generic:
       - complementary:
@@ -231,6 +231,11 @@
                                           - generic:
                                             - generic:
                                               - generic: 0/10 Pax
+                                              - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
                                               - generic: Private
                                         - generic:
                                           - generic:
@@ -252,6 +257,16 @@
                                             - generic:
                                               - generic: 0/10 Pax
                                               - generic: Public
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 0/10 Pax
+                                              - generic: Private
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 2/8 Pax
+                                              - generic: Private
                                   - gridcell:
                                     - generic:
                                       - generic:
@@ -320,25 +335,62 @@
                                     - generic:
                                       - generic:
                                         - generic: "6"
-  - dialog "Departure Details PRIVATE" [ref=e2]:
-    - generic [ref=e3]:
-      - generic [ref=e4]:
-        - heading "Departure Details PRIVATE" [level=2] [ref=e5]:
-          - generic [ref=e6]: Departure Details
-          - generic [ref=e7]: PRIVATE
-        - paragraph [ref=e8]: November 30th, 2025 • 0/10 Pax
-      - button [ref=e9]:
-        - img [ref=e10]
-    - generic [ref=e13]:
-      - tablist [ref=e15]:
-        - tab "Overview" [ref=e16]
-        - tab "Bookings (0)" [selected] [ref=e17]
-        - tab "Tools" [ref=e18]
-      - tabpanel "Bookings (0)" [ref=e20]:
-        - generic [ref=e21]:
-          - button "Split Departure" [ref=e22]:
-            - img [ref=e23]
-            - text: Split Departure
-          - button "+ Add Booking" [ref=e28]
-        - generic [ref=e30]: No bookings yet
+  - dialog:
+    - generic:
+      - generic:
+        - heading [level=2]:
+          - generic: Departure Details
+          - generic: PRIVATE
+        - paragraph: November 30th, 2025 • 0/10 Pax
+      - button:
+        - img
+    - generic:
+      - generic:
+        - tablist:
+          - tab: Overview
+          - tab [selected]: Bookings (0)
+          - tab: Tools
+      - generic:
+        - tabpanel:
+          - generic:
+            - button:
+              - img
+              - text: Split Departure
+            - button: + Add Booking
+          - generic:
+            - generic: No bookings yet
+  - dialog "New Booking" [active] [ref=e3]:
+    - generic [ref=e4]:
+      - heading "New Booking" [level=2] [ref=e5]
+      - button [ref=e7]:
+        - img [ref=e8]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - paragraph [ref=e14]: Tour
+        - paragraph [ref=e15]: Unknown Tour
+      - generic [ref=e16]:
+        - paragraph [ref=e17]: Date
+        - paragraph [ref=e18]: N/A
+      - generic [ref=e19]:
+        - paragraph [ref=e20]: Type
+        - paragraph [ref=e21]: N/A
+    - generic [ref=e22]:
+      - tablist [ref=e24]:
+        - tab "Details" [selected] [ref=e25]
+      - tabpanel "Details" [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - heading "Customer Info" [level=3] [ref=e30]:
+              - img [ref=e31]
+              - text: Customer Info
+            - generic [ref=e34]:
+              - textbox "Full Name" [ref=e36]: Public Test 1
+              - textbox "Email" [ref=e38]: pub1@test.com
+              - textbox "Phone (+57...)" [ref=e40]: "+123"
+              - textbox "Document ID" [ref=e42]: "123"
+              - textbox "Notes..." [ref=e44]
+          - generic [ref=e46]:
+            - generic [ref=e47]: Pax Count
+            - spinbutton [ref=e48]: "1"
+          - button "Create Booking" [ref=e50]
 ```

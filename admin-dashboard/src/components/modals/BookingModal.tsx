@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api, endpoints } from '../../lib/api';
 import { LiquidButton } from '../ui/LiquidButton';
 import { useBookingMutations } from '../../hooks/useBookings';
+import { useDepartureMutations } from '../../hooks/useDepartures';
 import type { Booking } from '../../types';
 
 // Schemas
@@ -35,15 +36,16 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ isOpen, onClose, bookingId, departureId }: BookingModalProps) {
-    const { createBooking, updateDetails, updatePax, updateStatus, applyDiscount, moveBooking, convertType } = useBookingMutations();
+    const { createBooking, updateDetails, updatePax, updateStatus, applyDiscount, convertType } = useBookingMutations();
+    const { updateDate, updateTour } = useDepartureMutations();
 
     // State for actions
     const [discountAmount, setDiscountAmount] = useState<number>(0);
     const [newFinalPrice, setNewFinalPrice] = useState<number>(0);
     const [priceMode, setPriceMode] = useState<'discount' | 'direct'>('discount');
     const [discountReason, setDiscountReason] = useState('');
-    const [moveTourId, setMoveTourId] = useState('');
-    const [moveDate, setMoveDate] = useState('');
+    const [newTourId, setNewTourId] = useState('');
+    const [newDate, setNewDate] = useState('');
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<BookingFormValues>({
         resolver: zodResolver(bookingSchema),
@@ -202,11 +204,31 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     };
 
-    const handleMoveBooking = () => {
-        if (bookingId && moveTourId && moveDate) {
-            moveBooking.mutate({ id: bookingId, newTourId: moveTourId, newDate: new Date(moveDate).toISOString() }, {
-                onSuccess: onClose
-            });
+    const handleUpdateDate = () => {
+        if (booking?.departureId && newDate) {
+            updateDate.mutate(
+                { id: booking.departureId, newDate: new Date(newDate).toISOString() },
+                {
+                    onSuccess: () => {
+                        setNewDate('');
+                        // Refresh booking data
+                    }
+                }
+            );
+        }
+    };
+
+    const handleUpdateTour = () => {
+        if (booking?.departureId && newTourId) {
+            updateTour.mutate(
+                { id: booking.departureId, newTourId },
+                {
+                    onSuccess: () => {
+                        setNewTourId('');
+                        // Refresh booking data
+                    }
+                }
+            );
         }
     };
 
@@ -531,36 +553,54 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                         <Calendar size={18} /> Change Date/Tour
                                                     </h3>
                                                     <p className="text-xs text-white/40">
-                                                        This is a private booking. You can change the date and tour.
+                                                        This is a private booking. You can change the date and tour independently.
                                                     </p>
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <input
-                                                            type="date"
-                                                            className="glass-input w-full"
-                                                            value={moveDate}
-                                                            onChange={e => setMoveDate(e.target.value)}
-                                                            data-testid="input-move-date"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            placeholder="New Tour ID"
-                                                            className="glass-input w-full"
-                                                            value={moveTourId}
-                                                            onChange={e => setMoveTourId(e.target.value)}
-                                                            data-testid="input-move-tour-id"
-                                                        />
+
+                                                    {/* Update Date */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm text-white/60">Update Date</label>
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="date"
+                                                                className="glass-input flex-1"
+                                                                value={newDate}
+                                                                onChange={e => setNewDate(e.target.value)}
+                                                                data-testid="input-update-date"
+                                                            />
+                                                            <LiquidButton
+                                                                size="sm"
+                                                                onClick={handleUpdateDate}
+                                                                isLoading={updateDate.isPending}
+                                                                disabled={!newDate}
+                                                                data-testid="button-update-date"
+                                                            >
+                                                                Update Date
+                                                            </LiquidButton>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex justify-end">
-                                                        <LiquidButton
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={handleMoveBooking}
-                                                            isLoading={moveBooking.isPending}
-                                                            disabled={!moveDate && !moveTourId}
-                                                            data-testid="move-booking-button"
-                                                        >
-                                                            Update
-                                                        </LiquidButton>
+
+                                                    {/* Update Tour */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm text-white/60">Update Tour</label>
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="New Tour ID"
+                                                                className="glass-input flex-1"
+                                                                value={newTourId}
+                                                                onChange={e => setNewTourId(e.target.value)}
+                                                                data-testid="input-update-tour"
+                                                            />
+                                                            <LiquidButton
+                                                                size="sm"
+                                                                onClick={handleUpdateTour}
+                                                                isLoading={updateTour.isPending}
+                                                                disabled={!newTourId}
+                                                                data-testid="button-update-tour"
+                                                            >
+                                                                Update Tour
+                                                            </LiquidButton>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             ) : (
