@@ -1,0 +1,378 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - generic: "N"
+          - navigation:
+            - link:
+              - /url: /
+              - img
+              - generic: Calendar
+            - link:
+              - /url: /bookings
+              - img
+              - generic: Bookings
+            - link:
+              - /url: /tours
+              - img
+              - generic: Tours
+            - link:
+              - /url: /stats
+              - img
+              - generic: Stats
+        - button:
+          - img
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Dashboard
+          - generic:
+            - generic:
+              - img
+              - textbox:
+                - /placeholder: Search...
+            - generic:
+              - img
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=2]: Bookings
+              - generic:
+                - generic:
+                  - img
+                  - textbox:
+                    - /placeholder: Search bookings...
+                - combobox
+                - button:
+                  - img
+                  - generic: New Booking
+            - generic:
+              - generic:
+                - table:
+                  - rowgroup:
+                    - row:
+                      - cell: Customer
+                      - cell: Pax
+                      - cell: Total
+                      - cell: Status
+                      - cell: Created
+                      - cell
+                  - rowgroup:
+                    - row:
+                      - cell:
+                        - generic: Updated Name E2E
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $716,000
+                      - cell: CANCELLED
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Doe
+                        - generic: jane.doe@test.com
+                      - cell: "3"
+                      - cell: $448,000
+                      - cell: PENDING
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john@example.com
+                      - cell: "3"
+                      - cell: $170,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 21, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john@example.com
+                      - cell: "3"
+                      - cell: $170,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john@example.com
+                      - cell: "3"
+                      - cell: $170,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Smith
+                        - generic: jane@example.com
+                      - cell: "4"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Private
+                        - generic: jane.private@example.com
+                      - cell: "4"
+                      - cell: $600,000
+                      - cell: PENDING
+                      - cell: Nov 19, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john@example.com
+                      - cell: "3"
+                      - cell: $170,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Doe
+                        - generic: jane.doe@test.com
+                      - cell: "3"
+                      - cell: $430,000
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john@example.com
+                      - cell: "3"
+                      - cell: $170,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Smith
+                        - generic: jane@example.com
+                      - cell: "4"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Private
+                        - generic: jane.private@example.com
+                      - cell: "4"
+                      - cell: $600,000
+                      - cell: PENDING
+                      - cell: Nov 19, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Public Updated
+                        - generic: john.updated@example.com
+                      - cell: "3"
+                      - cell: $460,000
+                      - cell: CONFIRMED
+                      - cell: Nov 19, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Public Updated
+                        - generic: john.updated@example.com
+                      - cell: "3"
+                      - cell: $460,000
+                      - cell: CONFIRMED
+                      - cell: Nov 19, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: John Doe
+                        - generic: john.doe@test.com
+                      - cell: "2"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 21, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Smith
+                        - generic: jane@example.com
+                      - cell: "4"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Doe
+                        - generic: jane.doe@test.com
+                      - cell: "3"
+                      - cell: $430,000
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Updated Name
+                        - generic: test@example.com
+                      - cell: "3"
+                      - cell: $239,990
+                      - cell: CONFIRMED
+                      - cell: Nov 20, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Smith
+                        - generic: jane@example.com
+                      - cell: "4"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+                    - row:
+                      - cell:
+                        - generic: Jane Smith
+                        - generic: jane@example.com
+                      - cell: "4"
+                      - cell: $360,000
+                      - cell: PENDING
+                      - cell: Nov 18, 2025
+                      - cell:
+                        - button: Edit
+  - dialog "Manage Booking" [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Manage Booking" [level=2] [ref=e4]
+      - button [ref=e5]:
+        - img [ref=e6]
+    - generic [ref=e9]:
+      - tablist [ref=e11]:
+        - tab "Details" [ref=e12]
+        - tab "Status & Type" [ref=e13]
+        - tab "Actions" [active] [selected] [ref=e14]
+      - tabpanel "Actions" [ref=e16]:
+        - generic [ref=e17]:
+          - heading "Update Price" [level=3] [ref=e18]:
+            - img [ref=e19]
+            - text: Update Price
+          - generic [ref=e22]:
+            - button "Apply Discount" [ref=e23]
+            - button "Set Final Price" [ref=e24]
+          - generic [ref=e25]:
+            - spinbutton [ref=e26]
+            - textbox "Reason" [ref=e27]
+          - button "Apply Discount" [disabled] [ref=e29]
+        - generic [ref=e30]:
+          - heading "Change Date/Tour - Blocked" [level=3] [ref=e31]:
+            - img [ref=e32]
+            - text: Change Date/Tour - Blocked
+          - paragraph [ref=e34]: ⚠️ This booking is in a public departure with 0 other booking(s).
+          - paragraph [ref=e35]: To change the date or tour for this booking only, convert it to private first.
+          - generic [ref=e36]:
+            - button "Convert to Private" [ref=e37]
+            - paragraph [ref=e38]: Then you can change date/tour
+          - paragraph [ref=e40]: 💡 Or change date/tour in the Departure modal to update all bookings
+```

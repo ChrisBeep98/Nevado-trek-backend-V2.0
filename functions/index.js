@@ -39,6 +39,8 @@ adminRouter.get("/departures", departuresController.getDepartures); // Calendar 
 adminRouter.put("/departures/:id", departuresController.updateDeparture);
 adminRouter.post("/departures/:id/split", departuresController.splitDeparture);
 adminRouter.delete("/departures/:id", departuresController.deleteDeparture);
+adminRouter.put("/departures/:id/date", departuresController.updateDepartureDate);
+adminRouter.put("/departures/:id/tour", departuresController.updateDepartureTour);
 
 // Bookings
 adminRouter.get("/bookings", bookingsController.getBookings);

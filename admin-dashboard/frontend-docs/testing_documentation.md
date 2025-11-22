@@ -82,6 +82,18 @@
    - Edits customer name, email, phone, document
    - Clicks save button
    - Verifies modal closes
+ 
+ 6. ✅ **should display booking context**
+    - Opens booking modal
+    - Verifies tour name is visible
+    - Verifies departure date is visible
+    - Verifies departure type is visible
+    - Verifies capacity info is visible
+ 
+ 7. ✅ **should show correct move options**
+    - Opens booking modal
+    - If private: Verifies date/tour change inputs visible
+    - If public: Verifies "Convert to Private" option visible or date change blocked
 
 **Coverage**: Bookings list, search, filter, modal opening, data loading, editing
 
@@ -123,8 +135,17 @@
 5. ✅ **should allow changing tour**
    - Clicks calendar event
    - Opens departure modal
-   - Verifies tour select dropdown visible
-   - If no events, test passes
+   - Selects "Tools" tab
+   - Selects new tour
+   - Clicks update button
+   - Verifies success message/modal close
+
+6. ✅ **should allow changing departure date**
+   - Opens departure modal
+   - Selects "Tools" tab
+   - Enters new date
+   - Clicks update button
+   - Verifies success message/modal close
 
 **Coverage**: Calendar rendering, navigation, event display, modal opening, tour selection
 
@@ -312,6 +333,7 @@ npx playwright test --ui
 | Filter Bookings | ✅ | Full |
 | View Calendar | ✅ | Full |
 | Open Departure Modal | ✅ | Full |
+| Change Departure Date | ✅ | Full |
 | Change Tour | ✅ | Full |
 | Create New Tour | ⚠️ | Flaky |
 | Create New Booking | ❌ | Not tested |

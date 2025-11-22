@@ -39,6 +39,8 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
     // State for actions
     const [discountAmount, setDiscountAmount] = useState<number>(0);
+    const [newFinalPrice, setNewFinalPrice] = useState<number>(0);
+    const [priceMode, setPriceMode] = useState<'discount' | 'direct'>('discount');
     const [discountReason, setDiscountReason] = useState('');
     const [moveTourId, setMoveTourId] = useState('');
     const [moveDate, setMoveDate] = useState('');
@@ -60,6 +62,53 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         },
         enabled: !!bookingId
     });
+
+    // Fetch departure info
+    const { data: departure } = useQuery({
+        queryKey: ['departure', booking?.departureId],
+        queryFn: async () => {
+            if (!booking?.departureId) return null;
+            const { data } = await api.get(endpoints.admin.departures);
+            // Handle both single departure response and list response if needed, 
+            // but here we likely need to fetch specific departure or find it in list
+            // For safety, let's assume we might need to fetch specific if list doesn't have it,
+            // but the endpoint is /admin/departures (calendar). 
+            // Let's try to fetch specific departure if possible or find in list.
+            // Actually, api.ts has departure(id) endpoint.
+            const res = await api.get(endpoints.admin.departure(booking.departureId));
+            return res.data;
+        },
+        enabled: !!booking?.departureId
+    });
+
+    // Fetch tour info
+    const { data: tour } = useQuery({
+        queryKey: ['tour', departure?.tourId],
+        queryFn: async () => {
+            if (!departure?.tourId) return null;
+            const { data } = await api.get(endpoints.admin.tour(departure.tourId));
+            return data.tour || data;
+        },
+        enabled: !!departure?.tourId
+    });
+
+    // Fetch related bookings (only for public departures)
+    const { data: relatedBookings = [] } = useQuery({
+        queryKey: ['bookings', 'departure', booking?.departureId],
+        queryFn: async () => {
+            if (!booking?.departureId) return [];
+            const { data } = await api.get(endpoints.admin.bookings, {
+                params: { departureId: booking.departureId }
+            });
+            const bookings = data.bookings || data;
+            return bookings.filter((b: Booking) => b.bookingId !== bookingId);
+        },
+        enabled: !!booking?.departureId && departure?.type === 'public'
+    });
+
+    // Check if this is a private booking (only booking in departure)
+    const isPrivateBooking = departure?.type === 'private' ||
+        (departure?.currentPax === booking?.pax);
 
     useEffect(() => {
         if (booking) {
@@ -113,10 +162,24 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     };
 
-    const handleApplyDiscount = () => {
-        if (bookingId && discountAmount > 0 && discountReason) {
-            applyDiscount.mutate({ id: bookingId, amount: discountAmount, reason: discountReason });
+    const handleApplyPrice = () => {
+        if (!bookingId) return;
+
+        if (priceMode === 'discount' && discountAmount > 0 && discountReason) {
+            applyDiscount.mutate({
+                id: bookingId,
+                discountAmount,
+                reason: discountReason
+            });
             setDiscountAmount(0);
+            setDiscountReason('');
+        } else if (priceMode === 'direct' && newFinalPrice >= 0 && discountReason) {
+            applyDiscount.mutate({
+                id: bookingId,
+                newFinalPrice,
+                reason: discountReason
+            });
+            setNewFinalPrice(0);
             setDiscountReason('');
         }
     };
@@ -143,6 +206,78 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                             <X size={24} />
                         </Dialog.Close>
                     </div>
+
+                    {booking && departure && tour && (
+                        <div className="p-4 bg-slate-800/50 border-b border-white/10 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div data-testid="booking-context-tour">
+                                    <p className="text-sm text-white/60">Tour</p>
+                                    <p className="text-white font-medium">{tour.name?.es || tour.name}</p>
+                                </div>
+                                <div data-testid="booking-context-date">
+                                    <p className="text-sm text-white/60">Date</p>
+                                    <p className="text-white font-medium">
+                                        {new Date(departure.date).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <div data-testid="booking-context-type">
+                                    <p className="text-sm text-white/60">Type</p>
+                                    <p className={`font-medium ${departure.type === 'private' ? 'text-purple-400' : 'text-blue-400'
+                                        }`}>
+                                        {departure.type === 'private' ? 'Private' : 'Public'}
+                                    </p>
+                                </div>
+                                {departure.type === 'public' && (
+                                    <div data-testid="booking-context-capacity">
+                                        <p className="text-sm text-white/60">Capacity</p>
+                                        <p className="text-white font-medium">
+                                            {departure.currentPax}/{departure.maxPax} pax
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Show other bookings if public */}
+                            {departure.type === 'public' && relatedBookings.length > 0 && (
+                                <div className="pt-2 border-t border-white/10">
+                                    <p className="text-xs text-white/60 mb-1">
+                                        Other bookings in this departure:
+                                    </p>
+                                    <div className="space-y-1">
+                                        {relatedBookings.map((b: Booking) => (
+                                            <div key={b.bookingId} className="text-xs text-white/80">
+                                                • {b.customer.name} ({b.pax} pax)
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Price info */}
+                            <div className="pt-2 border-t border-white/10 flex gap-4 text-sm">
+                                <div>
+                                    <span className="text-white/60">Original:</span>
+                                    <span className="text-white ml-2">
+                                        ${booking.originalPrice.toLocaleString()} COP
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="text-white/60">Final:</span>
+                                    <span className="text-green-400 ml-2 font-medium">
+                                        ${booking.finalPrice.toLocaleString()} COP
+                                    </span>
+                                </div>
+                                {booking.discountReason && (
+                                    <div>
+                                        <span className="text-white/60">Discount:</span>
+                                        <span className="text-amber-400 ml-2">
+                                            ${(booking.originalPrice - booking.finalPrice).toLocaleString()}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {isLoadingBooking ? (
                         <div className="flex-1 flex items-center justify-center">
@@ -254,102 +389,209 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
                                             <div className="glass-panel p-4 rounded-xl space-y-4">
                                                 <h3 className="text-white font-medium flex items-center gap-2">
-                                                    <ArrowRightLeft size={18} /> Booking Type
+                                                    <ArrowRightLeft size={18} /> Convert Type
                                                 </h3>
-                                                <div className="flex gap-4">
-                                                    <LiquidButton
-                                                        variant="ghost"
-                                                        className="flex-1"
-                                                        onClick={() => convertType.mutate({ id: bookingId, targetType: 'public' })}
-                                                        data-testid="convert-public-button"
-                                                    >
-                                                        Convert to Public
-                                                    </LiquidButton>
-                                                    <LiquidButton
-                                                        variant="ghost"
-                                                        className="flex-1"
-                                                        onClick={() => convertType.mutate({ id: bookingId, targetType: 'private' })}
-                                                        data-testid="convert-private-button"
-                                                    >
-                                                        Convert to Private
-                                                    </LiquidButton>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    {departure?.type === 'private' ? (
+                                                        <div className="space-y-2">
+                                                            <p className="text-xs text-white/60">
+                                                                Current: Private Departure
+                                                            </p>
+                                                            <LiquidButton
+                                                                size="sm"
+                                                                onClick={() => convertType.mutate({ id: bookingId, targetType: 'public' })}
+                                                                isLoading={convertType.isPending}
+                                                                disabled={booking?.pax > 8}
+                                                                data-testid="convert-public-button"
+                                                            >
+                                                                Convert to Public
+                                                            </LiquidButton>
+                                                            {booking?.pax > 8 && (
+                                                                <p className="text-xs text-amber-400">
+                                                                    ⚠️ Cannot convert: {booking.pax} pax exceeds public limit (8)
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-2">
+                                                            <p className="text-xs text-white/60">
+                                                                Current: Public Departure
+                                                                {relatedBookings.length > 0 && ` (${relatedBookings.length + 1} bookings)`}
+                                                            </p>
+                                                            <LiquidButton
+                                                                size="sm"
+                                                                onClick={() => convertType.mutate({ id: bookingId, targetType: 'private' })}
+                                                                isLoading={convertType.isPending}
+                                                                data-testid="convert-private-button"
+                                                            >
+                                                                Convert to Private
+                                                            </LiquidButton>
+                                                            {relatedBookings.length > 0 && (
+                                                                <p className="text-xs text-blue-400">
+                                                                    ℹ️ Will split to new private departure
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </Tabs.Content>
 
                                         <Tabs.Content value="actions" className="outline-none space-y-6">
-                                            {/* Discount */}
+                                            {/* Price Update */}
                                             <div className="glass-panel p-4 rounded-xl space-y-4">
                                                 <h3 className="text-white font-medium flex items-center gap-2">
-                                                    <Tag size={18} /> Apply Discount
+                                                    <Tag size={18} /> Update Price
                                                 </h3>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <input
-                                                        type="number"
-                                                        placeholder="Amount (COP)"
-                                                        className="glass-input w-full"
-                                                        value={discountAmount || ''}
-                                                        onChange={e => setDiscountAmount(Number(e.target.value))}
-                                                        data-testid="input-discount-amount"
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Reason"
-                                                        className="glass-input w-full"
-                                                        value={discountReason}
-                                                        onChange={e => setDiscountReason(e.target.value)}
-                                                        data-testid="input-discount-reason"
-                                                    />
+
+                                                {/* Toggle between discount and direct price */}
+                                                <div className="flex gap-2 p-1 bg-slate-800 rounded-lg">
+                                                    <button
+                                                        onClick={() => setPriceMode('discount')}
+                                                        className={`flex-1 py-2 px-4 rounded transition-all ${priceMode === 'discount'
+                                                            ? 'bg-indigo-500 text-white'
+                                                            : 'text-white/60 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        Apply Discount
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPriceMode('direct')}
+                                                        className={`flex-1 py-2 px-4 rounded transition-all ${priceMode === 'direct'
+                                                            ? 'bg-indigo-500 text-white'
+                                                            : 'text-white/60 hover:text-white'
+                                                            }`}
+                                                    >
+                                                        Set Final Price
+                                                    </button>
                                                 </div>
+
+                                                {priceMode === 'discount' ? (
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <input
+                                                            type="number"
+                                                            placeholder="Discount Amount (COP)"
+                                                            className="glass-input w-full"
+                                                            value={discountAmount || ''}
+                                                            onChange={e => setDiscountAmount(Number(e.target.value))}
+                                                            data-testid="input-discount-amount"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Reason"
+                                                            className="glass-input w-full"
+                                                            value={discountReason}
+                                                            onChange={e => setDiscountReason(e.target.value)}
+                                                            data-testid="input-discount-reason"
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <input
+                                                            type="number"
+                                                            placeholder="New Final Price (COP)"
+                                                            className="glass-input w-full"
+                                                            value={newFinalPrice || ''}
+                                                            onChange={e => setNewFinalPrice(Number(e.target.value))}
+                                                            data-testid="input-new-price"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Reason"
+                                                            className="glass-input w-full"
+                                                            value={discountReason}
+                                                            onChange={e => setDiscountReason(e.target.value)}
+                                                            data-testid="input-price-reason"
+                                                        />
+                                                    </div>
+                                                )}
+
                                                 <div className="flex justify-end">
                                                     <LiquidButton
                                                         size="sm"
-                                                        onClick={handleApplyDiscount}
+                                                        onClick={handleApplyPrice}
                                                         isLoading={applyDiscount.isPending}
-                                                        disabled={!discountAmount || !discountReason}
-                                                        data-testid="apply-discount-button"
+                                                        disabled={
+                                                            (priceMode === 'discount' && (!discountAmount || !discountReason)) ||
+                                                            (priceMode === 'direct' && (newFinalPrice === undefined || !discountReason))
+                                                        }
+                                                        data-testid="apply-price-button"
                                                     >
-                                                        Apply Discount
+                                                        {priceMode === 'discount' ? 'Apply Discount' : 'Update Price'}
                                                     </LiquidButton>
                                                 </div>
                                             </div>
 
-                                            {/* Move Booking */}
-                                            <div className="glass-panel p-4 rounded-xl space-y-4 border border-amber-500/20">
-                                                <h3 className="text-amber-400 font-medium flex items-center gap-2">
-                                                    <Calendar size={18} /> Move Booking
-                                                </h3>
-                                                <p className="text-xs text-white/40">Move this booking to a different tour or date.</p>
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="New Tour ID"
-                                                        className="glass-input w-full"
-                                                        value={moveTourId}
-                                                        onChange={e => setMoveTourId(e.target.value)}
-                                                        data-testid="input-move-tour-id"
-                                                    />
-                                                    <input
-                                                        type="date"
-                                                        className="glass-input w-full"
-                                                        value={moveDate}
-                                                        onChange={e => setMoveDate(e.target.value)}
-                                                        data-testid="input-move-date"
-                                                    />
+                                            {/* Move Booking - Conditional */}
+                                            {isPrivateBooking ? (
+                                                <div className="glass-panel p-4 rounded-xl space-y-4 border border-indigo-500/20">
+                                                    <h3 className="text-indigo-400 font-medium flex items-center gap-2">
+                                                        <Calendar size={18} /> Change Date/Tour
+                                                    </h3>
+                                                    <p className="text-xs text-white/40">
+                                                        This is a private booking. You can change the date and tour.
+                                                    </p>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <input
+                                                            type="date"
+                                                            className="glass-input w-full"
+                                                            value={moveDate}
+                                                            onChange={e => setMoveDate(e.target.value)}
+                                                            data-testid="input-move-date"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="New Tour ID"
+                                                            className="glass-input w-full"
+                                                            value={moveTourId}
+                                                            onChange={e => setMoveTourId(e.target.value)}
+                                                            data-testid="input-move-tour-id"
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-end">
+                                                        <LiquidButton
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={handleMoveBooking}
+                                                            isLoading={moveBooking.isPending}
+                                                            disabled={!moveDate && !moveTourId}
+                                                            data-testid="move-booking-button"
+                                                        >
+                                                            Update
+                                                        </LiquidButton>
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-end">
-                                                    <LiquidButton
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={handleMoveBooking}
-                                                        isLoading={moveBooking.isPending}
-                                                        disabled={!moveTourId || !moveDate}
-                                                        data-testid="move-booking-button"
-                                                    >
-                                                        Move Booking
-                                                    </LiquidButton>
+                                            ) : (
+                                                <div className="glass-panel p-4 rounded-xl space-y-4 border border-amber-500/20 bg-amber-500/5">
+                                                    <h3 className="text-amber-400 font-medium flex items-center gap-2">
+                                                        <Calendar size={18} /> Change Date/Tour - Blocked
+                                                    </h3>
+                                                    <p className="text-sm text-amber-200">
+                                                        ⚠️ This booking is in a public departure with {relatedBookings.length} other booking(s).
+                                                    </p>
+                                                    <p className="text-xs text-white/60 mb-3">
+                                                        To change the date or tour for this booking only, convert it to private first.
+                                                    </p>
+                                                    <div className="flex gap-2">
+                                                        <LiquidButton
+                                                            size="sm"
+                                                            onClick={() => convertType.mutate({ id: bookingId, targetType: 'private' })}
+                                                            isLoading={convertType.isPending}
+                                                            data-testid="inline-convert-private-button"
+                                                        >
+                                                            Convert to Private
+                                                        </LiquidButton>
+                                                        <p className="text-xs text-white/40 flex items-center">
+                                                            Then you can change date/tour
+                                                        </p>
+                                                    </div>
+                                                    <div className="pt-2 border-t border-white/10 mt-3">
+                                                        <p className="text-xs text-blue-300">
+                                                            💡 Or change date/tour in the Departure modal to update all bookings
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </Tabs.Content>
                                     </>
                                 )}

@@ -53,10 +53,15 @@ export function useBookingMutations() {
   });
 
   const applyDiscount = useMutation({
-    mutationFn: ({ id, amount, reason }: { id: string; amount: number; reason: string }) =>
-      bookingsService.applyDiscount(id, amount, reason),
+    mutationFn: ({ id, discountAmount, newFinalPrice, reason }: {
+      id: string;
+      discountAmount?: number;
+      newFinalPrice?: number;
+      reason: string
+    }) => bookingsService.applyDiscount(id, { discountAmount, newFinalPrice, reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 

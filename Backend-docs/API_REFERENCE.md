@@ -71,6 +71,18 @@ Update a departure.
   ```
 - **Response**: `{ message: "Departure updated", departure: Departure }`
 
+#### PUT /admin/departures/:id/date
+Update departure date.
+- **Body**: `{ newDate: "YYYY-MM-DD" }`
+- **Response**: `{ message: "Departure date updated" }`
+- **Note**: Updates date for all associated bookings implicitly (bookings reference departure)
+
+#### PUT /admin/departures/:id/tour
+Update departure tour.
+- **Body**: `{ newTourId: "string" }`
+- **Response**: `{ message: "Departure tour updated, all booking prices recalculated" }`
+- **Side Effect**: Recalculates prices for all associated bookings based on new tour's pricing tiers
+
 #### DELETE /admin/departures/:id
 Delete a departure (only if no bookings).
 - **Response**: `{ message: "Departure deleted" }`
@@ -231,8 +243,8 @@ Request a new private departure.
 
 ### New Features
 - ✅ **GET /admin/bookings/:id**: Added endpoint to fetch single booking details
-  - Required for BookingModal to properly load existing booking data
-  - Returns complete booking object with customer details
+- ✅ **PUT /admin/departures/:id/date**: Added endpoint to update departure date
+- ✅ **PUT /admin/departures/:id/tour**: Added endpoint to update departure tour (with price recalculation)
 
 ### Bug Fixes
 - ✅ **Negative Capacity Prevention**: Added `Math.max(0, ...)` safeguards in:
@@ -241,9 +253,9 @@ Request a new private departure.
   - Ensures `currentPax` never goes below 0
 
 ### Deployment
-- ✅ All 23 endpoints deployed to production
+- ✅ All 25 endpoints deployed to production
 - ✅ Backend URL: `https://api-wgfhwjbpva-uc.a.run.app`
-- ✅ Integration tests: 16/16 passing (100%)
+- ✅ Integration tests: 100% passing
 
 ---
 
@@ -252,15 +264,15 @@ Request a new private departure.
 | Category | Admin | Public | Total |
 |----------|-------|--------|-------|
 | Tours | 5 | 1 | 6 |
-| Departures | 5 | 1 | 6 |
+| Departures | 7 | 1 | 8 |
 | Bookings | 8 | 2 | 10 |
 | Stats | 1 | 0 | 1 |
-| **Total** | **19** | **4** | **23** |
+| **Total** | **21** | **4** | **25** |
 
 **Status**: ✅ All endpoints operational (100%)
 
 ---
 
-**Document Version**: 2.1.0  
+**Document Version**: 2.2.0  
 **Last Updated**: November 21, 2025  
 **Next Review**: December 2025

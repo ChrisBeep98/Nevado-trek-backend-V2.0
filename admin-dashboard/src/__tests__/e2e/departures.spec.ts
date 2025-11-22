@@ -61,28 +61,51 @@ test.describe('Departures Management', () => {
         }
     });
 
+    test('should allow changing departure date', async ({ page }) => {
+        // Wait for calendar and events
+        await page.waitForSelector('.fc-view', { timeout: 10000 });
+        await page.waitForTimeout(2000);
+
+        const fcEvents = page.locator('.fc-event');
+        const eventCount = await fcEvents.count();
+
+        if (eventCount > 0) {
+            await fcEvents.first().click();
+            await expect(page.getByText('Departure Details')).toBeVisible({ timeout: 5000 });
+
+            // Click Tools tab
+            await page.getByText('Tools').click();
+
+            // Check Date input exists
+            const dateInput = page.locator('input[type="date"]').last(); // Use last() as there might be one in Overview
+            await expect(dateInput).toBeVisible();
+
+            // We don't actually change it to avoid messing up data, just verify UI
+            await expect(page.getByText('Change Departure Date')).toBeVisible();
+        }
+    });
+
     test('should allow changing tour', async ({ page }) => {
         // Wait for calendar and events
         await page.waitForSelector('.fc-view', { timeout: 10000 });
         await page.waitForTimeout(2000);
 
-        // Try to find an event
         const fcEvents = page.locator('.fc-event');
         const eventCount = await fcEvents.count();
 
         if (eventCount > 0) {
-            // Click first event
             await fcEvents.first().click();
-
-            // Wait for modal
             await expect(page.getByText('Departure Details')).toBeVisible({ timeout: 5000 });
 
+            // Click Tools tab
+            await page.getByText('Tools').click();
+
             // Check Tour select exists
-            const tourSelect = page.locator('select[name="tourId"]');
-            await expect(tourSelect).toBeVisible({ timeout: 3000 });
-        } else {
-            // No events, test passes
-            expect(true).toBe(true);
+            const tourSelect = page.locator('select').last();
+            await expect(tourSelect).toBeVisible();
+
+            // Verify warning message if bookings exist (optional, depends on data)
+            // await expect(page.getByText('Change Tour')).toBeVisible();
         }
     });
 });

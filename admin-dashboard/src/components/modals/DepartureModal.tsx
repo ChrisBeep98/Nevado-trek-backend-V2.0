@@ -30,13 +30,17 @@ type EditFormValues = z.infer<typeof editSchema>;
 
 export function DepartureModal({ isOpen, onClose, departure }: DepartureModalProps) {
     const { data: bookings, isLoading } = useBookings(departure?.departureId);
-    const { updateDeparture, splitDeparture, deleteDeparture } = useDepartureMutations();
+    const { updateDeparture, splitDeparture, deleteDeparture, updateDate, updateTour } = useDepartureMutations();
     const { data: tours, isLoading: isLoadingTours } = useTours();
 
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState<string | undefined>();
     const [splitMode, setSplitMode] = useState(false);
     const [selectedBookingForSplit, setSelectedBookingForSplit] = useState<string | null>(null);
+
+    // New state for tools
+    const [newDate, setNewDate] = useState('');
+    const [newTourId, setNewTourId] = useState('');
 
     const { register, handleSubmit, reset } = useForm<EditFormValues>({
         resolver: zodResolver(editSchema)
@@ -104,6 +108,28 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
         }
     };
 
+    const handleChangeDate = () => {
+        if (newDate) {
+            updateDate.mutate({ id: departure.departureId, newDate: new Date(newDate).toISOString() }, {
+                onSuccess: () => {
+                    setNewDate('');
+                    onClose();
+                }
+            });
+        }
+    };
+
+    const handleChangeTour = () => {
+        if (newTourId) {
+            updateTour.mutate({ id: departure.departureId, newTourId }, {
+                onSuccess: () => {
+                    setNewTourId('');
+                    onClose();
+                }
+            });
+        }
+    };
+
     const tourName = tours?.find(t => t.tourId === departure.tourId)?.name.en || departure.tourId;
     const currentPax = departure.currentPax < 0 ? 0 : departure.currentPax; // Fix negative capacity
 
@@ -142,8 +168,8 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                     <Tabs.Trigger value="bookings" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
                                         Bookings ({bookings?.length || 0})
                                     </Tabs.Trigger>
-                                    <Tabs.Trigger value="settings" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
-                                        Settings
+                                    <Tabs.Trigger value="tools" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors">
+                                        Tools
                                     </Tabs.Trigger>
                                 </Tabs.List>
                             </div>
@@ -296,7 +322,69 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                     )}
                                 </Tabs.Content>
 
-                                <Tabs.Content value="settings" className="outline-none flex flex-col gap-4">
+                                <Tabs.Content value="tools" className="outline-none flex flex-col gap-4">
+                                    {/* Change Date */}
+                                    <div className="glass-panel p-4 rounded-xl space-y-4">
+                                        <h3 className="text-white font-medium flex items-center gap-2">
+                                            <Calendar size={18} /> Change Departure Date
+                                        </h3>
+                                        {bookings && bookings.length > 0 && (
+                                            <p className="text-xs text-amber-200 bg-amber-500/10 p-2 rounded">
+                                                ⚠️ This will update the date for all {bookings.length} bookings
+                                            </p>
+                                        )}
+                                        <div className="flex gap-4">
+                                            <input
+                                                type="date"
+                                                className="glass-input flex-1"
+                                                value={newDate}
+                                                onChange={e => setNewDate(e.target.value)}
+                                            />
+                                            <LiquidButton
+                                                size="sm"
+                                                onClick={handleChangeDate}
+                                                isLoading={updateDate.isPending}
+                                                disabled={!newDate}
+                                            >
+                                                Update Date
+                                            </LiquidButton>
+                                        </div>
+                                    </div>
+
+                                    {/* Change Tour */}
+                                    <div className="glass-panel p-4 rounded-xl space-y-4">
+                                        <h3 className="text-white font-medium flex items-center gap-2">
+                                            <ArrowRightLeft size={18} /> Change Tour
+                                        </h3>
+                                        {bookings && bookings.length > 0 && (
+                                            <p className="text-xs text-amber-200 bg-amber-500/10 p-2 rounded">
+                                                ⚠️ This will recalculate prices for all {bookings.length} bookings
+                                            </p>
+                                        )}
+                                        <div className="flex gap-4">
+                                            <select
+                                                className="glass-input flex-1 [&>option]:bg-slate-900"
+                                                value={newTourId}
+                                                onChange={e => setNewTourId(e.target.value)}
+                                            >
+                                                <option value="">Select new tour...</option>
+                                                {tours?.map(t => (
+                                                    <option key={t.tourId} value={t.tourId}>
+                                                        {t.name?.es || t.name?.en}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <LiquidButton
+                                                size="sm"
+                                                onClick={handleChangeTour}
+                                                isLoading={updateTour.isPending}
+                                                disabled={!newTourId}
+                                            >
+                                                Update Tour
+                                            </LiquidButton>
+                                        </div>
+                                    </div>
+
                                     <div className="glass-panel p-4 rounded-xl border border-rose-500/20">
                                         <h3 className="text-rose-400 font-bold mb-2 flex items-center gap-2">
                                             <Trash2 size={18} />

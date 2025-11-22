@@ -47,10 +47,30 @@ export function useDepartureMutations() {
         }
     });
 
+    const updateDate = useMutation({
+        mutationFn: ({ id, newDate }: { id: string; newDate: string }) =>
+            departuresService.updateDate(id, newDate),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        }
+    });
+
+    const updateTour = useMutation({
+        mutationFn: ({ id, newTourId }: { id: string; newTourId: string }) =>
+            departuresService.updateTour(id, newTourId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['departures'] });
+            queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        }
+    });
+
     return {
         createDeparture,
         updateDeparture,
         splitDeparture,
-        deleteDeparture
+        deleteDeparture,
+        updateDate,
+        updateTour
     };
 }

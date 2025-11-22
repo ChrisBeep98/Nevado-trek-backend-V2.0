@@ -45,12 +45,22 @@ async function runTests() {
         name: { en: 'Test Tour', es: 'Tour de Prueba' },
         description: { en: 'A test tour', es: 'Un tour de prueba' },
         type: 'multi-day',
+        totalDays: 3,
+        difficulty: 'medium',
         pricingTiers: [
             { minPax: 1, maxPax: 1, priceCOP: 150000, priceUSD: 45 },
             { minPax: 2, maxPax: 2, priceCOP: 120000, priceUSD: 35 },
             { minPax: 3, maxPax: 3, priceCOP: 100000, priceUSD: 30 },
             { minPax: 4, maxPax: 8, priceCOP: 80000, priceUSD: 25 }
         ],
+        altitude: { es: '1000m', en: '1000m' },
+        location: { es: 'Nevado', en: 'Nevado' },
+        temperature: 15,
+        distance: 10,
+        faqs: [],
+        recommendations: [],
+        inclusions: [],
+        exclusions: [],
         isActive: true
     };
     let res = await client.post('/admin/tours', newTour);

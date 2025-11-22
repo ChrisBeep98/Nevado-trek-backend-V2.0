@@ -236,3 +236,114 @@ exports.deleteDeparture = async (req, res) => {
     return res.status(400).json({ error: error.message });
   }
 };
+
+/**
+ * Update Departure Date
+ * Updates departure date and all associated bookings
+ */
+exports.updateDepartureDate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newDate } = req.body;
+
+    const targetDate = new Date(newDate);
+
+    await db.runTransaction(async (t) => {
+      // 1. Update Departure
+      const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
+      const depDoc = await t.get(depRef);
+
+      if (!depDoc.exists) {
+        throw new Error('Departure not found');
+      }
+
+      t.update(depRef, {
+        date: targetDate,
+        updatedAt: new Date()
+      });
+
+      // 2. No need to update bookings - they reference departure by ID
+      // Date is stored in departure, not duplicated in bookings
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Departure date updated'
+    });
+  } catch (error) {
+    console.error('Error updating departure date:', error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Update Departure Tour
+ * Updates departure tour, pricing snapshot, and recalculates all booking prices
+ */
+exports.updateDepartureTour = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newTourId } = req.body;
+
+    await db.runTransaction(async (t) => {
+      // 1. Get new tour for pricing
+      const tourRef = db.collection(COLLECTIONS.TOURS).doc(newTourId);
+      const tourDoc = await t.get(tourRef);
+
+      if (!tourDoc.exists) {
+        throw new Error('Tour not found');
+      }
+
+      const tourData = tourDoc.data();
+
+      // 2. Update Departure
+      const depRef = db.collection(COLLECTIONS.DEPARTURES).doc(id);
+      const depDoc = await t.get(depRef);
+
+      if (!depDoc.exists) {
+        throw new Error('Departure not found');
+      }
+
+      t.update(depRef, {
+        tourId: newTourId,
+        pricingSnapshot: tourData.pricingTiers,
+        updatedAt: new Date()
+      });
+
+      // 3. Recalculate all booking prices
+      const bookingsSnapshot = await db.collection(COLLECTIONS.BOOKINGS)
+        .where('departureId', '==', id)
+        .get();
+
+      bookingsSnapshot.forEach((bookingDoc) => {
+        const bookingData = bookingDoc.data();
+        const pax = bookingData.pax;
+
+        // Find tier for this pax count
+        const tier = tourData.pricingTiers.find(
+          t => pax >= t.minPax && pax <= t.maxPax
+        );
+
+        if (tier) {
+          const newOriginalPrice = tier.priceCOP * pax;
+          const discountRatio = bookingData.finalPrice / bookingData.originalPrice;
+          const newFinalPrice = Math.round(newOriginalPrice * discountRatio);
+
+          t.update(bookingDoc.ref, {
+            originalPrice: newOriginalPrice,
+            finalPrice: newFinalPrice,
+            updatedAt: new Date()
+          });
+        }
+      });
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Departure tour updated, all booking prices recalculated'
+    });
+  } catch (error) {
+    console.error('Error updating departure tour:', error);
+    return res.status(500).json({ error: error.message });
+  }
+};

@@ -33,6 +33,8 @@ export const endpoints = {
         tour: (id: string) => `/admin/tours/${id}`, // GET, PUT, DELETE
         departures: '/admin/departures', // GET, POST
         departure: (id: string) => `/admin/departures/${id}`, // PUT, DELETE
+        departureDate: (id: string) => `/admin/departures/${id}/date`, // PUT
+        departureTour: (id: string) => `/admin/departures/${id}/tour`, // PUT
         splitDeparture: (id: string) => `/admin/departures/${id}/split`, // POST
         bookings: '/admin/bookings', // GET, POST
         booking: (id: string) => `/admin/bookings/${id}`, // GET, PUT, DELETE
