@@ -39,7 +39,7 @@ Delete a tour.
 
 ---
 
-### Departures (5 endpoints)
+### Departures (7 endpoints)
 
 #### GET /admin/departures
 List all departures with optional date filtering.
@@ -47,7 +47,7 @@ List all departures with optional date filtering.
 - **Response**: `{ departures: Departure[] }`
 
 #### GET /admin/departures/:id
-**NEW** - Get a specific departure by ID.
+Get a specific departure by ID.
 - **Response**: `{ departure: Departure }`
 - **Use Case**: Used by BookingModal to fetch departure data when displaying booking details
 - **Date Format**: Returns date as ISO string for JSON compatibility
@@ -77,26 +77,27 @@ Update a departure.
   ```
 - **Response**: `{ message: "Departure updated", departure: Departure }`
 
-#### PUT /admin/departures/:id/date
-Update departure date.
+#### POST /admin/departures/:id/update-date
+Update departure date (for Private bookings or all bookings in Public departure).
 - **Body**: `{ newDate: "YYYY-MM-DD" }`
 - **Response**: `{ message: "Departure date updated" }`
-- **Note**: Updates date for all associated bookings implicitly (bookings reference departure)
+- **Use Case**: 
+  - **Private**: Used from BookingModal to update date independently
+  - **Public**: Updates date for ALL associated bookings (used from DepartureModal)
 
-#### PUT /admin/departures/:id/tour
-Update departure tour.
+#### POST /admin/departures/:id/update-tour
+Update departure tour and recalculate all booking prices.
 - **Body**: `{ newTourId: "string" }`
 - **Response**: `{ message: "Departure tour updated, all booking prices recalculated" }`
 - **Side Effect**: Recalculates prices for all associated bookings based on new tour's pricing tiers
+- **Use Case**:
+  - **Private**: Used from BookingModal to update tour independently
+  - **Public**: Updates tour for ALL associated bookings (used from DepartureModal)
 
 #### DELETE /admin/departures/:id
 Delete a departure (only if no bookings).
 - **Response**: `{ message: "Departure deleted" }`
-
-#### POST /admin/departures/:id/split
-Split a departure (move specific booking to new private departure).
-- **Body**: `{ bookingId: string }`
-- **Response**: `{ newDepartureId: string, message: "Departure split successfully" }`
+- **Validation**: Returns error if any bookings exist
 
 ---
 
@@ -156,17 +157,23 @@ Apply a discount to a booking.
 
 #### POST /admin/bookings/:id/move
 Move booking to a different departure.
-- **Body**: `{ newDepartureId: string }`
+- **Body**: `{ newTourId: string, newDate: string }` (creates/finds target departure)
 - **Response**: `{ message: "Booking moved", booking: Booking }`
-- **Side Effect**: Atomically updates `currentPax` on both old and new departures
+- **Side Effects**: 
+  - Atomically updates `currentPax` on both old and new departures
+  - **Auto-cleanup**: If old departure becomes empty (`currentPax = 0`), it is automatically deleted
+- **Use Case**: Move booking between departures (e.g., change date/tour for private booking)
 
 #### POST /admin/bookings/:id/convert-type
-Convert booking type (and potentially split departure).
-- **Body**: `{ newType: "public" | "private" }`
+Convert booking type (and potentially split/join departure).
+- **Body**: `{ targetType: "public" | "private" }`
 - **Response**: `{ message: "Type converted", booking: Booking, newDepartureId?: string }`
 - **Logic**: 
-  - Private→Public: Validates max 8 pax
-  - Public→Private: If multiple bookings, splits target booking to new private departure
+  - **Private→Public**: Validates max 8 pax, joins existing public departure or creates new one
+  - **Public→Private**: Splits booking to new private departure if multiple bookings exist
+- **Auto-cleanup**: 
+  - If source departure becomes empty after conversion, it is automatically deleted
+  - Prevents "ghost departures" (empty departures polluting the database)
 
 ---
 
@@ -245,26 +252,30 @@ Request a new private departure.
 
 ---
 
-## Recent Changes (November 21, 2025 - Evening Update)
+## Recent Changes
 
-### New Features
+### November 22, 2025 - Ghost Departure Fix \u0026 Logic Refinement
+- ✅ **POST /admin/bookings/:id/move**: Updated to use `{newTourId, newDate}` instead of `newDepartureId`
+  - Finds/creates target departure automatically
+  - Implements ghost departure auto-cleanup
+- ✅ **POST /admin/bookings/:id/convert-type**: Updated body to use `targetType` instead of `newType`
+  - Implements ghost departure auto-cleanup for both directions
+- ✅ **Ghost Departure Prevention**: All endpoints that modify departure occupancy now include:
+  - Automatic deletion of departures when `currentPax` reaches 0
+  - Prevents database pollution with empty departures
+- ✅ **Comprehensive Testing**: 18/18 tests passing on both emulators and live production
+
+### November 21, 2025 - Evening Update  
 - ✅ **GET /admin/departures/:id**: Added endpoint to fetch single departure details
-  - Returns departure with properly formatted date (ISO string)
-  - Used by frontend BookingModal for displaying departure type, date, tour info
-- ✅ **GET /admin/bookings/:id**: Already documented
-- ✅ **PUT /admin/departures/:id/date**: Already documented
-- ✅ **PUT /admin/departures/:id/tour**: Already documented
-
-### Bug Fixes
-- ✅ **Negative Capacity Prevention**: Added `Math.max(0, ...)` safeguards in:
-  - `updateBookingStatus` (when cancelling bookings)
-  - `updateBookingPax` (when reducing pax count)
-  - Ensures `currentPax` never goes below 0
+- ✅ **GET /admin/bookings/:id**: Added endpoint to fetch single booking details
+- ✅ **POST /admin/departures/:id/update-date**: Clarified use cases for Public vs Private
+- ✅ **POST /admin/departures/:id/update-tour**: Clarified use cases for Public vs Private
+- ✅ **Negative Capacity Prevention**: Added `Math.max(0, ...)` safeguards
 
 ### Deployment
-- ✅ All 26 endpoints deployed to production (November 21, 2025 23:20 COT)
+- ✅ All 26 endpoints deployed to production  
 - ✅ Backend URL: `https://api-wgfhwjbpva-uc.a.run.app`
-- ✅ Integration tests: 100% passing
+- ✅ Integration tests: 100% passing (18/18)
 
 ---
 
@@ -282,6 +293,7 @@ Request a new private departure.
 
 ---
 
-**Document Version**: 2.2.0  
-**Last Updated**: November 21, 2025  
+**Document Version**: 2.3.0  
+**Last Updated**: November 22, 2025  
+**Status**: ✅ All endpoints verified & documented  
 **Next Review**: December 2025

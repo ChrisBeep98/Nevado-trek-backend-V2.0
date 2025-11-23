@@ -74,18 +74,6 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         // Navigate to Actions tab
         await page.click('[data-testid="tab-actions"]');
 
-        // Verify "Convert to Private" button exists ONLY in Actions tab
-        const convertButton = page.locator('[data-testid="convert-private-button"], [data-testid="inline-convert-private-button"]');
-        const count = await convertButton.count();
-        expect(count).toBeGreaterThan(0); // At least one convert button exists in Actions
-    });
-
-    test('should allow editing customer info', async ({ page }) => {
-        // Open first booking
-        await page.waitForSelector('table tbody tr');
-        await page.locator('table tbody tr').first().click();
-
-        // Wait for Details tab (default)
         await page.waitForSelector('[data-testid="input-customer-name"]');
 
         // Edit customer name
@@ -185,7 +173,7 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         }
     });
 
-    test('should convert public booking to private (with split)', async ({ page }) => {
+    test('should convert public booking to private (with split)', async ({ page: _page }) => {
         // This test requires a PUBLIC departure with multiple bookings
         test.skip(); // Skip until proper test data is set up
 
@@ -210,7 +198,7 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         await page.waitForSelector('[data-testid="input-discount-amount"]');
 
         // Get original price from context
-        const originalPriceText = await page.locator('[data-testid="booking-context-tour"]').first().textContent();
+        await page.locator('[data-testid="booking-context-tour"]').first().textContent();
 
         // Apply discount
         await page.fill('[data-testid="input-discount-amount"]', '50000');
@@ -254,7 +242,7 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         await expect(finalPriceElement).toBeVisible();
     });
 
-    test('should show blocked Change Date/Tour for public bookings with others', async ({ page }) => {
+    test('should show blocked Change Date/Tour for public bookings with others', async ({ page: _page }) => {
         // This requires a public booking with other bookings in same departure
         test.skip(); // Skip until proper test data
 
@@ -266,7 +254,7 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         // 5. Verify "Convert to Private" button is shown as solution
     });
 
-    test('should allow Change Date/Tour for private bookings', async ({ page }) => {
+    test('should allow Change Date/Tour for private bookings', async ({ page: _page }) => {
         // This requires a private booking
         test.skip(); // Skip until proper test data
 

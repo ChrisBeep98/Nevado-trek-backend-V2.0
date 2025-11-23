@@ -1,0 +1,203 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: "N"
+      - navigation [ref=e8]:
+        - link "Calendar" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic: Calendar
+        - link "Bookings" [ref=e15] [cursor=pointer]:
+          - /url: /bookings
+          - img [ref=e16]
+          - generic: Bookings
+        - link "Tours" [ref=e21] [cursor=pointer]:
+          - /url: /tours
+          - img [ref=e22]
+          - generic: Tours
+        - link "Stats" [ref=e24] [cursor=pointer]:
+          - /url: /stats
+          - img [ref=e25]
+          - generic: Stats
+    - button "Logout" [ref=e30]:
+      - img [ref=e31]
+  - main [ref=e35]:
+    - generic [ref=e36]:
+      - heading "Dashboard" [level=1] [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - img [ref=e41]
+          - textbox "Search..." [ref=e44]
+        - img [ref=e46]
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "Calendar" [level=2] [ref=e52]
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - generic [ref=e55]: Public Open
+            - generic [ref=e57]: Public Full
+            - generic [ref=e59]: Private
+          - button "New Departure" [ref=e61]:
+            - img [ref=e62]
+            - generic [ref=e65]: New Departure
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - button "Previous month" [ref=e72] [cursor=pointer]:
+                - img [ref=e73]: 
+              - button "Next month" [ref=e74] [cursor=pointer]:
+                - img [ref=e75]: 
+            - button "today" [disabled] [ref=e76]
+          - heading "November 2025" [level=2] [ref=e78]
+          - generic [ref=e80]:
+            - button "month" [pressed] [ref=e81] [cursor=pointer]
+            - button "week" [ref=e82] [cursor=pointer]
+        - generic "November 2025" [ref=e83]:
+          - grid [ref=e85]:
+            - rowgroup [ref=e86]:
+              - row "Sunday Monday Tuesday Wednesday Thursday Friday Saturday" [ref=e90]:
+                - columnheader "Sunday" [ref=e91]:
+                  - generic "Sunday" [ref=e93]: Sun
+                - columnheader "Monday" [ref=e94]:
+                  - generic "Monday" [ref=e96]: Mon
+                - columnheader "Tuesday" [ref=e97]:
+                  - generic "Tuesday" [ref=e99]: Tue
+                - columnheader "Wednesday" [ref=e100]:
+                  - generic "Wednesday" [ref=e102]: Wed
+                - columnheader "Thursday" [ref=e103]:
+                  - generic "Thursday" [ref=e105]: Thu
+                - columnheader "Friday" [ref=e106]:
+                  - generic "Friday" [ref=e108]: Fri
+                - columnheader "Saturday" [ref=e109]:
+                  - generic "Saturday" [ref=e111]: Sat
+              - generic [ref=e114]:
+                - row "October 26, 2025 October 27, 2025 October 28, 2025 October 29, 2025 October 30, 2025 October 31, 2025 November 1, 2025" [ref=e116]:
+                  - gridcell "October 26, 2025" [ref=e117]:
+                    - generic "October 26, 2025" [ref=e120]: "26"
+                  - gridcell "October 27, 2025" [ref=e122]:
+                    - generic "October 27, 2025" [ref=e125]: "27"
+                  - gridcell "October 28, 2025" [ref=e127]:
+                    - generic "October 28, 2025" [ref=e130]: "28"
+                  - gridcell "October 29, 2025" [ref=e132]:
+                    - generic "October 29, 2025" [ref=e135]: "29"
+                  - gridcell "October 30, 2025" [ref=e137]:
+                    - generic "October 30, 2025" [ref=e140]: "30"
+                  - gridcell "October 31, 2025" [ref=e142]:
+                    - generic "October 31, 2025" [ref=e145]: "31"
+                  - gridcell "November 1, 2025" [ref=e147]:
+                    - generic "November 1, 2025" [ref=e150]: "1"
+                - row "November 2, 2025 November 3, 2025 November 4, 2025 November 5, 2025 November 6, 2025 November 7, 2025 November 8, 2025" [ref=e152]:
+                  - gridcell "November 2, 2025" [ref=e153]:
+                    - generic "November 2, 2025" [ref=e156]: "2"
+                  - gridcell "November 3, 2025" [ref=e158]:
+                    - generic "November 3, 2025" [ref=e161]: "3"
+                  - gridcell "November 4, 2025" [ref=e163]:
+                    - generic "November 4, 2025" [ref=e166]: "4"
+                  - gridcell "November 5, 2025" [ref=e168]:
+                    - generic "November 5, 2025" [ref=e171]: "5"
+                  - gridcell "November 6, 2025" [ref=e173]:
+                    - generic "November 6, 2025" [ref=e176]: "6"
+                  - gridcell "November 7, 2025" [ref=e178]:
+                    - generic "November 7, 2025" [ref=e181]: "7"
+                  - gridcell "November 8, 2025" [ref=e183]:
+                    - generic "November 8, 2025" [ref=e186]: "8"
+                - row "November 9, 2025 November 10, 2025 November 11, 2025 November 12, 2025 November 13, 2025 November 14, 2025 November 15, 2025" [ref=e188]:
+                  - gridcell "November 9, 2025" [ref=e189]:
+                    - generic "November 9, 2025" [ref=e192]: "9"
+                  - gridcell "November 10, 2025" [ref=e194]:
+                    - generic "November 10, 2025" [ref=e197]: "10"
+                  - gridcell "November 11, 2025" [ref=e199]:
+                    - generic "November 11, 2025" [ref=e202]: "11"
+                  - gridcell "November 12, 2025" [ref=e204]:
+                    - generic "November 12, 2025" [ref=e207]: "12"
+                  - gridcell "November 13, 2025" [ref=e209]:
+                    - generic "November 13, 2025" [ref=e212]: "13"
+                  - gridcell "November 14, 2025" [ref=e214]:
+                    - generic "November 14, 2025" [ref=e217]: "14"
+                  - gridcell "November 15, 2025" [ref=e219]:
+                    - generic "November 15, 2025" [ref=e222]: "15"
+                - row "November 16, 2025 November 17, 2025 November 18, 2025 November 19, 2025 November 20, 2025 November 21, 2025 November 22, 2025" [ref=e224]:
+                  - gridcell "November 16, 2025" [ref=e225]:
+                    - generic "November 16, 2025" [ref=e228]: "16"
+                  - gridcell "November 17, 2025" [ref=e230]:
+                    - generic "November 17, 2025" [ref=e233]: "17"
+                  - gridcell "November 18, 2025" [ref=e235]:
+                    - generic "November 18, 2025" [ref=e238]: "18"
+                  - gridcell "November 19, 2025" [ref=e240]:
+                    - generic "November 19, 2025" [ref=e243]: "19"
+                  - gridcell "November 20, 2025" [ref=e245]:
+                    - generic "November 20, 2025" [ref=e248]: "20"
+                  - gridcell "November 21, 2025" [ref=e250]:
+                    - generic "November 21, 2025" [ref=e253]: "21"
+                  - gridcell "November 22, 2025" [ref=e255]:
+                    - generic "November 22, 2025" [ref=e258]: "22"
+                - row "November 23, 2025 November 24, 2025 November 25, 2025 November 26, 2025 November 27, 2025 November 28, 2025 November 29, 2025" [ref=e260]:
+                  - gridcell "November 23, 2025" [ref=e261]:
+                    - generic "November 23, 2025" [ref=e264]: "23"
+                  - gridcell "November 24, 2025" [ref=e266]:
+                    - generic "November 24, 2025" [ref=e269]: "24"
+                  - gridcell "November 25, 2025" [ref=e271]:
+                    - generic "November 25, 2025" [ref=e274]: "25"
+                  - gridcell "November 26, 2025" [ref=e276]:
+                    - generic "November 26, 2025" [ref=e279]: "26"
+                  - gridcell "November 27, 2025" [ref=e281]:
+                    - generic "November 27, 2025" [ref=e284]: "27"
+                  - gridcell "November 28, 2025" [ref=e286]:
+                    - generic "November 28, 2025" [ref=e289]: "28"
+                  - gridcell "November 29, 2025" [ref=e291]:
+                    - generic "November 29, 2025" [ref=e294]: "29"
+                - row "November 30, 2025 December 1, 2025 December 2, 2025 December 3, 2025 December 4, 2025 December 5, 2025 December 6, 2025" [ref=e296]:
+                  - gridcell "November 30, 2025" [ref=e297]:
+                    - generic [ref=e298]:
+                      - generic "November 30, 2025" [ref=e300]: "30"
+                      - generic [ref=e301]:
+                        - generic [ref=e304]:
+                          - generic [ref=e305]: 0/10 Pax
+                          - generic [ref=e306]: Private
+                        - generic [ref=e309]:
+                          - generic [ref=e310]: 0/10 Pax
+                          - generic [ref=e311]: Private
+                        - generic [ref=e314]:
+                          - generic [ref=e315]: 0/10 Pax
+                          - generic [ref=e316]: Private
+                        - generic [ref=e319]:
+                          - generic [ref=e320]: 0/10 Pax
+                          - generic [ref=e321]: Private
+                        - generic [ref=e324]:
+                          - generic [ref=e325]: 0/10 Pax
+                          - generic [ref=e326]: Private
+                        - generic [ref=e329]:
+                          - generic [ref=e330]: 0/8 Pax
+                          - generic [ref=e331]: Public
+                        - generic [ref=e334]:
+                          - generic [ref=e335]: 0/8 Pax
+                          - generic [ref=e336]: Public
+                        - generic [ref=e339]:
+                          - generic [ref=e340]: 0/8 Pax
+                          - generic [ref=e341]: Public
+                        - generic [ref=e344]:
+                          - generic [ref=e345]: 0/8 Pax
+                          - generic [ref=e346]: Public
+                        - generic [ref=e349]:
+                          - generic [ref=e350]: 0/8 Pax
+                          - generic [ref=e351]: Public
+                        - generic [ref=e354]:
+                          - generic [ref=e355]: 0/8 Pax
+                          - generic [ref=e356]: Public
+                  - gridcell "December 1, 2025" [ref=e357]:
+                    - generic "December 1, 2025" [ref=e360]: "1"
+                  - gridcell "December 2, 2025" [ref=e362]:
+                    - generic "December 2, 2025" [ref=e365]: "2"
+                  - gridcell "December 3, 2025" [ref=e367]:
+                    - generic "December 3, 2025" [ref=e370]: "3"
+                  - gridcell "December 4, 2025" [ref=e372]:
+                    - generic "December 4, 2025" [ref=e375]: "4"
+                  - gridcell "December 5, 2025" [ref=e377]:
+                    - generic "December 5, 2025" [ref=e380]: "5"
+                  - gridcell "December 6, 2025" [ref=e382]:
+                    - generic "December 6, 2025" [ref=e385]: "6"
+```

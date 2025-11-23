@@ -1,380 +1,357 @@
 import { test, expect } from '@playwright/test';
+import {
+    loginAsAdmin,
+    getTourId,
+    createAndOpenPrivateBooking,
+    createPublicDepartureWithBookings,
+    searchAndOpenBooking,
+    generateUniqueId,
+    getDateString,
+} from './helpers/booking-helpers';
 
-const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
-
-test.describe('BookingModal Date/Tour Update Functionality', () => {
+/**
+ * BookingModal - Date/Tour Update Functionality
+ * 
+ * Tests cover:
+ * - Private bookings: Independent date/tour updates
+ * - Public bookings: Blocked state and conversion flow
+ * - Backend bug verification: Type field, price calculation
+ */
+test.describe('BookingModal - Date/Tour Update Functionality', () => {
 
     test.beforeEach(async ({ page }) => {
-        await page.goto('/login');
-        await page.getByTestId('login-input').fill(ADMIN_KEY);
-        await page.getByTestId('login-button').click();
-        await page.waitForURL('/');
+        await loginAsAdmin(page);
     });
 
-    test('should update date for private booking independently', async ({ page }) => {
-        test.setTimeout(120000);
-        const uniqueId = Date.now().toString();
-        const customerName = `Date Update Test ${uniqueId}`;
+    // ============================================================
+    // PRIVATE BOOKING TESTS
+    // ============================================================
+    test.describe('Private Bookings', () => {
 
-        // Get a tour ID
-        await page.getByTestId('nav-tours').click();
-        await page.waitForURL('/tours');
-        await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
-        const tourCard = page.locator('[data-testid^="tour-card-"]').first();
-        const tourId = (await tourCard.getAttribute('data-testid'))?.replace('tour-card-', '');
+        test('should update date independently without changing tour', async ({ page }) => {
+            test.setTimeout(120000);
 
-        // Create a private departure
-        await page.goto('/');
-        await page.waitForTimeout(2000);
-        await page.getByTestId('new-departure-button').click();
-        const today = new Date();
-        const initialDate = today.toISOString().split('T')[0];
-        await page.getByTestId('input-date').fill(initialDate);
-        await page.getByTestId('select-type').selectOption('private');
-        await page.getByTestId('input-price').fill('100000');
-        await page.getByTestId('input-max-pax').fill('10');
-        await page.getByTestId('select-tour').selectOption(tourId!);
-        await page.getByTestId('create-departure-button').click();
+            const uniqueId = generateUniqueId();
+            const customerName = `Date Update Test ${uniqueId}`;
 
-        // Wait for modal to close
-        await expect(page.getByTestId('create-departure-button')).not.toBeVisible({ timeout: 10000 });
-        await page.waitForTimeout(2000); // Wait for calendar refresh
+            // Get tour ID
+            const tourId = await getTourId(page);
 
-        // Add a booking
-        const event = page.locator('.fc-event').last();
-        await event.click();
-        await page.getByTestId('tab-bookings').click();
-        await page.getByTestId('add-booking-button').click();
-        await page.getByTestId('input-customer-name').fill(customerName);
-        await page.getByTestId('input-customer-email').fill(`date${uniqueId}@test.com`);
-        await page.getByTestId('input-customer-phone').fill('+123');
-        await page.getByTestId('input-customer-document').fill('123');
-        await page.getByTestId('input-pax').fill('2');
-        await page.getByTestId('submit-booking-button').click();
+            // Create private booking
+            await createAndOpenPrivateBooking(page, tourId, customerName, 2);
 
-        // Wait for success and modal close
-        await expect(page.getByTestId('submit-booking-button')).not.toBeVisible({ timeout: 15000 });
-        await page.waitForTimeout(2000); // Wait for backend sync
-
-        // Open booking from bookings page
-        await page.getByTestId('nav-bookings').click();
-        await page.waitForURL('/bookings');
-        await page.waitForLoadState('networkidle');
-
-        // Search with retry logic
-        await page.getByTestId('search-bookings-input').fill(customerName);
-        await page.waitForTimeout(2000); // Wait for debounce
-
-        // Retry search if not found immediately (backend latency)
-        const row = page.locator('[data-testid^="booking-row-"]').first();
-        try {
-            await expect(row).toBeVisible({ timeout: 5000 });
-        } catch (e) {
-            console.log('Booking not found immediately, reloading...');
-            await page.reload();
-            await page.waitForLoadState('networkidle');
-            await page.getByTestId('search-bookings-input').fill(customerName);
-            await expect(row).toBeVisible({ timeout: 10000 });
-        }
-
-        await row.click();
-        await page.waitForTimeout(2000);
-
-        // Verify private booking shows separate update options
-        await page.getByTestId('tab-actions').click();
-        await expect(page.getByTestId('input-update-date')).toBeVisible();
-        await expect(page.getByTestId('button-update-date')).toBeVisible();
-        await expect(page.getByTestId('input-update-tour')).toBeVisible();
-        await expect(page.getByTestId('button-update-tour')).toBeVisible();
-
-        // Update date independently
-        const newDate = new Date();
-        newDate.setDate(newDate.getDate() + 5);
-        const newDateStr = newDate.toISOString().split('T')[0];
-        await page.getByTestId('input-update-date').fill(newDateStr);
-        await page.getByTestId('button-update-date').click();
-
-        // Wait for loading state on button
-        await expect(page.getByTestId('button-update-date')).toBeDisabled();
-        await expect(page.getByTestId('button-update-date')).not.toBeDisabled({ timeout: 10000 });
-
-        // Verify update succeeded (modal should still be open)
-        await expect(page.getByTestId('input-update-date')).toBeVisible();
-    });
-
-    test('should update tour for private booking independently', async ({ page }) => {
-        test.setTimeout(120000);
-        // Reuse the booking from previous test or create new one? 
-        // Better to create new one for isolation, but for speed let's create one.
-        const uniqueId = Date.now().toString();
-        const customerName = `Tour Update Test ${uniqueId}`;
-
-        // Get a tour ID
-        await page.getByTestId('nav-tours').click();
-        await page.waitForURL('/tours');
-        await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
-        const tourCard = page.locator('[data-testid^="tour-card-"]').first();
-        const tourId = (await tourCard.getAttribute('data-testid'))?.replace('tour-card-', '');
-
-        // Create a private departure
-        await page.goto('/');
-        await page.waitForTimeout(2000);
-        await page.getByTestId('new-departure-button').click();
-        const today = new Date();
-        const initialDate = today.toISOString().split('T')[0];
-        await page.getByTestId('input-date').fill(initialDate);
-        await page.getByTestId('select-type').selectOption('private');
-        await page.getByTestId('input-price').fill('100000');
-        await page.getByTestId('input-max-pax').fill('10');
-        await page.getByTestId('select-tour').selectOption(tourId!);
-        await page.getByTestId('create-departure-button').click();
-        await expect(page.getByTestId('create-departure-button')).not.toBeVisible({ timeout: 10000 });
-        await page.waitForTimeout(2000);
-
-        // Add a booking
-        const event = page.locator('.fc-event').last();
-        await event.click();
-        await page.getByTestId('tab-bookings').click();
-        await page.getByTestId('add-booking-button').click();
-        await page.getByTestId('input-customer-name').fill(customerName);
-        await page.getByTestId('input-customer-email').fill(`tour${uniqueId}@test.com`);
-        await page.getByTestId('input-customer-phone').fill('+123');
-        await page.getByTestId('input-customer-document').fill('123');
-        await page.getByTestId('input-pax').fill('2');
-        await page.getByTestId('submit-booking-button').click();
-        await expect(page.getByTestId('submit-booking-button')).not.toBeVisible({ timeout: 15000 });
-        await page.waitForTimeout(2000);
-
-        // Navigate to bookings
-        await page.getByTestId('nav-bookings').click();
-        await page.waitForURL('/bookings');
-        await page.waitForLoadState('networkidle');
-        await page.getByTestId('search-bookings-input').fill(customerName);
-        await page.waitForTimeout(2000);
-
-        const row = page.locator('[data-testid^="booking-row-"]').first();
-        try {
-            await expect(row).toBeVisible({ timeout: 5000 });
-        } catch (e) {
-            await page.reload();
-            await page.waitForLoadState('networkidle');
-            await page.getByTestId('search-bookings-input').fill(customerName);
-            await expect(row).toBeVisible({ timeout: 10000 });
-        }
-
-        await row.click();
-        await page.waitForTimeout(2000);
-
-        // Go to actions tab
-        await page.getByTestId('tab-actions').click();
-
-        // Get a different tour ID
-        await page.getByTestId('close-modal-button').click();
-        await page.getByTestId('nav-tours').click();
-        await page.waitForURL('/tours');
-        const tourCard2 = page.locator('[data-testid^="tour-card-"]').nth(1);
-        let newTourId = (await tourCard2.getAttribute('data-testid'))?.replace('tour-card-', '');
-
-        if (!newTourId) {
-            const firstTour = page.locator('[data-testid^="tour-card-"]').first();
-            newTourId = (await firstTour.getAttribute('data-testid'))?.replace('tour-card-', '');
-        }
-
-        // Go back to booking
-        await page.getByTestId('nav-bookings').click();
-        await page.getByTestId('search-bookings-input').fill(customerName);
-        await page.waitForTimeout(2000);
-        await page.locator('[data-testid^="booking-row-"]').first().click();
-        await page.waitForTimeout(2000);
-
-        // Update tour independently
-        await page.getByTestId('tab-actions').click();
-        await page.getByTestId('input-update-tour').fill(newTourId!);
-        await page.getByTestId('button-update-tour').click();
-
-        await expect(page.getByTestId('button-update-tour')).toBeDisabled();
-        await expect(page.getByTestId('button-update-tour')).not.toBeDisabled({ timeout: 10000 });
-
-        // Verify update succeeded
-        await expect(page.getByTestId('input-update-tour')).toBeVisible();
-    });
-
-    test('should show blocked state for public shared booking', async ({ page }) => {
-        test.setTimeout(120000);
-        const uniqueId = Date.now().toString();
-        const customerName1 = `Public Test 1 ${uniqueId}`;
-        const customerName2 = `Public Test 2 ${uniqueId}`;
-
-        // Get a tour ID
-        await page.getByTestId('nav-tours').click();
-        await page.waitForURL('/tours');
-        await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
-        const tourCard = page.locator('[data-testid^="tour-card-"]').first();
-        const tourId = (await tourCard.getAttribute('data-testid'))?.replace('tour-card-', '');
-
-        // Create a public departure
-        await page.goto('/');
-        await page.waitForTimeout(2000);
-        await page.getByTestId('new-departure-button').click();
-        await page.getByTestId('input-date').fill(new Date().toISOString().split('T')[0]);
-        await page.getByTestId('select-type').selectOption('public');
-        await page.getByTestId('input-price').fill('50000');
-        await page.getByTestId('input-max-pax').fill('10');
-        await page.getByTestId('select-tour').selectOption(tourId!);
-        await page.getByTestId('create-departure-button').click();
-        await expect(page.getByTestId('create-departure-button')).not.toBeVisible({ timeout: 10000 });
-        await page.waitForTimeout(3000);
-
-        // Add first booking
-        const event = page.locator('.fc-event').last();
-        await event.click();
-        await page.getByTestId('tab-bookings').click();
-        await page.getByTestId('add-booking-button').click();
-        await page.getByTestId('input-customer-name').fill(customerName1);
-        await page.getByTestId('input-customer-email').fill(`pub1${uniqueId}@test.com`);
-        await page.getByTestId('input-customer-phone').fill('+123');
-        await page.getByTestId('input-customer-document').fill('123');
-        await page.getByTestId('input-pax').fill('1');
-        await page.getByTestId('submit-booking-button').click();
-        await expect(page.getByTestId('submit-booking-button')).not.toBeVisible({ timeout: 15000 });
-        await page.waitForTimeout(2000);
-
-        // Add second booking
-        await page.getByTestId('add-booking-button').click();
-        await page.getByTestId('input-customer-name').fill(customerName2);
-        await page.getByTestId('input-customer-email').fill(`pub2${uniqueId}@test.com`);
-        await page.getByTestId('input-customer-phone').fill('+123');
-        await page.getByTestId('input-customer-document').fill('123');
-        await page.getByTestId('input-pax').fill('1');
-        await page.getByTestId('submit-booking-button').click();
-        await expect(page.getByTestId('submit-booking-button')).not.toBeVisible({ timeout: 15000 });
-        await page.waitForTimeout(2000);
-        await page.getByTestId('close-modal-button').click();
-
-        // Open first booking
-        await page.getByTestId('nav-bookings').click();
-        await page.waitForURL('/bookings');
-        await page.waitForLoadState('networkidle');
-        await page.getByTestId('search-bookings-input').fill(customerName1);
-        await page.waitForTimeout(2000);
-
-        const row = page.locator('[data-testid^="booking-row-"]').first();
-        try {
-            await expect(row).toBeVisible({ timeout: 5000 });
-        } catch (e) {
-            await page.reload();
-            await page.waitForLoadState('networkidle');
-            await page.getByTestId('search-bookings-input').fill(customerName1);
-            await expect(row).toBeVisible({ timeout: 10000 });
-        }
-
-        await row.click();
-        await page.waitForTimeout(2000);
-
-        // Verify type is Public
-        await expect(page.getByTestId('booking-type-chip')).toContainText('Public');
-
-        // Go to actions tab
-        await page.getByTestId('tab-actions').click();
-
-        // Verify date/tour inputs are NOT visible (blocked state)
-        await expect(page.getByTestId('input-update-date')).not.toBeVisible();
-        await expect(page.getByTestId('input-update-tour')).not.toBeVisible();
-
-        // Verify blocked message and convert button are visible
-        await expect(page.getByText('Change Date/Tour - Blocked')).toBeVisible();
-        await expect(page.getByTestId('inline-convert-private-button')).toBeVisible();
-    });
-
-    test('should show update options after converting to private', async ({ page }) => {
-        test.setTimeout(120000);
-        const uniqueId = Date.now().toString();
-        const customerName = `Convert Test ${uniqueId}`;
-
-        // Get a tour ID
-        await page.getByTestId('nav-tours').click();
-        await page.waitForURL('/tours');
-        await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
-        const tourCard = page.locator('[data-testid^="tour-card-"]').first();
-        const tourId = (await tourCard.getAttribute('data-testid'))?.replace('tour-card-', '');
-
-        // Create a public departure
-        await page.goto('/');
-        await page.waitForTimeout(2000);
-        await page.getByTestId('new-departure-button').click();
-        await page.getByTestId('input-date').fill(new Date().toISOString().split('T')[0]);
-        await page.getByTestId('select-type').selectOption('public');
-        await page.getByTestId('input-price').fill('50000');
-        await page.getByTestId('input-max-pax').fill('10');
-        await page.getByTestId('select-tour').selectOption(tourId!);
-        await page.getByTestId('create-departure-button').click();
-        await expect(page.getByTestId('create-departure-button')).not.toBeVisible({ timeout: 10000 });
-        await page.waitForTimeout(3000);
-
-        // Add booking
-        const event = page.locator('.fc-event').last();
-        await event.click();
-        await page.getByTestId('tab-bookings').click();
-        await page.getByTestId('add-booking-button').click();
-        await page.getByTestId('input-customer-name').fill(customerName);
-        await page.getByTestId('input-customer-email').fill(`convert${uniqueId}@test.com`);
-        await page.getByTestId('input-customer-phone').fill('+123');
-        await page.getByTestId('input-customer-document').fill('123');
-        await page.getByTestId('input-pax').fill('1');
-        await page.getByTestId('submit-booking-button').click();
-        await expect(page.getByTestId('submit-booking-button')).not.toBeVisible({ timeout: 15000 });
-        await page.waitForTimeout(2000);
-        await page.getByTestId('close-modal-button').click();
-
-        // Navigate to bookings
-        await page.getByTestId('nav-bookings').click();
-        await page.waitForURL('/bookings');
-        await page.waitForLoadState('networkidle');
-        await page.getByTestId('search-bookings-input').fill(customerName);
-        await page.waitForTimeout(2000);
-
-        const row = page.locator('[data-testid^="booking-row-"]').first();
-        try {
-            await expect(row).toBeVisible({ timeout: 5000 });
-        } catch (e) {
-            await page.reload();
-            await page.waitForLoadState('networkidle');
-            await page.getByTestId('search-bookings-input').fill(customerName);
-            await expect(row).toBeVisible({ timeout: 10000 });
-        }
-
-        await row.click();
-        await page.waitForTimeout(2000);
-
-        // Verify it's public
-        const typeChip = page.getByTestId('booking-type-chip');
-        const typeText = await typeChip.textContent();
-
-        if (typeText?.includes('Public')) {
-            // Go to actions and convert
+            // Navigate to Actions tab
             await page.getByTestId('tab-actions').click();
-            await page.getByTestId('inline-convert-private-button').click();
 
-            // Wait for conversion
-            await page.waitForTimeout(3000);
-
-            // Close and reopen
-            await page.getByTestId('close-modal-button').click();
-            await page.waitForTimeout(1000);
-            await page.getByTestId('search-bookings-input').fill(customerName);
-            await page.waitForTimeout(1000);
-            await page.locator('[data-testid^="booking-row-"]').first().click();
-            await page.waitForTimeout(2000);
-
-            // Verify now private
-            await expect(page.getByTestId('booking-type-chip')).toContainText('Private');
-
-            // Verify update options are now visible
-            await page.getByTestId('tab-actions').click();
+            // Verify private booking shows update fields
             await expect(page.getByTestId('input-update-date')).toBeVisible();
             await expect(page.getByTestId('button-update-date')).toBeVisible();
             await expect(page.getByTestId('input-update-tour')).toBeVisible();
             await expect(page.getByTestId('button-update-tour')).toBeVisible();
-        }
+
+            // Get initial tour ID for later verification
+            const tourSelect = page.getByTestId('input-update-tour');
+            const initialTourId = await tourSelect.inputValue();
+
+            // Update date independently
+            const newDate = getDateString(15); // 15 days from now
+            await page.getByTestId('input-update-date').fill(newDate);
+            await page.getByTestId('button-update-date').click();
+
+            // Wait for loading state
+            await expect(page.getByTestId('button-update-date')).toBeDisabled();
+            await expect(page.getByTestId('button-update-date')).not.toBeDisabled({ timeout: 10000 });
+
+            // Close modal and reopen to verify persistence
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(2000);
+            await searchAndOpenBooking(page, customerName);
+            await page.getByTestId('tab-actions').click();
+
+            // Verify date changed
+            const updatedDate = await page.getByTestId('input-update-date').inputValue();
+            expect(updatedDate).toBe(newDate);
+
+            // Verify tour ID remained unchanged
+            const unchangedTourId = await page.getByTestId('input-update-tour').inputValue();
+            expect(unchangedTourId).toBe(initialTourId);
+        });
+
+        test('should update tour independently and recalculate price correctly', async ({ page }) => {
+            test.setTimeout(120000);
+
+            const uniqueId = generateUniqueId();
+            const customerName = `Tour Update Test ${uniqueId}`;
+
+            // Get tour IDs (need 2 different tours)
+            await page.goto('/tours');
+            await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
+            const tourCards = page.locator('[data-testid^="tour-card-"]');
+            const count = await tourCards.count();
+
+            if (count < 2) {
+                test.skip(true, 'Need at least 2 tours for this test');
+                return;
+            }
+
+            const tour1Id = (await tourCards.nth(0).getAttribute('data-testid'))!.replace('tour-card-', '');
+            const tour2Id = (await tourCards.nth(1).getAttribute('data-testid'))!.replace('tour-card-', '');
+
+            // Create private booking with tour1
+            await createAndOpenPrivateBooking(page, tour1Id, customerName, 2);
+
+            // Navigate to Actions tab
+            await page.getByTestId('tab-actions').click();
+
+            // Get initial date for later verification
+            const initialDate = await page.getByTestId('input-update-date').inputValue();
+
+            // Get initial price
+            await page.getByTestId('tab-details').click();
+            const initialPriceText = await page.getByText(/Original Price/).textContent();
+            console.log('Initial price:', initialPriceText);
+
+            // Update tour independently
+            await page.getByTestId('tab-actions').click();
+            await page.getByTestId('input-update-tour').selectOption(tour2Id);
+            await page.getByTestId('button-update-tour').click();
+
+            // Wait for loading state
+            await expect(page.getByTestId('button-update-tour')).toBeDisabled();
+            await expect(page.getByTestId('button-update-tour')).not.toBeDisabled({ timeout: 10000 });
+
+            // Wait for price update
+            await page.waitForTimeout(1000);
+
+            // Close modal and reopen to verify persistence
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(2000);
+            await searchAndOpenBooking(page, customerName);
+            await page.getByTestId('tab-actions').click();
+
+            // Verify tour changed
+            const updatedTourId = await page.getByTestId('input-update-tour').inputValue();
+            expect(updatedTourId).toBe(tour2Id);
+
+            // Verify date remained unchanged
+            const unchangedDate = await page.getByTestId('input-update-date').inputValue();
+            expect(unchangedDate).toBe(initialDate);
+
+            // Verify price was recalculated
+            await page.getByTestId('tab-details').click();
+            const updatedPriceText = await page.getByText(/Original Price/).textContent();
+            console.log('Updated price:', updatedPriceText);
+
+            // Price should have changed (different tour = different pricing)
+            expect(updatedPriceText).not.toBe(initialPriceText);
+
+            // CRITICAL: Verify price is NOT doubled
+            // Extract numeric value from price text
+            const priceMatch = updatedPriceText?.match(/[\d,]+/);
+            if (priceMatch) {
+                const priceValue = parseInt(priceMatch[0].replace(/,/g, ''));
+                // Sanity check: price should be reasonable (not millions)
+                expect(priceValue).toBeLessThan(1000000); // 1M COP max
+                expect(priceValue).toBeGreaterThan(10000); // 10k COP min
+                console.log('Price sanity check passed:', priceValue);
+            }
+        });
+    });
+
+    // ============================================================
+    // PUBLIC BOOKING TESTS
+    // ============================================================
+    test.describe('Public Bookings', () => {
+
+        test('should display blocked state with convert button for public bookings', async ({ page }) => {
+            test.setTimeout(120000);
+
+            // const uniqueId = generateUniqueId();
+            const tourId = await getTourId(page);
+
+            // Create public departure with 2 bookings
+            const [customer1] = await createPublicDepartureWithBookings(page, tourId, 2);
+
+            // Open first booking
+            await searchAndOpenBooking(page, customer1);
+
+            // Navigate to Actions tab
+            await page.getByTestId('tab-actions').click();
+
+            // Verify update inputs are HIDDEN (blocked state)
+            await expect(page.getByTestId('input-update-date')).not.toBeVisible();
+            await expect(page.getByTestId('button-update-date')).not.toBeVisible();
+            await expect(page.getByTestId('input-update-tour')).not.toBeVisible();
+            await expect(page.getByTestId('button-update-tour')).not.toBeVisible();
+
+            // Verify Convert to Private button is visible
+            await expect(page.getByTestId('inline-convert-private-button')).toBeVisible();
+
+            // Verify warning message is present
+            const warningText = await page.locator('text=/blocked|public|convert/i').first().textContent();
+            expect(warningText).toBeTruthy();
+            console.log('Warning message:', warningText);
+        });
+
+        test('should verify public booking has type field set to public', async ({ page }) => {
+            test.setTimeout(120000);
+
+            // const uniqueId = generateUniqueId();
+            const tourId = await getTourId(page);
+
+            // Create public departure with 1 booking
+            const [customerName] = await createPublicDepartureWithBookings(page, tourId, 1);
+
+            // Open booking
+            await searchAndOpenBooking(page, customerName);
+
+            // Verify type chip shows "PUBLIC"
+            const typeChip = page.getByTestId('booking-type-chip');
+            await expect(typeChip).toBeVisible();
+            const typeText = await typeChip.textContent();
+            expect(typeText?.toUpperCase()).toContain('PUBLIC');
+
+            console.log('Booking type:', typeText);
+        });
+
+        test('should convert public booking to private and unlock update options', async ({ page }) => {
+            test.setTimeout(150000);
+
+            // const uniqueId = generateUniqueId();
+            const tourId = await getTourId(page);
+
+            // Create public departure with 2 bookings
+            const [customer1, customer2] = await createPublicDepartureWithBookings(page, tourId, 2);
+
+            // Open first booking
+            await searchAndOpenBooking(page, customer1);
+
+            // Navigate to Actions tab
+            await page.getByTestId('tab-actions').click();
+
+            // Verify blocked state initially
+            await expect(page.getByTestId('inline-convert-private-button')).toBeVisible();
+
+            // Click Convert to Private
+            await page.getByTestId('inline-convert-private-button').click();
+
+            // Wait for conversion (button should be disabled during processing)
+            await expect(page.getByTestId('inline-convert-private-button')).toBeDisabled();
+
+            // Wait for conversion to complete and UI to update
+            await page.waitForTimeout(3000);
+
+            // Verify type changed to PRIVATE
+            const typeChip = page.getByTestId('booking-type-chip');
+            const updatedTypeText = await typeChip.textContent();
+            expect(updatedTypeText?.toUpperCase()).toContain('PRIVATE');
+            console.log('Updated booking type:', updatedTypeText);
+
+            // Verify update options are now VISIBLE (unlocked)
+            await expect(page.getByTestId('input-update-date')).toBeVisible();
+            await expect(page.getByTestId('button-update-date')).toBeVisible();
+            await expect(page.getByTestId('input-update-tour')).toBeVisible();
+            await expect(page.getByTestId('button-update-tour')).toBeVisible();
+
+            // Verify Convert button is now HIDDEN
+            await expect(page.getByTestId('inline-convert-private-button')).not.toBeVisible();
+
+            // Test that we can now update date
+            const newDate = getDateString(20);
+            await page.getByTestId('input-update-date').fill(newDate);
+            await page.getByTestId('button-update-date').click();
+
+            // Wait for update
+            await expect(page.getByTestId('button-update-date')).toBeDisabled();
+            await expect(page.getByTestId('button-update-date')).not.toBeDisabled({ timeout: 10000 });
+
+            // Close and reopen to verify
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(2000);
+            await searchAndOpenBooking(page, customer1);
+            await page.getByTestId('tab-actions').click();
+
+            // Verify date was updated
+            const updatedDate = await page.getByTestId('input-update-date').inputValue();
+            expect(updatedDate).toBe(newDate);
+
+            console.log('Successfully updated date after conversion');
+
+            // Verify second booking is still public (not affected by conversion)
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(1000);
+            await searchAndOpenBooking(page, customer2);
+            const secondBookingType = await page.getByTestId('booking-type-chip').textContent();
+            expect(secondBookingType?.toUpperCase()).toContain('PUBLIC');
+
+            console.log('Second booking remains public:', secondBookingType);
+        });
+    });
+
+    // ============================================================
+    // EDGE CASES & VALIDATION
+    // ============================================================
+    test.describe('Edge Cases', () => {
+
+        test('should validate price is not doubled after tour update', async ({ page }) => {
+            test.setTimeout(120000);
+
+            const uniqueId = generateUniqueId();
+            const customerName = `Price Validation ${uniqueId}`;
+
+            // Get 2 tours
+            await page.goto('/tours');
+            await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
+            const tourCards = page.locator('[data-testid^="tour-card-"]');
+
+            if (await tourCards.count() < 2) {
+                test.skip(true, 'Need at least 2 tours');
+                return;
+            }
+
+            const tour1Id = (await tourCards.nth(0).getAttribute('data-testid'))!.replace('tour-card-', '');
+            const tour2Id = (await tourCards.nth(1).getAttribute('data-testid'))!.replace('tour-card-', '');
+
+            // Create booking with 2 pax
+            await createAndOpenPrivateBooking(page, tour1Id, customerName, 2);
+
+            // Get initial price
+            await page.getByTestId('tab-details').click();
+            const initialPriceElement = page.locator('text=/Original Price/').locator('..').locator('text=/[\d,]+/');
+            const initialPriceText = await initialPriceElement.textContent();
+            const initialPrice = parseInt(initialPriceText!.replace(/,/g, ''));
+
+            console.log('Initial price for 2 pax:', initialPrice);
+
+            // Update tour
+            await page.getByTestId('tab-actions').click();
+            await page.getByTestId('input-update-tour').selectOption(tour2Id);
+            await page.getByTestId('button-update-tour').click();
+            await expect(page.getByTestId('button-update-tour')).not.toBeDisabled({ timeout: 10000 });
+            await page.waitForTimeout(1000);
+
+            // Get updated price
+            await page.getByTestId('tab-details').click();
+            const updatedPriceElement = page.locator('text=/Original Price/').locator('..').locator('text=/[\d,]+/');
+            const updatedPriceText = await updatedPriceElement.textContent();
+            const updatedPrice = parseInt(updatedPriceText!.replace(/,/g, ''));
+
+            console.log('Updated price for 2 pax:', updatedPrice);
+
+            // CRITICAL BUG VERIFICATION
+            // If bug exists: updatedPrice would be DOUBLE the expected tier price
+            // With 2 pax, if tier is 180k, buggy code would give 360k
+
+            // Verify price is within reasonable range (not doubled)
+            // Assuming tours have similar pricing (50k - 300k per booking)
+            expect(updatedPrice).toBeGreaterThan(50000);
+            expect(updatedPrice).toBeLessThan(500000);
+
+            // Verify price difference is reasonable (not exactly doubled)
+            const ratio = updatedPrice / initialPrice;
+            expect(ratio).not.toBeCloseTo(2.0, 0.1); // Should NOT be close to 2x
+
+            console.log(`Price ratio: ${ratio.toFixed(2)}x - Verified NOT doubled ✓`);
+        });
     });
 });

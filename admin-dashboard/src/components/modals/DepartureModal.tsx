@@ -5,8 +5,7 @@ import { X, Users, MapPin, Settings, Trash2, Calendar, Split, ArrowRightLeft, Do
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format } from 'date-fns';
-import { firestoreTimestampToDate } from '../../utils/dates';
+import { firestoreTimestampToDate, formatDateUTC } from '../../utils/dates';
 import type { Departure } from '../../types';
 import { useBookings } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
@@ -44,7 +43,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
     const [newDate, setNewDate] = useState('');
     const [newTourId, setNewTourId] = useState('');
 
-    const { register, handleSubmit, reset, watch } = useForm<EditFormValues>({
+    const { register, handleSubmit, reset } = useForm<EditFormValues>({
         resolver: zodResolver(editSchema)
     });
 
@@ -57,7 +56,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                 maxPax: departure.maxPax,
                 tourId: departure.tourId,
                 type: departure.type as 'public' | 'private',
-                price: departure.price || 0
+                price: (departure as any).price || 0
             });
         }
     }, [departure, reset]);
@@ -171,7 +170,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                 </Dialog.Title>
                                 {!isCreating && (
                                     <Dialog.Description className="text-white/60 text-sm mt-1">
-                                        {departure.date ? format(firestoreTimestampToDate(departure.date), 'PPP') : 'No date'} • {currentPax}/{departure.maxPax} Pax
+                                        {departure.date ? formatDateUTC(departure.date) : 'No date'} • {currentPax}/{departure.maxPax} Pax
                                     </Dialog.Description>
                                 )}
                             </div>

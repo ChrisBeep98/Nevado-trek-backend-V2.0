@@ -8,3 +8,11 @@ export function firestoreTimestampToDate(timestamp: any): Date {
     }
     return new Date(timestamp);
 }
+
+// Format date in UTC to avoid timezone shifts (off-by-one error)
+export function formatDateUTC(dateInput: Date | string | any): string {
+    if (!dateInput) return '';
+    const date = firestoreTimestampToDate(dateInput);
+    return date.toLocaleDateString('en-US', { timeZone: 'UTC' });
+}
+

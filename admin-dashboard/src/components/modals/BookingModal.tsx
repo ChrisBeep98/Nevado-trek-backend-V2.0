@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { X, User, Calendar, CreditCard, Tag, ArrowRightLeft } from 'lucide-react';
+import { X, User, Calendar, CreditCard, Tag } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,6 +10,7 @@ import { api, endpoints } from '../../lib/api';
 import { LiquidButton } from '../ui/LiquidButton';
 import { useBookingMutations } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
+import { formatDateUTC } from '../../utils/dates';
 import type { Booking } from '../../types';
 
 // Schemas
@@ -111,9 +112,8 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         enabled: !!booking?.departureId && departure?.type === 'public'
     });
 
-    // Check if this is a private booking (only booking in departure)
-    const isPrivateBooking = departure?.type === 'private' ||
-        (departure?.currentPax === booking?.pax);
+    // FIXED: Use booking.type field instead of pax comparison
+    const isPrivateBooking = booking?.type === 'private';
 
     useEffect(() => {
         if (booking) {
@@ -287,7 +287,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                         <div data-testid="booking-context-date">
                                             <p className="text-sm text-white/60">Date</p>
                                             <p className="text-white font-medium">
-                                                {departure?.date ? new Date(departure.date).toLocaleDateString() : 'N/A'}
+                                                {departure?.date ? formatDateUTC(departure.date) : 'N/A'}
                                             </p>
                                         </div>
                                         <div data-testid="booking-context-type">

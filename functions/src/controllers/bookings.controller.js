@@ -62,6 +62,7 @@ exports.createBooking = async (req, res) => {
       // 4. Create Booking
       const newBooking = {
         departureId: departureRef.id,
+        type: type, // FIXED: Added type field to match schema
         customer,
         pax,
         originalPrice: pricePerPax * pax,
@@ -670,10 +671,16 @@ exports.moveBooking = async (req, res) => {
       // 3. ALL WRITES AT THE END
       // Update Old Departure (Decrement)
       const newOldCurrentPax = oldDepData.currentPax - bookingData.pax;
-      t.update(oldDepRef, {
-        currentPax: newOldCurrentPax,
-        updatedAt: new Date(),
-      });
+
+      if (newOldCurrentPax <= 0) {
+        // Delete if empty
+        t.delete(oldDepRef);
+      } else {
+        t.update(oldDepRef, {
+          currentPax: newOldCurrentPax,
+          updatedAt: new Date(),
+        });
+      }
 
       // Update Target Departure (Increment)
       const newTargetCurrentPax = targetDepData.currentPax + bookingData.pax;

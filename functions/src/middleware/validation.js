@@ -100,7 +100,18 @@ exports.validateTour = (req, res, next) => {
     return res.status(400).json({ error: "Missing or invalid 'name' (requires es/en)" });
   }
 
-  // 2. Pricing Tiers (Array of 4)
+  // 2. Description (Bilingual)
+  const { description, shortDescription } = req.body;
+  if (isCreate && !isBilingual(description)) {
+    return res.status(400).json({ error: "Missing or invalid 'description' (requires es/en)" });
+  }
+
+  // 3. Short Description (Bilingual)
+  if (isCreate && !isBilingual(shortDescription)) {
+    return res.status(400).json({ error: "Missing or invalid 'shortDescription' (requires es/en)" });
+  }
+
+  // 4. Pricing Tiers (Array of 4)
   if (isCreate || pricingTiers) {
     if (!Array.isArray(pricingTiers) || pricingTiers.length !== 4) {
       return res.status(400).json({ error: "'pricingTiers' must be an array of exactly 4 items" });
@@ -130,7 +141,7 @@ exports.validateTour = (req, res, next) => {
     }
   }
 
-  // 3. New Required Fields (Only enforced on Create for now to allow partial updates if needed, or strict?)
+  // 5. New Required Fields (Only enforced on Create for now to allow partial updates if needed, or strict?)
   // Let's enforce strictness on Create.
 
   if (isCreate) {

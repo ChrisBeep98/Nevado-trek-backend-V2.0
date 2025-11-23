@@ -61,6 +61,7 @@ export interface Departure {
 export interface Booking {
     bookingId: string;
     departureId: string;
+    type: 'private' | 'public'; // ADDED: Backend now always sets this field
     customer: {
         name: string;
         email: string;
@@ -75,3 +76,8 @@ export interface Booking {
     status: 'pending' | 'confirmed' | 'paid' | 'cancelled';
     createdAt: string;
 }
+
+// Re-export common types
+export type BookingStatus = Booking['status'];
+export type DepartureType = Departure['type'];
+export type DepartureStatus = Departure['status'];

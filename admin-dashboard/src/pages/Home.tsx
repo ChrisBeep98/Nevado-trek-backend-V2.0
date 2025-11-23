@@ -28,8 +28,10 @@ export default function Home() {
             currentPax: 0,
             type: 'public',
             status: 'open',
-            price: 0
-        } as Departure);
+            price: 0,
+            pricingSnapshot: [],
+            createdAt: new Date().toISOString()
+        } as unknown as Departure);
         setIsModalOpen(true);
     };
 
@@ -70,6 +72,7 @@ export default function Home() {
                     <FullCalendar
                         plugins={[dayGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"
+                        timeZone="UTC"
                         headerToolbar={{
                             left: 'prev,next today',
                             center: 'title',

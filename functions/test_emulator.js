@@ -178,6 +178,54 @@ async function runTests() {
             `Expected 180000, got ${privBookingAfter.data.originalPrice}`);
         console.log('');
 
+        // ============================================================
+        // TEST 4: createBooking sets type field + capacity update
+        // ============================================================
+        console.log('TEST 4: createBooking Type Field + Capacity Updates');
+
+        // Create private booking
+        const newPrivBookingRes = await api.post('/admin/bookings', {
+            tourId,
+            date: '2025-12-20',
+            type: 'private',
+            customer: {
+                name: 'Capacity Test',
+                email: 'capacity@test.com',
+                phone: '+999',
+                document: '999'
+            },
+            pax: 3
+        });
+        const newPrivBookingId = newPrivBookingRes.data.bookingId;
+        const newPrivDepId = newPrivBookingRes.data.departureId;
+
+        // Verify type field
+        const newPrivBooking = await api.get(`/admin/bookings/${newPrivBookingId}`);
+        logTest('4.1 createBooking sets type=private', newPrivBooking.data.type === 'private',
+            `Got: ${newPrivBooking.data.type}`);
+
+        // Verify departure capacity
+        const newPrivDep = await api.get(`/admin/departures/${newPrivDepId}`);
+        logTest('4.2 Departure currentPax = booking pax', newPrivDep.data.currentPax === 3,
+            `Expected 3, got ${newPrivDep.data.currentPax}`);
+
+        // Update pax and verify capacity updates
+        await api.put(`/admin/bookings/${newPrivBookingId}/pax`, { pax: 5 });
+        const newPrivDepAfter = await api.get(`/admin/departures/${newPrivDepId}`);
+        logTest('4.3 Capacity updates when pax changes', newPrivDepAfter.data.currentPax === 5,
+            `Expected 5, got ${newPrivDepAfter.data.currentPax}`);
+
+        // Test capacity error
+        try {
+            await api.put(`/admin/bookings/${newPrivBookingId}/pax`, { pax: 100 });
+            logTest('4.4 Capacity limit validation', false, 'Should have thrown error');
+        } catch (error) {
+            const hasErrorMsg = error.response?.data?.error?.includes('Insufficient capacity');
+            logTest('4.4 Capacity error message shown', hasErrorMsg,
+                `Error: ${error.response?.data?.error}`);
+        }
+        console.log('');
+
     } catch (error) {
         console.error('\n❌ TEST SUITE FAILED:');
         console.error('Error:', error.response?.data || error.message);

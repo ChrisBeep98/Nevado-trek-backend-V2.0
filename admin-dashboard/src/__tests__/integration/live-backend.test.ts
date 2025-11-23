@@ -13,7 +13,6 @@ let jsonHeaders: Record<string, string> = {};
 // Test State
 let createdTourId: string;
 let createdDepartureId: string;
-let secondDepartureId: string;
 let createdBookingId: string;
 
 try {
@@ -170,8 +169,7 @@ describe.skipIf(!ADMIN_KEY)('Live Backend Integration Tests', () => {
                 const text = await response.text();
                 console.error('Create 2nd Departure Error:', text);
             }
-            const data = await response.json();
-            secondDepartureId = data.departureId;
+            // Not storing ID since we don't use it anymore
         });
 
         it('Updates Departure (PUT /admin/departures/:id)', async () => {
