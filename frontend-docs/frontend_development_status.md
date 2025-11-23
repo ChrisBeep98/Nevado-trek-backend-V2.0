@@ -414,27 +414,6 @@ admin-dashboard/
 │           ├── bookings.spec.ts          # ✅ General bookings tests passing
 │           └── booking_date_tour_update.spec.ts  # ⏳ NEEDS REFACTORING
 ├── playwright.config.ts
-└── package.json
-```
-
----
-
-## 🧪 Test Coverage Status
-
-### ✅ Passing E2E Tests
-- General booking management (`bookings.spec.ts`)
-- Tours management
-- Departures management  
-- Auth flows
-
-### ⏳ Needs Refactoring
-- `booking_date_tour_update.spec.ts` - **This is our current focus**
-
-### Target Coverage
-After refactoring, we should have:
-- ✅ Private booking: date update (independent)
-- ✅ Private booking: tour update (independent)  
-- ✅ Private booking: price recalculation verification
 - ✅ Public booking: blocked state UI
 - ✅ Public booking: type field verification
 - ✅ Public→Private: conversion flow

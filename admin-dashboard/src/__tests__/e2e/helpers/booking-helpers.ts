@@ -7,7 +7,7 @@ import axios from 'axios';
  */
 
 const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
-const API_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
+const API_URL = 'https://us-central1-nevadotrektest01.cloudfunctions.net/api';
 
 const headers = {
     'X-Admin-Secret-Key': ADMIN_KEY,

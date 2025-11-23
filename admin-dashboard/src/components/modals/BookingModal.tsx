@@ -49,6 +49,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
     const [discountReason, setDiscountReason] = useState('');
     const [newTourId, setNewTourId] = useState('');
     const [newDate, setNewDate] = useState('');
+    const [newType, setNewType] = useState<'private' | 'public'>('private');
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<BookingFormValues>({
         resolver: zodResolver(bookingSchema),
@@ -139,7 +140,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
 
 
-    const [manualDepartureId, setManualDepartureId] = useState('');
+
 
     const onSubmit = (data: BookingFormValues) => {
         if (bookingId) {
@@ -165,15 +166,31 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
             }
             onClose();
         } else {
-            const targetDepartureId = departureId || manualDepartureId;
-            if (targetDepartureId) {
-                // Create new booking for departure
+            if (departureId) {
+                // Add to existing departure
                 createBooking.mutate({
-                    departureId: targetDepartureId,
+                    departureId,
                     ...data,
-                    date: new Date().toISOString(), // Backend handles date from departure usually, but required by schema
-                    type: 'public' // Default for now
+                    date: new Date().toISOString(), // Ignored by backend for existing departure join? Or maybe used?
+                    type: 'public' // Default
                 }, { onSuccess: onClose });
+            } else if (newTourId && newDate) {
+                // Create NEW booking (and departure)
+                console.log('Submitting new booking:', { tourId: newTourId, date: newDate, type: newType, ...data });
+                createBooking.mutate({
+                    tourId: newTourId,
+                    date: new Date(newDate).toISOString(),
+                    type: newType,
+                    ...data
+                }, {
+                    onSuccess: onClose,
+                    onError: (error) => {
+                        console.error('Failed to create booking:', error);
+                        alert(`Failed to create booking: ${error}`);
+                    }
+                });
+            } else {
+                alert('Please select a Tour and Date');
             }
         }
     };
@@ -243,8 +260,15 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
     const { data: allTours = [] } = useQuery({
         queryKey: ['tours'],
         queryFn: async () => {
-            const { data } = await api.get(endpoints.admin.tours);
-            return data.tours || data;
+            console.log('Fetching tours...');
+            try {
+                const { data } = await api.get(endpoints.admin.tours);
+                console.log('Fetched tours:', data.tours?.length || data?.length);
+                return data.tours || data;
+            } catch (e) {
+                console.error('Error fetching tours:', e);
+                throw e;
+            }
         }
     });
 
@@ -396,16 +420,76 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                 <Tabs.Content value="details" className="outline-none">
                                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                         {!bookingId && !departureId && (
-                                            <div className="space-y-2 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                                                <label className="text-amber-200 text-sm font-medium">Departure ID (Required)</label>
-                                                <input
-                                                    value={manualDepartureId}
-                                                    onChange={(e) => setManualDepartureId(e.target.value)}
-                                                    placeholder="Enter Departure ID"
-                                                    className="glass-input w-full"
-                                                    data-testid="input-departure-id"
-                                                />
-                                                <p className="text-xs text-amber-200/60">Enter the ID of the departure to add this booking to.</p>
+                                            <div className="space-y-4 p-4 bg-slate-800/50 border border-white/10 rounded-xl">
+                                                <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider flex items-center gap-2">
+                                                    <Calendar size={16} /> Trip Details
+                                                </h3>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {/* Debug info */}
+                                                    <div data-testid="debug-tours-count" className="hidden">
+                                                        {allTours.length}
+                                                    </div>
+
+                                                    {/* Tour Selection */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm text-white/60">Select Tour</label>
+                                                        <select
+                                                            className="glass-input w-full"
+                                                            value={newTourId}
+                                                            onChange={e => setNewTourId(e.target.value)}
+                                                            data-testid="select-new-tour"
+                                                        >
+                                                            <option value="" className="bg-slate-900 text-white">Select a tour...</option>
+                                                            {allTours.map((t: any) => (
+                                                                <option key={t.tourId} value={t.tourId} className="bg-slate-900 text-white">
+                                                                    {t.name.es || t.name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    {/* Date Selection */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm text-white/60">Select Date</label>
+                                                        <input
+                                                            type="date"
+                                                            className="glass-input w-full"
+                                                            value={newDate}
+                                                            onChange={e => setNewDate(e.target.value)}
+                                                            data-testid="input-new-date"
+                                                        />
+                                                    </div>
+
+                                                    {/* Type Selection */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm text-white/60">Booking Type</label>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setNewType('private')}
+                                                                className={`flex-1 py-2 px-3 rounded-lg border transition-all ${newType === 'private'
+                                                                    ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                                                                    : 'border-white/10 text-white/40 hover:bg-white/5'
+                                                                    }`}
+                                                                data-testid="type-private"
+                                                            >
+                                                                Private
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setNewType('public')}
+                                                                className={`flex-1 py-2 px-3 rounded-lg border transition-all ${newType === 'public'
+                                                                    ? 'bg-blue-500/20 border-blue-500/50 text-blue-300'
+                                                                    : 'border-white/10 text-white/40 hover:bg-white/5'
+                                                                    }`}
+                                                                data-testid="type-public"
+                                                            >
+                                                                Public
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
 

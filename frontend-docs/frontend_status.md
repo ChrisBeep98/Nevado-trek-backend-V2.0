@@ -76,27 +76,6 @@ El Admin Dashboard está **funcionalmente completo** y **verificado**. Se han im
 
 ### API Client
 **Archivo**: `src/lib/api.ts`
-- Configurado para producción (`us-central1`).
-- Interceptor para `X-Admin-Secret-Key`.
-
-### React Query Mutations
-**Archivo**: `src/hooks/useBookingMutations.ts`
-- Optimistic updates implementados.
-- Manejo de errores robusto.
-- Invalidación de queries correcta tras mutaciones.
-   - Update Tour (UI Dropdown).
-   - Update Status (UI Dropdown).
-   - Verificación de precios.
-
-2. ✅ **Public Bookings**:
-   - Creación y verificación.
-   - Bloqueo de UI (Blocked State).
-   - Conversión a Private.
-
-3. ✅ **Edge Cases**:
-   - Capacidad de departures.
-   - Limpieza de "Ghost Departures" (verificado con `moveBooking`).
-
 ---
 
 ## 🎨 UI/UX - "Liquid Glass"
