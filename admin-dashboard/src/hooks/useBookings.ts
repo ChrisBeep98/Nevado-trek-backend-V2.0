@@ -52,6 +52,7 @@ export function useBookingMutations() {
       bookingsService.updateDetails(id, customer),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 
