@@ -10,6 +10,7 @@ import { api, endpoints } from '../../lib/api';
 import { LiquidButton } from '../ui/LiquidButton';
 import { useBookingMutations } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
+import { useToast } from '../../context/ToastContext';
 import { formatDateUTC } from '../../utils/dates';
 import type { Booking } from '../../types';
 
@@ -39,6 +40,7 @@ interface BookingModalProps {
 export function BookingModal({ isOpen, onClose, bookingId, departureId }: BookingModalProps) {
     const { createBooking, updateDetails, updatePax, updateStatus, applyDiscount, convertType } = useBookingMutations();
     const { updateDate, updateTour } = useDepartureMutations();
+    const { success } = useToast();
 
     // State for actions
     const [discountAmount, setDiscountAmount] = useState<number>(0);
@@ -178,7 +180,12 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
     const handleStatusChange = (status: string) => {
         if (bookingId) {
-            updateStatus.mutate({ id: bookingId, status });
+            updateStatus.mutate(
+                { id: bookingId, status },
+                {
+                    onSuccess: () => success(`Booking status updated to ${status}`)
+                }
+            );
         }
     };
 
@@ -211,7 +218,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                 {
                     onSuccess: () => {
                         setNewDate('');
-                        // Refresh booking data
+                        success('Departure date updated successfully');
                     }
                 }
             );
@@ -225,7 +232,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                 {
                     onSuccess: () => {
                         setNewTourId('');
-                        // Refresh booking data
+                        success('Tour updated successfully');
                     }
                 }
             );
@@ -458,7 +465,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     data-testid="status-select"
                                                 >
                                                     {['pending', 'confirmed', 'paid', 'cancelled'].map((status) => (
-                                                        <option key={status} value={status}>
+                                                        <option key={status} value={status} className="bg-slate-900 text-white">
                                                             {status.charAt(0).toUpperCase() + status.slice(1)}
                                                         </option>
                                                     ))}
@@ -594,9 +601,9 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                                 onChange={e => setNewTourId(e.target.value)}
                                                                 data-testid="input-update-tour"
                                                             >
-                                                                <option value="">Select a tour...</option>
+                                                                <option value="" className="bg-slate-900 text-white">Select a tour...</option>
                                                                 {allTours.map((t: any) => (
-                                                                    <option key={t.tourId} value={t.tourId}>
+                                                                    <option key={t.tourId} value={t.tourId} className="bg-slate-900 text-white">
                                                                         {t.name.es || t.name}
                                                                     </option>
                                                                 ))}

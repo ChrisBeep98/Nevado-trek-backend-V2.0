@@ -23,6 +23,7 @@ export function useBookingMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 
@@ -32,6 +33,7 @@ export function useBookingMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 
@@ -41,6 +43,7 @@ export function useBookingMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 
@@ -71,6 +74,7 @@ export function useBookingMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 
@@ -80,6 +84,7 @@ export function useBookingMutations() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
+      queryClient.invalidateQueries({ queryKey: ['booking'] });
     }
   });
 

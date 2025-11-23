@@ -53,6 +53,7 @@ export function useDepartureMutations() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['departures'] });
             queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            queryClient.invalidateQueries({ queryKey: ['booking'] });
         }
     });
 
@@ -62,6 +63,7 @@ export function useDepartureMutations() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['departures'] });
             queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            queryClient.invalidateQueries({ queryKey: ['booking'] });
         }
     });
 

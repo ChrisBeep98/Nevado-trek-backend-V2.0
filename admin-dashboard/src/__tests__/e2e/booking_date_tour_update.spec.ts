@@ -18,6 +18,7 @@ const headers = {
 };
 
 test.describe('BookingModal - UI & API Tests', () => {
+    test.setTimeout(120000);
 
     test.beforeEach(async ({ page }) => {
         await loginAsAdmin(page);

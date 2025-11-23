@@ -50,20 +50,6 @@
 ---
 
 ## 🏗️ Current Implementation Status
-
-### Components
-
-#### ✅ BookingModal.tsx
-**Location**: `admin-dashboard/src/components/modals/BookingModal.tsx`
-
-**Implemented Features**:
-- ✅ **Status Dropdown**: Replaced buttons with `<select>` for cleaner UI.
-- ✅ **Tour Selection**: Dynamic dropdown fetching tours from API.
-- ✅ Separate "Update Date" and "Update Tour" fields for **private** bookings.
-- ✅ **Public** bookings: Blocked state UI correctly implemented.
-- ✅ Type-based conditional rendering working perfectly.
-
-**Test IDs Used**:
 ```typescript
 // New Dropdowns
 data-testid="status-select"
