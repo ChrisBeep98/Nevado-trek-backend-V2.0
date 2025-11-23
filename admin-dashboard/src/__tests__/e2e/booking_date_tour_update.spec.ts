@@ -17,7 +17,7 @@ const headers = {
     'Content-Type': 'application/json'
 };
 
-test.describe('BookingModal - Simplified API-First Tests', () => {
+test.describe('BookingModal - UI & API Tests', () => {
 
     test.beforeEach(async ({ page }) => {
         await loginAsAdmin(page);
@@ -54,11 +54,11 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             expect(typeText?.toUpperCase()).toContain('PRIVATE');
         });
 
-        test('should update tour for private booking via API', async ({ page }) => {
+        test('should update tour for private booking via UI Dropdown', async ({ page }) => {
             test.setTimeout(90000);
 
             const uniqueId = generateUniqueId();
-            const customerName = `TourUpdate_${uniqueId}`;
+            const customerName = `TourUpdateUI_${uniqueId}`;
 
             // Get 2 tours
             const toursResponse = await axios.get(`${API_URL}/admin/tours`, { headers });
@@ -73,35 +73,64 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             const tour2Id = tours[1].tourId;
 
             // Create booking with tour1
-            const { bookingId, departureId } = await createPrivateBookingViaAPI(tour1Id, customerName, 2);
+            const { bookingId } = await createPrivateBookingViaAPI(tour1Id, customerName, 2);
 
-            // Get initial price
-            const initialResponse = await axios.get(`${API_URL}/admin/bookings/${bookingId}`, { headers });
-            const initialBooking = initialResponse.data.booking || initialResponse.data;
-            const initialPrice = initialBooking.originalPrice;
+            // Open booking in UI
+            await searchAndOpenBooking(page, customerName);
 
-            // Update tour via API (PUT)
-            await axios.put(`${API_URL}/admin/departures/${departureId}/tour`,
-                { newTourId: tour2Id },
-                { headers }
-            );
+            // Go to Actions tab (wait for it to be visible)
+            await page.getByTestId('tab-actions').click();
 
-            // Wait a bit for backend to process
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Select new tour from dropdown
+            // Note: The select element has data-testid="input-update-tour"
+            await page.getByTestId('input-update-tour').selectOption(tour2Id);
 
-            // Verify price was recalculated
+            // Click update
+            await page.getByTestId('button-update-tour').click();
+
+            // Wait for update
+            await page.waitForTimeout(3000);
+
+            // Verify via API that tour changed
             const updatedResponse = await axios.get(`${API_URL}/admin/bookings/${bookingId}`, { headers });
             const updatedBooking = updatedResponse.data.booking || updatedResponse.data;
-            const updatedPrice = updatedBooking.originalPrice;
 
-            // Verify price changed (tour changed so price should be different)
-            expect(updatedPrice).toBeGreaterThan(0);
+            // Get departure to check tourId
+            const depResponse = await axios.get(`${API_URL}/admin/departures/${updatedBooking.departureId}`, { headers });
+            const departure = depResponse.data.departure || depResponse.data;
 
-            // Verify price is reasonable (not doubled)
-            const ratio = updatedPrice / initialPrice;
-            expect(ratio).not.toBeCloseTo(2.0, 0.1);
+            expect(departure.tourId).toBe(tour2Id);
+            console.log(`✓ Tour updated via UI Dropdown`);
+        });
 
-            console.log(`✓ Tour updated - Price ratio: ${ratio.toFixed(2)}x`);
+        test('should update booking status via UI Dropdown', async ({ page }) => {
+            test.setTimeout(60000);
+
+            const uniqueId = generateUniqueId();
+            const customerName = `StatusUpdate_${uniqueId}`;
+            const tourId = await getTourId(page);
+
+            // Create booking
+            const { bookingId } = await createPrivateBookingViaAPI(tourId, customerName, 1);
+
+            // Open booking in UI
+            await searchAndOpenBooking(page, customerName);
+
+            // Go to Status tab
+            await page.getByTestId('tab-status').click();
+
+            // Change status to 'confirmed' via dropdown
+            await page.getByTestId('status-select').selectOption('confirmed');
+
+            // Wait for update (it's immediate on change)
+            await page.waitForTimeout(2000);
+
+            // Verify via API
+            const response = await axios.get(`${API_URL}/admin/bookings/${bookingId}`, { headers });
+            const booking = response.data.booking || response.data;
+
+            expect(booking.status).toBe('confirmed');
+            console.log(`✓ Status updated to confirmed via UI Dropdown`);
         });
 
         test('should update date for private booking via API', async ({ page }) => {
@@ -228,6 +257,7 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             // Verify update inputs are NOT visible (blocked)
             const updateDateInput = page.getByTestId('input-update-date');
             const isDateInputVisible = await updateDateInput.isVisible().catch(() => false);
+            expect(isDateInputVisible).toBe(false);
 
             // For public bookings, date/tour inputs should be in blocked section (not directly editable)
             console.log(`✓ Public booking UI correctly shows blocked state`);

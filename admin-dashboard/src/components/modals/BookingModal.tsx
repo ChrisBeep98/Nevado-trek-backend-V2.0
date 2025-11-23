@@ -232,6 +232,15 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         }
     };
 
+    // Fetch all tours for dropdown
+    const { data: allTours = [] } = useQuery({
+        queryKey: ['tours'],
+        queryFn: async () => {
+            const { data } = await api.get(endpoints.admin.tours);
+            return data.tours || data;
+        }
+    });
+
     // FIX: Use explicit loading flags instead of derived logic
     const isLoading = isLoadingBooking || isLoadingDeparture || isLoadingTour;
 
@@ -442,22 +451,18 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                 <h3 className="text-white font-medium flex items-center gap-2">
                                                     <CreditCard size={18} /> Booking Status
                                                 </h3>
-                                                <div className="grid grid-cols-2 gap-2">
+                                                <select
+                                                    value={booking.status}
+                                                    onChange={(e) => handleStatusChange(e.target.value)}
+                                                    className="glass-input w-full"
+                                                    data-testid="status-select"
+                                                >
                                                     {['pending', 'confirmed', 'paid', 'cancelled'].map((status) => (
-                                                        <button
-                                                            key={status}
-                                                            type="button"
-                                                            onClick={() => handleStatusChange(status)}
-                                                            className={`p-3 rounded-lg border transition-all ${booking.status === status
-                                                                ? 'bg-indigo-500/20 border-indigo-500 text-indigo-200'
-                                                                : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'
-                                                                }`}
-                                                            data-testid={`status-button-${status}`}
-                                                        >
+                                                        <option key={status} value={status}>
                                                             {status.charAt(0).toUpperCase() + status.slice(1)}
-                                                        </button>
+                                                        </option>
                                                     ))}
-                                                </div>
+                                                </select>
                                             </div>
                                         </Tabs.Content>
 
@@ -583,14 +588,19 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     <div className="space-y-2">
                                                         <label className="text-sm text-white/60">Update Tour</label>
                                                         <div className="flex gap-2">
-                                                            <input
-                                                                type="text"
-                                                                placeholder="New Tour ID"
+                                                            <select
                                                                 className="glass-input flex-1"
                                                                 value={newTourId}
                                                                 onChange={e => setNewTourId(e.target.value)}
                                                                 data-testid="input-update-tour"
-                                                            />
+                                                            >
+                                                                <option value="">Select a tour...</option>
+                                                                {allTours.map((t: any) => (
+                                                                    <option key={t.tourId} value={t.tourId}>
+                                                                        {t.name.es || t.name}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
                                                             <LiquidButton
                                                                 size="sm"
                                                                 onClick={handleUpdateTour}
