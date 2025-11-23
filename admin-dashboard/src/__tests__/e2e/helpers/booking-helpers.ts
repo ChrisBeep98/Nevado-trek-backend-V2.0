@@ -1,14 +1,18 @@
 import type { Page } from '@playwright/test';
+import axios from 'axios';
 
 /**
  * Helper functions for Booking E2E tests
+ * Uses direct API calls for reliable test data creation
  */
 
 const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
+const API_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
 
-// Track created resources for cleanup
-const createdDepartureIds: string[] = [];
-const createdBookingIds: string[] = [];
+const headers = {
+    'X-Admin-Secret-Key': ADMIN_KEY,
+    'Content-Type': 'application/json'
+};
 
 /**
  * Login as admin
@@ -21,76 +25,96 @@ export async function loginAsAdmin(page: Page) {
 }
 
 /**
- * Get first available tour ID from tours page
+ * Get first available tour ID from backend
  */
 export async function getTourId(page: Page): Promise<string> {
-    await page.goto('/tours');
-    await page.waitForURL('/tours');
-    await page.waitForSelector('[data-testid^="tour-card-"]', { timeout: 10000 });
-    const tourCard = page.locator('[data-testid^="tour-card-"]').first();
-    const tourId = (await tourCard.getAttribute('data-testid'))?.replace('tour-card-', '');
-
-    if (!tourId) {
-        throw new Error('No tour found');
+    try {
+        const response = await axios.get(`${API_URL}/admin/tours`, { headers });
+        const tours = response.data.tours || response.data;
+        if (!tours || tours.length === 0) {
+            throw new Error('No tours found in database');
+        }
+        return tours[0].tourId;
+    } catch (error) {
+        console.error('Failed to get tour ID:', error);
+        throw error;
     }
-
-    return tourId;
 }
 
 /**
- * Create a private departure and return its ID
+ * Create a private booking via API and return booking ID
  */
-export async function createPrivateDeparture(
-    page: Page,
+export async function createPrivateBookingViaAPI(
     tourId: string,
-    date: string
-): Promise<void> {
-    await page.goto('/');
-    await page.waitForTimeout(2000);
-    await page.getByTestId('new-departure-button').click();
-    await page.getByTestId('input-date').fill(date);
-    await page.getByTestId('select-type').selectOption('private');
-    await page.getByTestId('input-price').fill('100000');
-    await page.getByTestId('input-max-pax').fill('10');
-    await page.getByTestId('select-tour').selectOption(tourId);
-    await page.getByTestId('create-departure-button').click();
+    customerName: string,
+    pax: number = 2
+): Promise<{ bookingId: string, departureId: string }> {
+    const date = getDateString(7);
+    const email = `${customerName.replace(/\s/g, '').toLowerCase()}@test.com`;
 
-    // Wait for modal to close
-    await page.waitForSelector('[data-testid="create-departure-button"]', {
-        state: 'hidden',
-        timeout: 10000
-    });
-    await page.waitForTimeout(2000); // Wait for calendar refresh
+    const bookingData = {
+        tourId,
+        date,
+        type: 'private',
+        customer: {
+            name: customerName,
+            email,
+            phone: '+1234567890',
+            document: 'TEST123456'
+        },
+        pax
+    };
+
+    try {
+        const response = await axios.post(`${API_URL}/admin/bookings`, bookingData, { headers });
+        return {
+            bookingId: response.data.bookingId,
+            departureId: response.data.departureId
+        };
+    } catch (error) {
+        console.error('Failed to create private booking:', error);
+        throw error;
+    }
 }
 
 /**
- * Create a public departure and return its ID
+ * Create a public booking via API
  */
-export async function createPublicDeparture(
-    page: Page,
+export async function createPublicBookingViaAPI(
     tourId: string,
-    date: string
-): Promise<void> {
-    await page.goto('/');
-    await page.waitForTimeout(2000);
-    await page.getByTestId('new-departure-button').click();
-    await page.getByTestId('input-date').fill(date);
-    await page.getByTestId('select-type').selectOption('public');
-    await page.getByTestId('input-price').fill('100000');
-    await page.getByTestId('input-max-pax').fill('8');
-    await page.getByTestId('select-tour').selectOption(tourId);
-    await page.getByTestId('create-departure-button').click();
+    customerName: string,
+    pax: number = 1
+): Promise<{ bookingId: string, departureId: string }> {
+    const date = getDateString(7);
+    const email = `${customerName.replace(/\s/g, '').toLowerCase()}@test.com`;
 
-    // Wait for modal to close
-    await page.waitForSelector('[data-testid="create-departure-button"]', {
-        state: 'hidden',
-        timeout: 10000
-    });
-    await page.waitForTimeout(2000); // Wait for calendar refresh
+    const bookingData = {
+        tourId,
+        date,
+        type: 'public',
+        customer: {
+            name: customerName,
+            email,
+            phone: '+1234567890',
+            document: 'TEST123456'
+        },
+        pax
+    };
+
+    try {
+        const response = await axios.post(`${API_URL}/admin/bookings`, bookingData, { headers });
+        return {
+            bookingId: response.data.bookingId,
+            departureId: response.data.departureId
+        };
+    } catch (error) {
+        console.error('Failed to create public booking:', error);
+        throw error;
+    }
 }
 
 /**
- * Search for a booking and open it
+ * Search for a booking and open it in the UI
  */
 export async function searchAndOpenBooking(
     page: Page,
@@ -133,27 +157,6 @@ export async function closeModal(page: Page): Promise<void> {
 }
 
 /**
- * Add a booking to the currently open departure modal
- */
-export async function addBookingToDeparture(
-    page: Page,
-    name: string,
-    email: string,
-    pax: number
-): Promise<void> {
-    await page.getByTestId('add-booking-button').click();
-    await page.getByTestId('input-customer-name').fill(name);
-    await page.getByTestId('input-customer-email').fill(email);
-    await page.getByTestId('input-customer-phone').fill('+1234567890');
-    await page.getByTestId('input-customer-document').fill('123456789');
-    await page.getByTestId('input-pax').fill(pax.toString());
-    await page.getByTestId('submit-booking-button').click();
-
-    // Wait for booking modal to close (it returns to departure modal)
-    await page.waitForSelector('[data-testid="submit-booking-button"]', { state: 'hidden' });
-}
-
-/**
  * Generate unique test identifier
  */
 export function generateUniqueId(): string {
@@ -170,7 +173,7 @@ export function getDateString(daysFromNow: number = 7): string {
 }
 
 /**
- * Create a complete private booking (departure + booking) and navigate to it
+ * Create a complete private booking via API and navigate to it
  */
 export async function createAndOpenPrivateBooking(
     page: Page,
@@ -178,21 +181,16 @@ export async function createAndOpenPrivateBooking(
     customerName: string,
     pax: number = 2
 ): Promise<void> {
-    const date = getDateString(7);
-    const email = `${customerName.replace(/\s/g, '')}@test.com`;
-
-    // Create private departure
-    await createPrivateDeparture(page, tourId, date);
-
-    // Add booking
-    await addBookingToDeparture(page, customerName, email, pax);
+    // Create booking via API
+    await createPrivateBookingViaAPI(tourId, customerName, pax);
 
     // Navigate to bookings and open it
     await searchAndOpenBooking(page, customerName);
 }
 
 /**
- * Create public departure with multiple bookings
+ * Create public departure with multiple bookings via API
+ * Returns array of customer names for later retrieval
  */
 export async function createPublicDepartureWithBookings(
     page: Page,
@@ -200,36 +198,38 @@ export async function createPublicDepartureWithBookings(
     bookingCount: number = 2
 ): Promise<string[]> {
     const uniqueId = generateUniqueId();
-    const date = getDateString(7);
     const customerNames: string[] = [];
 
-    // Create public departure ONCE
-    await createPublicDeparture(page, tourId, date);
+    // Create first booking (creates the public departure)
+    const customerName1 = `PublicTest1_${uniqueId}`;
+    customerNames.push(customerName1);
+    const { departureId } = await createPublicBookingViaAPI(tourId, customerName1, 1);
 
-    // Add bookings to the SAME departure
-    for (let i = 0; i < bookingCount; i++) {
-        const customerName = `Public Test ${i + 1} ${uniqueId}`;
+    // Add additional bookings to the SAME departure using join endpoint
+    for (let i = 1; i < bookingCount; i++) {
+        const customerName = `PublicTest${i + 1}_${uniqueId}`;
         customerNames.push(customerName);
-        const email = `public${i + 1}_${uniqueId}@test.com`;
+        const email = `publictest${i + 1}_${uniqueId}@test.com`;
 
-        if (i > 0) {
-            // For subsequent bookings, re-open the same departure
-            await page.goto('/');
-            await page.waitForTimeout(2000);
+        const joinData = {
+            departureId,
+            customer: {
+                name: customerName,
+                email,
+                phone: '+1234567890',
+                document: 'TEST123456'
+            },
+            pax: 1
+        };
 
-            // Click the most recent event (should be our public departure)
-            const event = page.locator('.fc-event').last();
-            await event.click();
-            await page.waitForTimeout(2000);
-            await page.getByTestId('tab-bookings').click();
-            await page.waitForTimeout(1000);
+        try {
+            await axios.post(`${API_URL}/public/bookings/join`, joinData, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (error) {
+            console.error(`Failed to join booking ${i + 1}:`, error);
+            throw error;
         }
-
-        await addBookingToDeparture(page, customerName, email, 1);
-
-        // Close DepartureModal after each booking
-        await closeModal(page);
-        await page.waitForTimeout(1000);
     }
 
     return customerNames;
