@@ -80,8 +80,8 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             const initialBooking = initialResponse.data.booking || initialResponse.data;
             const initialPrice = initialBooking.originalPrice;
 
-            // Update tour via API
-            await axios.post(`${API_URL}/admin/departures/${departureId}/update-tour`,
+            // Update tour via API (PUT)
+            await axios.put(`${API_URL}/admin/departures/${departureId}/tour`,
                 { newTourId: tour2Id },
                 { headers }
             );
@@ -119,9 +119,9 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             const initialDeparture = initialDepResponse.data.departure || initialDepResponse.data;
             const initialDate = initialDeparture.date;
 
-            // Update date
+            // Update date via API (PUT)
             const newDate = getDateString(20);
-            await axios.post(`${API_URL}/admin/departures/${departureId}/update-date`,
+            await axios.put(`${API_URL}/admin/departures/${departureId}/date`,
                 { newDate },
                 { headers }
             );
@@ -266,12 +266,14 @@ test.describe('BookingModal - Simplified API-First Tests', () => {
             const customerName = `GhostTest_${uniqueId}`;
             const tourId = await getTourId(page);
 
-            // Create public booking
-            const { bookingId: booking1Id, departureId } = await createPublicBookingViaAPI(tourId, customerName, 1);
+            // Create booking 1 (Creates Departure A)
+            const { bookingId, departureId } = await createPublicBookingViaAPI(tourId, customerName, 1);
 
-            // Convert to private (this should leave old departure empty)
-            await axios.post(`${API_URL}/admin/bookings/${booking1Id}/convert-type`,
-                { targetType: 'private' },
+            // Move booking to a new date (Should create Departure B and delete Departure A)
+            const newDate = getDateString(30);
+
+            await axios.post(`${API_URL}/admin/bookings/${bookingId}/move`,
+                { newTourId: tourId, newDate },
                 { headers }
             );
 
