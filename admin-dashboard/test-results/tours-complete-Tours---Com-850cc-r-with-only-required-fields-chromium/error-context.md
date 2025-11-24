@@ -1,0 +1,104 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - generic: "N"
+          - navigation:
+            - link:
+              - /url: /
+              - img
+              - generic: Calendar
+            - link:
+              - /url: /bookings
+              - img
+              - generic: Bookings
+            - link:
+              - /url: /tours
+              - img
+              - generic: Tours
+            - link:
+              - /url: /stats
+              - img
+              - generic: Stats
+        - button:
+          - img
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Dashboard
+          - generic:
+            - generic:
+              - img
+              - textbox:
+                - /placeholder: Search...
+            - generic:
+              - img
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=2]: Tours
+              - button:
+                - img
+                - generic: New Tour
+            - generic:
+              - generic: No tours found. Create one to get started.
+  - dialog "New Tour" [ref=e2]:
+    - generic [ref=e3]:
+      - heading "New Tour" [level=2] [ref=e4]
+      - button [active] [ref=e5]:
+        - img [ref=e6]
+    - generic [ref=e10]:
+      - tablist [ref=e12]:
+        - tab "Basic" [selected] [ref=e13]
+        - tab "Pricing" [ref=e14]
+        - tab "Itinerary" [ref=e15]
+        - tab "Details" [ref=e16]
+        - tab "Images" [ref=e17]
+      - tabpanel "Basic" [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - text: Name (ES)
+            - textbox "Nombre del tour" [ref=e22]
+          - generic [ref=e23]:
+            - text: Name (EN)
+            - textbox "Tour Name" [ref=e24]
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - text: Description (ES)
+            - textbox "Descripción..." [ref=e27]
+          - generic [ref=e28]:
+            - text: Description (EN)
+            - textbox "Description..." [ref=e29]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Short Description (ES) - Optional
+            - textbox "Descripción corta para listados (150-200 caracteres)..." [ref=e33]
+            - paragraph [ref=e34]: "Recomendado: 150-200 caracteres"
+          - generic [ref=e35]:
+            - generic [ref=e36]: Short Description (EN) - Optional
+            - textbox "Short description for listings (150-200 characters)..." [ref=e37]
+            - paragraph [ref=e38]: "Recommended: 150-200 characters"
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - text: Type
+            - combobox [ref=e41]:
+              - option "Multi-Day" [selected]
+              - option "Single-Day"
+          - generic [ref=e42]:
+            - text: Total Days
+            - spinbutton [ref=e43]: "1"
+          - generic [ref=e44]:
+            - text: Difficulty
+            - textbox [ref=e45]: Medium
+        - generic [ref=e46]:
+          - checkbox "Active (Visible to Public)" [checked] [ref=e47]
+          - generic [ref=e48]: Active (Visible to Public)
+      - generic [ref=e49]:
+        - button "Cancel" [ref=e50]
+        - button "Create Tour" [ref=e51]
+```

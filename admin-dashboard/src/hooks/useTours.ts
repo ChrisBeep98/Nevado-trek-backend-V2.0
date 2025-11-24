@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toursService } from '../services/tours.service';
+import { useToast } from '../context/ToastContext';
 import type { Tour } from '../types';
 
 export function useTours() {
     const queryClient = useQueryClient();
+    const { success, error } = useToast();
 
     const toursQuery = useQuery({
         queryKey: ['tours'],
@@ -17,6 +19,10 @@ export function useTours() {
         mutationFn: toursService.create,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tours'] });
+            success('Tour created successfully');
+        },
+        onError: (err: any) => {
+            error(err?.response?.data?.error || 'Failed to create tour');
         }
     });
 
@@ -25,6 +31,10 @@ export function useTours() {
             toursService.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tours'] });
+            success('Tour updated successfully');
+        },
+        onError: (err: any) => {
+            error(err?.response?.data?.error || 'Failed to update tour');
         }
     });
 
@@ -32,6 +42,10 @@ export function useTours() {
         mutationFn: toursService.delete,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tours'] });
+            success('Tour deactivated successfully');
+        },
+        onError: (err: any) => {
+            error(err?.response?.data?.error || 'Failed to deactivate tour');
         }
     });
 

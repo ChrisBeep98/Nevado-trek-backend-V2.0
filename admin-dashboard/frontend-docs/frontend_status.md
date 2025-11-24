@@ -1,6 +1,6 @@
 # Frontend Status - Admin Dashboard
 
-**Last Updated**: November 22, 2025  
+**Last Updated**: November 24, 2025  
 **Project**: Nevado Trek Admin Dashboard  
 **Status**: 🟢 **Completamente Funcional & Verificado**
 
@@ -13,6 +13,31 @@ El Admin Dashboard está **funcionalmente completo** y **verificado**. Se han im
 **Backend Integration**: ✅ Completamente integrado con backend funcional  
 **UI Implementation**: ✅ Todos los componentes implementados y refinados  
 **E2E Tests**: ✅ **100% Passing (27/27)** - Suite robusta y estable
+
+---
+
+## 📝 Changelog Reciente
+
+### November 24, 2025 - TourModal Refactoring
+**Cambios Mayores**:
+- ✅ Refactorización completa de validación schema en TourModal
+- ✅ Agregado campo `shortDescription` (bilingüe, 200 chars max)
+- ✅ Integración de toast notifications para tours
+- ✅ Suite de 6 tests E2E para tours (`tours-complete.spec.ts`)
+- ✅ Fix de arrays opcionales usando `.default([])`
+
+**Archivos Modificados**:
+- `admin-dashboard/src/components/modals/TourModal.tsx`
+- `admin-dashboard/src/hooks/useTours.ts`
+- `admin-dashboard/src/__tests__/e2e/tours-complete.spec.ts` (nuevo)
+
+**Impacto**: Tours ahora se pueden crear con solo campos requeridos, eliminando errores de validación previos.
+
+### November 22, 2025 - BookingModal UI Improvements
+**Cambios Mayores**:
+- ✅ Reemplazo de botones de status por dropdown
+- ✅ Tour selection via dropdown dinámico
+- ✅ 100% E2E test coverage (27/27 passing)
 
 ---
 
@@ -62,13 +87,63 @@ El Admin Dashboard está **funcionalmente completo** y **verificado**. Se han im
 
 ### TourModal
 **Archivo**: `src/components/modals/TourModal.tsx`  
-**Estado**: ✅ Completo
+**Estado**: ✅ **Completamente Refactorizado (Nov 24)**
+
+#### Mejoras Recientes (Nov 24)
+1. **Validación Schema Corregida**:
+   - Arrays opcionales ahora usan `.default([])` en lugar de `.optional()`.
+   - Elimina errores de validación al crear tours con arrays vacíos.
+   - Permite crear tours con solo campos requeridos.
+
+2. **Campo shortDescription Agregado**:
+   - Nuevo campo opcional bilingüe (ES/EN).
+   - Límite de 200 caracteres con contador.
+   - Helper text: "Recomendado: 150-200 caracteres".
+   - Ubicado en Basic tab después de description.
+
+3. **Toast Notifications Integradas**:
+   - Success toast: "Tour created successfully" / "Tour updated successfully".
+   - Error toast con mensajes específicos del backend.
+   - Integración con `useToast` hook existente.
+
+4. **E2E Tests Comprehensivos**:
+   - 6 tests en `tours-complete.spec.ts`:
+     - Create minimal tour (solo campos requeridos)
+     - Create complete tour (todos los campos)
+     - Update Basic tab
+     - Update Pricing tab
+     - Update Details tab
+     - Update All tabs combined
 
 **Funcionalidad**:
-- Crear/editar tours.
-- Gestión de pricing tiers.
-- Soporte multi-idioma (ES/EN).
-- Campos completos: FAQs, Recomendaciones, Inclusiones.
+- ✅ Crear tours con campos mínimos requeridos.
+- ✅ Crear tours completos con todos los campos opcionales.
+- ✅ Editar tours en cualquier tab independientemente.
+- ✅ Gestión de pricing tiers (4 tiers fijos).
+- ✅ Soporte multi-idioma completo (ES/EN).
+- ✅ Campos opcionales: shortDescription, FAQs, Recomendaciones, Inclusiones, Exclusiones, Itinerario, Imágenes.
+- ✅ Feedback inmediato con toast notifications.
+
+**Campos Requeridos**:
+- name (ES/EN)
+- description (ES/EN)
+- type (multi-day/single-day)
+- totalDays
+- difficulty
+- pricingTiers (4 tiers)
+- location (ES/EN)
+- temperature
+- distance
+- altitude (ES/EN)
+
+**Campos Opcionales**:
+- shortDescription (ES/EN) - **NUEVO**
+- itinerary
+- images
+- faqs
+- inclusions
+- exclusions
+- recommendations
 
 ---
 
@@ -276,6 +351,12 @@ npx playwright test --project=chromium # Solo Chrome
 
 | Feature | Backend | Frontend | E2E Tests | Status |
 |---------|---------|----------|-----------|--------|
+| **Tours** |
+| Create Tour | ✅ | ✅ | ✅ | 🟢 Funcional |
+| Update Tour | ✅ | ✅ | ✅ | 🟢 Funcional |
+| shortDescription Field | ✅ | ✅ | ✅ | 🟢 Funcional |
+| Toast Notifications | ✅ | ✅ | ✅ | 🟢 Funcional |
+| **Bookings** |
 | Create Booking | ✅ | ✅ | ⏳ | 🟢 Funcional |
 | Update Pax | ✅ | ✅ | ⏳ | 🟢 Funcional |
 | Update Date (Private) | ✅ | ✅ | ⏳ | 🟢 Funcional |

@@ -31,13 +31,14 @@ const tourSchema = z.object({
     temperature: z.number().min(-20).max(50),
     distance: z.number().min(0),
     altitude: bilingualSchema,
+    // Optional arrays - use .default([]) to make them truly optional
     faqs: z.array(z.object({
         question: bilingualSchema,
         answer: bilingualSchema
-    })),
-    inclusions: z.array(bilingualSchema),
-    exclusions: z.array(bilingualSchema),
-    recommendations: z.array(bilingualSchema),
+    })).default([]),
+    inclusions: z.array(bilingualSchema).default([]),
+    exclusions: z.array(bilingualSchema).default([]),
+    recommendations: z.array(bilingualSchema).default([]),
     itinerary: z.object({
         days: z.array(z.object({
             dayNumber: z.number(),
@@ -45,7 +46,7 @@ const tourSchema = z.object({
             activities: z.array(bilingualSchema)
         }))
     }).optional(),
-    images: z.array(z.string().url()).optional()
+    images: z.array(z.string().url()).default([])
 });
 
 type TourFormValues = z.infer<typeof tourSchema>;
@@ -190,6 +191,31 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                         <div className="space-y-2">
                                             <label className="text-white/60 text-sm">Description (EN)</label>
                                             <textarea {...register('description.en')} className="glass-input w-full h-24 resize-none" placeholder="Description..." />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-white/60 text-sm">Short Description (ES) <span className="text-white/40">- Optional</span></label>
+                                            <textarea
+                                                {...register('shortDescription.es')}
+                                                className="glass-input w-full h-20 resize-none"
+                                                placeholder="Descripción corta para listados (150-200 caracteres)..."
+                                                maxLength={200}
+                                                data-testid="input-short-desc-es"
+                                            />
+                                            <p className="text-white/40 text-xs">Recomendado: 150-200 caracteres</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-white/60 text-sm">Short Description (EN) <span className="text-white/40">- Optional</span></label>
+                                            <textarea
+                                                {...register('shortDescription.en')}
+                                                className="glass-input w-full h-20 resize-none"
+                                                placeholder="Short description for listings (150-200 characters)..."
+                                                maxLength={200}
+                                                data-testid="input-short-desc-en"
+                                            />
+                                            <p className="text-white/40 text-xs">Recommended: 150-200 characters</p>
                                         </div>
                                     </div>
 
