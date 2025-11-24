@@ -1,0 +1,2541 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: "N"
+      - navigation [ref=e8]:
+        - link "Calendar" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic: Calendar
+        - link "Bookings" [ref=e15] [cursor=pointer]:
+          - /url: /bookings
+          - img [ref=e16]
+          - generic: Bookings
+        - link "Tours" [ref=e21] [cursor=pointer]:
+          - /url: /tours
+          - img [ref=e22]
+          - generic: Tours
+        - link "Stats" [ref=e24] [cursor=pointer]:
+          - /url: /stats
+          - img [ref=e25]
+          - generic: Stats
+    - button "Logout" [ref=e30]:
+      - img [ref=e31]
+  - main [ref=e35]:
+    - generic [ref=e36]:
+      - heading "Dashboard" [level=1] [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - img [ref=e41]
+          - textbox "Search..." [ref=e44]
+        - img [ref=e46]
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - heading "Bookings" [level=2] [ref=e52]
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - textbox "Search bookings..." [ref=e58]
+          - combobox [ref=e59]:
+            - option "All Status" [selected]
+            - option "Pending"
+            - option "Confirmed"
+            - option "Paid"
+            - option "Cancelled"
+          - button "New Booking" [ref=e60]:
+            - img [ref=e61]
+            - generic [ref=e64]: New Booking
+      - table [ref=e67]:
+        - rowgroup [ref=e68]:
+          - row "Customer Pax Total Status Created" [ref=e69]:
+            - cell "Customer" [ref=e70]
+            - cell "Pax" [ref=e71]
+            - cell "Total" [ref=e72]
+            - cell "Status" [ref=e73]
+            - cell "Created" [ref=e74]
+            - cell [ref=e75]
+        - rowgroup [ref=e76]:
+          - row "PrivateTest_1763939165085_8k7nu3 privatetest_1763939165085_8k7nu3@test.com 4 $4,800,000 PENDING Nov 23, 2025 Edit" [ref=e77] [cursor=pointer]:
+            - cell "PrivateTest_1763939165085_8k7nu3 privatetest_1763939165085_8k7nu3@test.com" [ref=e78]:
+              - generic [ref=e79]: PrivateTest_1763939165085_8k7nu3
+              - generic [ref=e80]: privatetest_1763939165085_8k7nu3@test.com
+            - cell "4" [ref=e81]
+            - cell "$4,800,000" [ref=e82]
+            - cell "PENDING" [ref=e83]
+            - cell "Nov 23, 2025" [ref=e84]
+            - cell "Edit" [ref=e85]:
+              - button "Edit" [ref=e86]
+          - row "PublicTest_1763939182663_qk7bk9 publictest_1763939182663_qk7bk9@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e87] [cursor=pointer]:
+            - cell "PublicTest_1763939182663_qk7bk9 publictest_1763939182663_qk7bk9@test.com" [ref=e88]:
+              - generic [ref=e89]: PublicTest_1763939182663_qk7bk9
+              - generic [ref=e90]: publictest_1763939182663_qk7bk9@test.com
+            - cell "1" [ref=e91]
+            - cell "$1,500,000" [ref=e92]
+            - cell "PENDING" [ref=e93]
+            - cell "Nov 23, 2025" [ref=e94]
+            - cell "Edit" [ref=e95]:
+              - button "Edit" [ref=e96]
+          - row "christian sandoval christian@gmail.com 2 $7,227,691 PAID Nov 22, 2025 Edit" [ref=e97] [cursor=pointer]:
+            - cell "christian sandoval christian@gmail.com" [ref=e98]:
+              - generic [ref=e99]: christian sandoval
+              - generic [ref=e100]: christian@gmail.com
+            - cell "2" [ref=e101]
+            - cell "$7,227,691" [ref=e102]
+            - cell "PAID" [ref=e103]
+            - cell "Nov 22, 2025" [ref=e104]
+            - cell "Edit" [ref=e105]:
+              - button "Edit" [ref=e106]
+          - row "sundae froms sundae@test.com 3 $3,440,000 CONFIRMED Nov 22, 2025 Edit" [ref=e107] [cursor=pointer]:
+            - cell "sundae froms sundae@test.com" [ref=e108]:
+              - generic [ref=e109]: sundae froms
+              - generic [ref=e110]: sundae@test.com
+            - cell "3" [ref=e111]
+            - cell "$3,440,000" [ref=e112]
+            - cell "CONFIRMED" [ref=e113]
+            - cell "Nov 22, 2025" [ref=e114]
+            - cell "Edit" [ref=e115]:
+              - button "Edit" [ref=e116]
+          - row "yuuki publictest_1763861968295_ycdpqj@test.com 3 $2,850,000 PENDING Nov 22, 2025 Edit" [ref=e117] [cursor=pointer]:
+            - cell "yuuki publictest_1763861968295_ycdpqj@test.com" [ref=e118]:
+              - generic [ref=e119]: yuuki
+              - generic [ref=e120]: publictest_1763861968295_ycdpqj@test.com
+            - cell "3" [ref=e121]
+            - cell "$2,850,000" [ref=e122]
+            - cell "PENDING" [ref=e123]
+            - cell "Nov 22, 2025" [ref=e124]
+            - cell "Edit" [ref=e125]:
+              - button "Edit" [ref=e126]
+          - row "damara saint damara@gmail.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e127] [cursor=pointer]:
+            - cell "damara saint damara@gmail.com" [ref=e128]:
+              - generic [ref=e129]: damara saint
+              - generic [ref=e130]: damara@gmail.com
+            - cell "2" [ref=e131]
+            - cell "$2,200,000" [ref=e132]
+            - cell "PENDING" [ref=e133]
+            - cell "Nov 22, 2025" [ref=e134]
+            - cell "Edit" [ref=e135]:
+              - button "Edit" [ref=e136]
+          - row "samantha grind damagrind@gmail.com 2 $3,272,727 PENDING Nov 22, 2025 Edit" [ref=e137] [cursor=pointer]:
+            - cell "samantha grind damagrind@gmail.com" [ref=e138]:
+              - generic [ref=e139]: samantha grind
+              - generic [ref=e140]: damagrind@gmail.com
+            - cell "2" [ref=e141]
+            - cell "$3,272,727" [ref=e142]
+            - cell "PENDING" [ref=e143]
+            - cell "Nov 22, 2025" [ref=e144]
+            - cell "Edit" [ref=e145]:
+              - button "Edit" [ref=e146]
+          - row "charlie ponds converttest_1763861893521_i4yut6@test.com 2 $1,920,000 CONFIRMED Nov 22, 2025 Edit" [ref=e147] [cursor=pointer]:
+            - cell "charlie ponds converttest_1763861893521_i4yut6@test.com" [ref=e148]:
+              - generic [ref=e149]: charlie ponds
+              - generic [ref=e150]: converttest_1763861893521_i4yut6@test.com
+            - cell "2" [ref=e151]
+            - cell "$1,920,000" [ref=e152]
+            - cell "CONFIRMED" [ref=e153]
+            - cell "Nov 22, 2025" [ref=e154]
+            - cell "Edit" [ref=e155]:
+              - button "Edit" [ref=e156]
+          - row "BlockedUI_1763950193340_cnadn blockedui_1763950193340_cnadn@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e157] [cursor=pointer]:
+            - cell "BlockedUI_1763950193340_cnadn blockedui_1763950193340_cnadn@test.com" [ref=e158]:
+              - generic [ref=e159]: BlockedUI_1763950193340_cnadn
+              - generic [ref=e160]: blockedui_1763950193340_cnadn@test.com
+            - cell "1" [ref=e161]
+            - cell "$1,500,000" [ref=e162]
+            - cell "PENDING" [ref=e163]
+            - cell "Nov 23, 2025" [ref=e164]
+            - cell "Edit" [ref=e165]:
+              - button "Edit" [ref=e166]
+          - row "ConvertTest_1763859682910_wktb8f converttest_1763859682910_wktb8f@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e167] [cursor=pointer]:
+            - cell "ConvertTest_1763859682910_wktb8f converttest_1763859682910_wktb8f@test.com" [ref=e168]:
+              - generic [ref=e169]: ConvertTest_1763859682910_wktb8f
+              - generic [ref=e170]: converttest_1763859682910_wktb8f@test.com
+            - cell "1" [ref=e171]
+            - cell "$1,500,000" [ref=e172]
+            - cell "PENDING" [ref=e173]
+            - cell "Nov 22, 2025" [ref=e174]
+            - cell "Edit" [ref=e175]:
+              - button "Edit" [ref=e176]
+          - row "ConvertTest_1763859806792_qp19dk converttest_1763859806792_qp19dk@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e177] [cursor=pointer]:
+            - cell "ConvertTest_1763859806792_qp19dk converttest_1763859806792_qp19dk@test.com" [ref=e178]:
+              - generic [ref=e179]: ConvertTest_1763859806792_qp19dk
+              - generic [ref=e180]: converttest_1763859806792_qp19dk@test.com
+            - cell "1" [ref=e181]
+            - cell "$1,500,000" [ref=e182]
+            - cell "PENDING" [ref=e183]
+            - cell "Nov 22, 2025" [ref=e184]
+            - cell "Edit" [ref=e185]:
+              - button "Edit" [ref=e186]
+          - row "PrivateTest_1763931286338_8hg8nu privatetest_1763931286338_8hg8nu@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e187] [cursor=pointer]:
+            - cell "PrivateTest_1763931286338_8hg8nu privatetest_1763931286338_8hg8nu@test.com" [ref=e188]:
+              - generic [ref=e189]: PrivateTest_1763931286338_8hg8nu
+              - generic [ref=e190]: privatetest_1763931286338_8hg8nu@test.com
+            - cell "2" [ref=e191]
+            - cell "$2,200,000" [ref=e192]
+            - cell "PENDING" [ref=e193]
+            - cell "Nov 23, 2025" [ref=e194]
+            - cell "Edit" [ref=e195]:
+              - button "Edit" [ref=e196]
+          - row "TourUpdateUI_1763950177487_wpjclq tourupdateui_1763950177487_wpjclq@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e197] [cursor=pointer]:
+            - cell "TourUpdateUI_1763950177487_wpjclq tourupdateui_1763950177487_wpjclq@test.com" [ref=e198]:
+              - generic [ref=e199]: TourUpdateUI_1763950177487_wpjclq
+              - generic [ref=e200]: tourupdateui_1763950177487_wpjclq@test.com
+            - cell "2" [ref=e201]
+            - cell "$900,000" [ref=e202]
+            - cell "CONFIRMED" [ref=e203]
+            - cell "Nov 23, 2025" [ref=e204]
+            - cell "Edit" [ref=e205]:
+              - button "Edit" [ref=e206]
+          - row "PrivateTest_1763861326600_6gxeb5 privatetest_1763861326600_6gxeb5@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e207] [cursor=pointer]:
+            - cell "PrivateTest_1763861326600_6gxeb5 privatetest_1763861326600_6gxeb5@test.com" [ref=e208]:
+              - generic [ref=e209]: PrivateTest_1763861326600_6gxeb5
+              - generic [ref=e210]: privatetest_1763861326600_6gxeb5@test.com
+            - cell "2" [ref=e211]
+            - cell "$2,200,000" [ref=e212]
+            - cell "PENDING" [ref=e213]
+            - cell "Nov 22, 2025" [ref=e214]
+            - cell "Edit" [ref=e215]:
+              - button "Edit" [ref=e216]
+          - row "TourUpdate_1763859987890_yd3h6u tourupdate_1763859987890_yd3h6u@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e217] [cursor=pointer]:
+            - cell "TourUpdate_1763859987890_yd3h6u tourupdate_1763859987890_yd3h6u@test.com" [ref=e218]:
+              - generic [ref=e219]: TourUpdate_1763859987890_yd3h6u
+              - generic [ref=e220]: tourupdate_1763859987890_yd3h6u@test.com
+            - cell "2" [ref=e221]
+            - cell "$900,000" [ref=e222]
+            - cell "PENDING" [ref=e223]
+            - cell "Nov 22, 2025" [ref=e224]
+            - cell "Edit" [ref=e225]:
+              - button "Edit" [ref=e226]
+          - row "PrivateTest_1763860105633_9e3bq7 privatetest_1763860105633_9e3bq7@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e227] [cursor=pointer]:
+            - cell "PrivateTest_1763860105633_9e3bq7 privatetest_1763860105633_9e3bq7@test.com" [ref=e228]:
+              - generic [ref=e229]: PrivateTest_1763860105633_9e3bq7
+              - generic [ref=e230]: privatetest_1763860105633_9e3bq7@test.com
+            - cell "2" [ref=e231]
+            - cell "$2,200,000" [ref=e232]
+            - cell "PENDING" [ref=e233]
+            - cell "Nov 22, 2025" [ref=e234]
+            - cell "Edit" [ref=e235]:
+              - button "Edit" [ref=e236]
+          - row "TourUpdate_1763859718164_vwfdry tourupdate_1763859718164_vwfdry@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e237] [cursor=pointer]:
+            - cell "TourUpdate_1763859718164_vwfdry tourupdate_1763859718164_vwfdry@test.com" [ref=e238]:
+              - generic [ref=e239]: TourUpdate_1763859718164_vwfdry
+              - generic [ref=e240]: tourupdate_1763859718164_vwfdry@test.com
+            - cell "2" [ref=e241]
+            - cell "$900,000" [ref=e242]
+            - cell "PENDING" [ref=e243]
+            - cell "Nov 22, 2025" [ref=e244]
+            - cell "Edit" [ref=e245]:
+              - button "Edit" [ref=e246]
+          - row "DateUpdate_1763939127966_zhhp6s dateupdate_1763939127966_zhhp6s@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e247] [cursor=pointer]:
+            - cell "DateUpdate_1763939127966_zhhp6s dateupdate_1763939127966_zhhp6s@test.com" [ref=e248]:
+              - generic [ref=e249]: DateUpdate_1763939127966_zhhp6s
+              - generic [ref=e250]: dateupdate_1763939127966_zhhp6s@test.com
+            - cell "2" [ref=e251]
+            - cell "$2,200,000" [ref=e252]
+            - cell "PENDING" [ref=e253]
+            - cell "Nov 23, 2025" [ref=e254]
+            - cell "Edit" [ref=e255]:
+              - button "Edit" [ref=e256]
+          - row "PublicTest_1763953941809_vrhpw publictest_1763953941809_vrhpw@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e257] [cursor=pointer]:
+            - cell "PublicTest_1763953941809_vrhpw publictest_1763953941809_vrhpw@test.com" [ref=e258]:
+              - generic [ref=e259]: PublicTest_1763953941809_vrhpw
+              - generic [ref=e260]: publictest_1763953941809_vrhpw@test.com
+            - cell "1" [ref=e261]
+            - cell "$1,500,000" [ref=e262]
+            - cell "PENDING" [ref=e263]
+            - cell "Nov 23, 2025" [ref=e264]
+            - cell "Edit" [ref=e265]:
+              - button "Edit" [ref=e266]
+          - row "CapacityTest_1763861388740_w13xga capacitytest_1763861388740_w13xga@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e267] [cursor=pointer]:
+            - cell "CapacityTest_1763861388740_w13xga capacitytest_1763861388740_w13xga@test.com" [ref=e268]:
+              - generic [ref=e269]: CapacityTest_1763861388740_w13xga
+              - generic [ref=e270]: capacitytest_1763861388740_w13xga@test.com
+            - cell "2" [ref=e271]
+            - cell "$2,200,000" [ref=e272]
+            - cell "PENDING" [ref=e273]
+            - cell "Nov 22, 2025" [ref=e274]
+            - cell "Edit" [ref=e275]:
+              - button "Edit" [ref=e276]
+          - row "TourUpdate_1763859670715_9fbrai tourupdate_1763859670715_9fbrai@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e277] [cursor=pointer]:
+            - cell "TourUpdate_1763859670715_9fbrai tourupdate_1763859670715_9fbrai@test.com" [ref=e278]:
+              - generic [ref=e279]: TourUpdate_1763859670715_9fbrai
+              - generic [ref=e280]: tourupdate_1763859670715_9fbrai@test.com
+            - cell "2" [ref=e281]
+            - cell "$2,200,000" [ref=e282]
+            - cell "PENDING" [ref=e283]
+            - cell "Nov 22, 2025" [ref=e284]
+            - cell "Edit" [ref=e285]:
+              - button "Edit" [ref=e286]
+          - row "PrivateTest_1763859710370_omnkkr privatetest_1763859710370_omnkkr@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e287] [cursor=pointer]:
+            - cell "PrivateTest_1763859710370_omnkkr privatetest_1763859710370_omnkkr@test.com" [ref=e288]:
+              - generic [ref=e289]: PrivateTest_1763859710370_omnkkr
+              - generic [ref=e290]: privatetest_1763859710370_omnkkr@test.com
+            - cell "2" [ref=e291]
+            - cell "$2,200,000" [ref=e292]
+            - cell "PENDING" [ref=e293]
+            - cell "Nov 22, 2025" [ref=e294]
+            - cell "Edit" [ref=e295]:
+              - button "Edit" [ref=e296]
+          - row "PublicTest_1763867679686_8uz24d publictest_1763867679686_8uz24d@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e297] [cursor=pointer]:
+            - cell "PublicTest_1763867679686_8uz24d publictest_1763867679686_8uz24d@test.com" [ref=e298]:
+              - generic [ref=e299]: PublicTest_1763867679686_8uz24d
+              - generic [ref=e300]: publictest_1763867679686_8uz24d@test.com
+            - cell "1" [ref=e301]
+            - cell "$1,500,000" [ref=e302]
+            - cell "PENDING" [ref=e303]
+            - cell "Nov 22, 2025" [ref=e304]
+            - cell "Edit" [ref=e305]:
+              - button "Edit" [ref=e306]
+          - row "TourUpdateUI_1763861858083_oz0dzh tourupdateui_1763861858083_oz0dzh@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e307] [cursor=pointer]:
+            - cell "TourUpdateUI_1763861858083_oz0dzh tourupdateui_1763861858083_oz0dzh@test.com" [ref=e308]:
+              - generic [ref=e309]: TourUpdateUI_1763861858083_oz0dzh
+              - generic [ref=e310]: tourupdateui_1763861858083_oz0dzh@test.com
+            - cell "2" [ref=e311]
+            - cell "$900,000" [ref=e312]
+            - cell "PENDING" [ref=e313]
+            - cell "Nov 22, 2025" [ref=e314]
+            - cell "Edit" [ref=e315]:
+              - button "Edit" [ref=e316]
+          - row "PrivateTest_1763861921808_si7qy privatetest_1763861921808_si7qy@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e317] [cursor=pointer]:
+            - cell "PrivateTest_1763861921808_si7qy privatetest_1763861921808_si7qy@test.com" [ref=e318]:
+              - generic [ref=e319]: PrivateTest_1763861921808_si7qy
+              - generic [ref=e320]: privatetest_1763861921808_si7qy@test.com
+            - cell "2" [ref=e321]
+            - cell "$2,200,000" [ref=e322]
+            - cell "PENDING" [ref=e323]
+            - cell "Nov 22, 2025" [ref=e324]
+            - cell "Edit" [ref=e325]:
+              - button "Edit" [ref=e326]
+          - row "DateUpdate_1763860123804_vzofuk dateupdate_1763860123804_vzofuk@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e327] [cursor=pointer]:
+            - cell "DateUpdate_1763860123804_vzofuk dateupdate_1763860123804_vzofuk@test.com" [ref=e328]:
+              - generic [ref=e329]: DateUpdate_1763860123804_vzofuk
+              - generic [ref=e330]: dateupdate_1763860123804_vzofuk@test.com
+            - cell "2" [ref=e331]
+            - cell "$2,200,000" [ref=e332]
+            - cell "PENDING" [ref=e333]
+            - cell "Nov 22, 2025" [ref=e334]
+            - cell "Edit" [ref=e335]:
+              - button "Edit" [ref=e336]
+          - row "DateUpdate_1763954227086_mv2t2i dateupdate_1763954227086_mv2t2i@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e337] [cursor=pointer]:
+            - cell "DateUpdate_1763954227086_mv2t2i dateupdate_1763954227086_mv2t2i@test.com" [ref=e338]:
+              - generic [ref=e339]: DateUpdate_1763954227086_mv2t2i
+              - generic [ref=e340]: dateupdate_1763954227086_mv2t2i@test.com
+            - cell "2" [ref=e341]
+            - cell "$2,200,000" [ref=e342]
+            - cell "PENDING" [ref=e343]
+            - cell "Nov 23, 2025" [ref=e344]
+            - cell "Edit" [ref=e345]:
+              - button "Edit" [ref=e346]
+          - row "CapacityTest_1763953951800_14jmyt capacitytest_1763953951800_14jmyt@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e347] [cursor=pointer]:
+            - cell "CapacityTest_1763953951800_14jmyt capacitytest_1763953951800_14jmyt@test.com" [ref=e348]:
+              - generic [ref=e349]: CapacityTest_1763953951800_14jmyt
+              - generic [ref=e350]: capacitytest_1763953951800_14jmyt@test.com
+            - cell "2" [ref=e351]
+            - cell "$2,200,000" [ref=e352]
+            - cell "PENDING" [ref=e353]
+            - cell "Nov 23, 2025" [ref=e354]
+            - cell "Edit" [ref=e355]:
+              - button "Edit" [ref=e356]
+          - row "CapacityTest_1763859762921_yex64 capacitytest_1763859762921_yex64@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e357] [cursor=pointer]:
+            - cell "CapacityTest_1763859762921_yex64 capacitytest_1763859762921_yex64@test.com" [ref=e358]:
+              - generic [ref=e359]: CapacityTest_1763859762921_yex64
+              - generic [ref=e360]: capacitytest_1763859762921_yex64@test.com
+            - cell "2" [ref=e361]
+            - cell "$2,200,000" [ref=e362]
+            - cell "PENDING" [ref=e363]
+            - cell "Nov 22, 2025" [ref=e364]
+            - cell "Edit" [ref=e365]:
+              - button "Edit" [ref=e366]
+          - row "PrivateTest_1763861586315_sjlt4 privatetest_1763861586315_sjlt4@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e367] [cursor=pointer]:
+            - cell "PrivateTest_1763861586315_sjlt4 privatetest_1763861586315_sjlt4@test.com" [ref=e368]:
+              - generic [ref=e369]: PrivateTest_1763861586315_sjlt4
+              - generic [ref=e370]: privatetest_1763861586315_sjlt4@test.com
+            - cell "1" [ref=e371]
+            - cell "$1,500,000" [ref=e372]
+            - cell "PENDING" [ref=e373]
+            - cell "Nov 22, 2025" [ref=e374]
+            - cell "Edit" [ref=e375]:
+              - button "Edit" [ref=e376]
+          - row "PublicTest_1763860060163_0ms8ov publictest_1763860060163_0ms8ov@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e377] [cursor=pointer]:
+            - cell "PublicTest_1763860060163_0ms8ov publictest_1763860060163_0ms8ov@test.com" [ref=e378]:
+              - generic [ref=e379]: PublicTest_1763860060163_0ms8ov
+              - generic [ref=e380]: publictest_1763860060163_0ms8ov@test.com
+            - cell "1" [ref=e381]
+            - cell "$1,500,000" [ref=e382]
+            - cell "PENDING" [ref=e383]
+            - cell "Nov 22, 2025" [ref=e384]
+            - cell "Edit" [ref=e385]:
+              - button "Edit" [ref=e386]
+          - row "GhostTest_1763861316316_jnvyg ghosttest_1763861316316_jnvyg@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e387] [cursor=pointer]:
+            - cell "GhostTest_1763861316316_jnvyg ghosttest_1763861316316_jnvyg@test.com" [ref=e388]:
+              - generic [ref=e389]: GhostTest_1763861316316_jnvyg
+              - generic [ref=e390]: ghosttest_1763861316316_jnvyg@test.com
+            - cell "1" [ref=e391]
+            - cell "$1,500,000" [ref=e392]
+            - cell "PENDING" [ref=e393]
+            - cell "Nov 22, 2025" [ref=e394]
+            - cell "Edit" [ref=e395]:
+              - button "Edit" [ref=e396]
+          - row "Test User 1763953958538 test1763953958538@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e397] [cursor=pointer]:
+            - cell "Test User 1763953958538 test1763953958538@example.com" [ref=e398]:
+              - generic [ref=e399]: Test User 1763953958538
+              - generic [ref=e400]: test1763953958538@example.com
+            - cell "2" [ref=e401]
+            - cell "$2,200,000" [ref=e402]
+            - cell "PENDING" [ref=e403]
+            - cell "Nov 23, 2025" [ref=e404]
+            - cell "Edit" [ref=e405]:
+              - button "Edit" [ref=e406]
+          - row "PublicTest_1763859997448_grfqao publictest_1763859997448_grfqao@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e407] [cursor=pointer]:
+            - cell "PublicTest_1763859997448_grfqao publictest_1763859997448_grfqao@test.com" [ref=e408]:
+              - generic [ref=e409]: PublicTest_1763859997448_grfqao
+              - generic [ref=e410]: publictest_1763859997448_grfqao@test.com
+            - cell "1" [ref=e411]
+            - cell "$1,500,000" [ref=e412]
+            - cell "PENDING" [ref=e413]
+            - cell "Nov 22, 2025" [ref=e414]
+            - cell "Edit" [ref=e415]:
+              - button "Edit" [ref=e416]
+          - row "BlockedUI_1763862078307_l5ihw blockedui_1763862078307_l5ihw@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e417] [cursor=pointer]:
+            - cell "BlockedUI_1763862078307_l5ihw blockedui_1763862078307_l5ihw@test.com" [ref=e418]:
+              - generic [ref=e419]: BlockedUI_1763862078307_l5ihw
+              - generic [ref=e420]: blockedui_1763862078307_l5ihw@test.com
+            - cell "1" [ref=e421]
+            - cell "$1,500,000" [ref=e422]
+            - cell "PENDING" [ref=e423]
+            - cell "Nov 22, 2025" [ref=e424]
+            - cell "Edit" [ref=e425]:
+              - button "Edit" [ref=e426]
+          - row "DateUpdate_1763861880981_qae8ol dateupdate_1763861880981_qae8ol@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e427] [cursor=pointer]:
+            - cell "DateUpdate_1763861880981_qae8ol dateupdate_1763861880981_qae8ol@test.com" [ref=e428]:
+              - generic [ref=e429]: DateUpdate_1763861880981_qae8ol
+              - generic [ref=e430]: dateupdate_1763861880981_qae8ol@test.com
+            - cell "2" [ref=e431]
+            - cell "$2,200,000" [ref=e432]
+            - cell "PENDING" [ref=e433]
+            - cell "Nov 22, 2025" [ref=e434]
+            - cell "Edit" [ref=e435]:
+              - button "Edit" [ref=e436]
+          - row "PublicTest_1763954232064_fgmzvq publictest_1763954232064_fgmzvq@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e437] [cursor=pointer]:
+            - cell "PublicTest_1763954232064_fgmzvq publictest_1763954232064_fgmzvq@test.com" [ref=e438]:
+              - generic [ref=e439]: PublicTest_1763954232064_fgmzvq
+              - generic [ref=e440]: publictest_1763954232064_fgmzvq@test.com
+            - cell "1" [ref=e441]
+            - cell "$1,500,000" [ref=e442]
+            - cell "PENDING" [ref=e443]
+            - cell "Nov 23, 2025" [ref=e444]
+            - cell "Edit" [ref=e445]:
+              - button "Edit" [ref=e446]
+          - row "CapacityTest_1763862090214_4qdn0k capacitytest_1763862090214_4qdn0k@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e447] [cursor=pointer]:
+            - cell "CapacityTest_1763862090214_4qdn0k capacitytest_1763862090214_4qdn0k@test.com" [ref=e448]:
+              - generic [ref=e449]: CapacityTest_1763862090214_4qdn0k
+              - generic [ref=e450]: capacitytest_1763862090214_4qdn0k@test.com
+            - cell "2" [ref=e451]
+            - cell "$2,200,000" [ref=e452]
+            - cell "PENDING" [ref=e453]
+            - cell "Nov 22, 2025" [ref=e454]
+            - cell "Edit" [ref=e455]:
+              - button "Edit" [ref=e456]
+          - row "StatusUpdate_1763931234371_aofq4i statusupdate_1763931234371_aofq4i@test.com 1 $1,500,000 CONFIRMED Nov 23, 2025 Edit" [ref=e457] [cursor=pointer]:
+            - cell "StatusUpdate_1763931234371_aofq4i statusupdate_1763931234371_aofq4i@test.com" [ref=e458]:
+              - generic [ref=e459]: StatusUpdate_1763931234371_aofq4i
+              - generic [ref=e460]: statusupdate_1763931234371_aofq4i@test.com
+            - cell "1" [ref=e461]
+            - cell "$1,500,000" [ref=e462]
+            - cell "CONFIRMED" [ref=e463]
+            - cell "Nov 23, 2025" [ref=e464]
+            - cell "Edit" [ref=e465]:
+              - button "Edit" [ref=e466]
+          - row "BlockedUI_1763934117297_x57lrv blockedui_1763934117297_x57lrv@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e467] [cursor=pointer]:
+            - cell "BlockedUI_1763934117297_x57lrv blockedui_1763934117297_x57lrv@test.com" [ref=e468]:
+              - generic [ref=e469]: BlockedUI_1763934117297_x57lrv
+              - generic [ref=e470]: blockedui_1763934117297_x57lrv@test.com
+            - cell "1" [ref=e471]
+            - cell "$1,500,000" [ref=e472]
+            - cell "PENDING" [ref=e473]
+            - cell "Nov 23, 2025" [ref=e474]
+            - cell "Edit" [ref=e475]:
+              - button "Edit" [ref=e476]
+          - row "StatusUpdate_1763861870292_qed79f statusupdate_1763861870292_qed79f@test.com 1 $1,500,000 CONFIRMED Nov 22, 2025 Edit" [ref=e477] [cursor=pointer]:
+            - cell "StatusUpdate_1763861870292_qed79f statusupdate_1763861870292_qed79f@test.com" [ref=e478]:
+              - generic [ref=e479]: StatusUpdate_1763861870292_qed79f
+              - generic [ref=e480]: statusupdate_1763861870292_qed79f@test.com
+            - cell "1" [ref=e481]
+            - cell "$1,500,000" [ref=e482]
+            - cell "CONFIRMED" [ref=e483]
+            - cell "Nov 22, 2025" [ref=e484]
+            - cell "Edit" [ref=e485]:
+              - button "Edit" [ref=e486]
+          - row "PublicTest_1763939090767_xwi5mm publictest_1763939090767_xwi5mm@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e487] [cursor=pointer]:
+            - cell "PublicTest_1763939090767_xwi5mm publictest_1763939090767_xwi5mm@test.com" [ref=e488]:
+              - generic [ref=e489]: PublicTest_1763939090767_xwi5mm
+              - generic [ref=e490]: publictest_1763939090767_xwi5mm@test.com
+            - cell "1" [ref=e491]
+            - cell "$1,500,000" [ref=e492]
+            - cell "PENDING" [ref=e493]
+            - cell "Nov 23, 2025" [ref=e494]
+            - cell "Edit" [ref=e495]:
+              - button "Edit" [ref=e496]
+          - row "BlockedUI_1763861987220_gvs9mn blockedui_1763861987220_gvs9mn@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e497] [cursor=pointer]:
+            - cell "BlockedUI_1763861987220_gvs9mn blockedui_1763861987220_gvs9mn@test.com" [ref=e498]:
+              - generic [ref=e499]: BlockedUI_1763861987220_gvs9mn
+              - generic [ref=e500]: blockedui_1763861987220_gvs9mn@test.com
+            - cell "1" [ref=e501]
+            - cell "$1,500,000" [ref=e502]
+            - cell "PENDING" [ref=e503]
+            - cell "Nov 22, 2025" [ref=e504]
+            - cell "Edit" [ref=e505]:
+              - button "Edit" [ref=e506]
+          - row "ConvertTest_1763934111298_ldi2in converttest_1763934111298_ldi2in@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e507] [cursor=pointer]:
+            - cell "ConvertTest_1763934111298_ldi2in converttest_1763934111298_ldi2in@test.com" [ref=e508]:
+              - generic [ref=e509]: ConvertTest_1763934111298_ldi2in
+              - generic [ref=e510]: converttest_1763934111298_ldi2in@test.com
+            - cell "1" [ref=e511]
+            - cell "$1,500,000" [ref=e512]
+            - cell "PENDING" [ref=e513]
+            - cell "Nov 23, 2025" [ref=e514]
+            - cell "Edit" [ref=e515]:
+              - button "Edit" [ref=e516]
+          - row "PrivateTest_1763861606701_9lxmvk privatetest_1763861606701_9lxmvk@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e517] [cursor=pointer]:
+            - cell "PrivateTest_1763861606701_9lxmvk privatetest_1763861606701_9lxmvk@test.com" [ref=e518]:
+              - generic [ref=e519]: PrivateTest_1763861606701_9lxmvk
+              - generic [ref=e520]: privatetest_1763861606701_9lxmvk@test.com
+            - cell "2" [ref=e521]
+            - cell "$2,200,000" [ref=e522]
+            - cell "PENDING" [ref=e523]
+            - cell "Nov 22, 2025" [ref=e524]
+            - cell "Edit" [ref=e525]:
+              - button "Edit" [ref=e526]
+          - row "CapacityTest_1763859821329_j44zpv capacitytest_1763859821329_j44zpv@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e527] [cursor=pointer]:
+            - cell "CapacityTest_1763859821329_j44zpv capacitytest_1763859821329_j44zpv@test.com" [ref=e528]:
+              - generic [ref=e529]: CapacityTest_1763859821329_j44zpv
+              - generic [ref=e530]: capacitytest_1763859821329_j44zpv@test.com
+            - cell "2" [ref=e531]
+            - cell "$2,200,000" [ref=e532]
+            - cell "PENDING" [ref=e533]
+            - cell "Nov 22, 2025" [ref=e534]
+            - cell "Edit" [ref=e535]:
+              - button "Edit" [ref=e536]
+          - row "CapacityTest_1763861685592_vtssoyj capacitytest_1763861685592_vtssoyj@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e537] [cursor=pointer]:
+            - cell "CapacityTest_1763861685592_vtssoyj capacitytest_1763861685592_vtssoyj@test.com" [ref=e538]:
+              - generic [ref=e539]: CapacityTest_1763861685592_vtssoyj
+              - generic [ref=e540]: capacitytest_1763861685592_vtssoyj@test.com
+            - cell "2" [ref=e541]
+            - cell "$2,200,000" [ref=e542]
+            - cell "PENDING" [ref=e543]
+            - cell "Nov 22, 2025" [ref=e544]
+            - cell "Edit" [ref=e545]:
+              - button "Edit" [ref=e546]
+          - row "PrivateTest_1763867643164_g6hau privatetest_1763867643164_g6hau@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e547] [cursor=pointer]:
+            - cell "PrivateTest_1763867643164_g6hau privatetest_1763867643164_g6hau@test.com" [ref=e548]:
+              - generic [ref=e549]: PrivateTest_1763867643164_g6hau
+              - generic [ref=e550]: privatetest_1763867643164_g6hau@test.com
+            - cell "2" [ref=e551]
+            - cell "$2,200,000" [ref=e552]
+            - cell "PENDING" [ref=e553]
+            - cell "Nov 22, 2025" [ref=e554]
+            - cell "Edit" [ref=e555]:
+              - button "Edit" [ref=e556]
+          - row "DateUpdate_1763939085506_6kbi2b dateupdate_1763939085506_6kbi2b@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e557] [cursor=pointer]:
+            - cell "DateUpdate_1763939085506_6kbi2b dateupdate_1763939085506_6kbi2b@test.com" [ref=e558]:
+              - generic [ref=e559]: DateUpdate_1763939085506_6kbi2b
+              - generic [ref=e560]: dateupdate_1763939085506_6kbi2b@test.com
+            - cell "2" [ref=e561]
+            - cell "$2,200,000" [ref=e562]
+            - cell "PENDING" [ref=e563]
+            - cell "Nov 23, 2025" [ref=e564]
+            - cell "Edit" [ref=e565]:
+              - button "Edit" [ref=e566]
+          - row "TourUpdateUI_1763867652413_ox5xg tourupdateui_1763867652413_ox5xg@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e567] [cursor=pointer]:
+            - cell "TourUpdateUI_1763867652413_ox5xg tourupdateui_1763867652413_ox5xg@test.com" [ref=e568]:
+              - generic [ref=e569]: TourUpdateUI_1763867652413_ox5xg
+              - generic [ref=e570]: tourupdateui_1763867652413_ox5xg@test.com
+            - cell "2" [ref=e571]
+            - cell "$900,000" [ref=e572]
+            - cell "PENDING" [ref=e573]
+            - cell "Nov 22, 2025" [ref=e574]
+            - cell "Edit" [ref=e575]:
+              - button "Edit" [ref=e576]
+          - row "PrivateTest_1763861294265_3am9fq privatetest_1763861294265_3am9fq@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e577] [cursor=pointer]:
+            - cell "PrivateTest_1763861294265_3am9fq privatetest_1763861294265_3am9fq@test.com" [ref=e578]:
+              - generic [ref=e579]: PrivateTest_1763861294265_3am9fq
+              - generic [ref=e580]: privatetest_1763861294265_3am9fq@test.com
+            - cell "1" [ref=e581]
+            - cell "$1,500,000" [ref=e582]
+            - cell "PENDING" [ref=e583]
+            - cell "Nov 22, 2025" [ref=e584]
+            - cell "Edit" [ref=e585]:
+              - button "Edit" [ref=e586]
+          - row "ConvertTest_1763867688260_1y4bx converttest_1763867688260_1y4bx@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e587] [cursor=pointer]:
+            - cell "ConvertTest_1763867688260_1y4bx converttest_1763867688260_1y4bx@test.com" [ref=e588]:
+              - generic [ref=e589]: ConvertTest_1763867688260_1y4bx
+              - generic [ref=e590]: converttest_1763867688260_1y4bx@test.com
+            - cell "1" [ref=e591]
+            - cell "$1,500,000" [ref=e592]
+            - cell "PENDING" [ref=e593]
+            - cell "Nov 22, 2025" [ref=e594]
+            - cell "Edit" [ref=e595]:
+              - button "Edit" [ref=e596]
+          - row "CapacityTest_1763950194903_datoii capacitytest_1763950194903_datoii@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e597] [cursor=pointer]:
+            - cell "CapacityTest_1763950194903_datoii capacitytest_1763950194903_datoii@test.com" [ref=e598]:
+              - generic [ref=e599]: CapacityTest_1763950194903_datoii
+              - generic [ref=e600]: capacitytest_1763950194903_datoii@test.com
+            - cell "2" [ref=e601]
+            - cell "$2,200,000" [ref=e602]
+            - cell "PENDING" [ref=e603]
+            - cell "Nov 23, 2025" [ref=e604]
+            - cell "Edit" [ref=e605]:
+              - button "Edit" [ref=e606]
+          - row "ConvertTest_1763931436496_fm4o5t converttest_1763931436496_fm4o5t@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e607] [cursor=pointer]:
+            - cell "ConvertTest_1763931436496_fm4o5t converttest_1763931436496_fm4o5t@test.com" [ref=e608]:
+              - generic [ref=e609]: ConvertTest_1763931436496_fm4o5t
+              - generic [ref=e610]: converttest_1763931436496_fm4o5t@test.com
+            - cell "1" [ref=e611]
+            - cell "$1,500,000" [ref=e612]
+            - cell "PENDING" [ref=e613]
+            - cell "Nov 23, 2025" [ref=e614]
+            - cell "Edit" [ref=e615]:
+              - button "Edit" [ref=e616]
+          - row "DateUpdate_1763859993353_g7aoja dateupdate_1763859993353_g7aoja@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e617] [cursor=pointer]:
+            - cell "DateUpdate_1763859993353_g7aoja dateupdate_1763859993353_g7aoja@test.com" [ref=e618]:
+              - generic [ref=e619]: DateUpdate_1763859993353_g7aoja
+              - generic [ref=e620]: dateupdate_1763859993353_g7aoja@test.com
+            - cell "2" [ref=e621]
+            - cell "$2,200,000" [ref=e622]
+            - cell "PENDING" [ref=e623]
+            - cell "Nov 22, 2025" [ref=e624]
+            - cell "Edit" [ref=e625]:
+              - button "Edit" [ref=e626]
+          - row "GhostTest_1763939161696_mqdsxp ghosttest_1763939161696_mqdsxp@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e627] [cursor=pointer]:
+            - cell "GhostTest_1763939161696_mqdsxp ghosttest_1763939161696_mqdsxp@test.com" [ref=e628]:
+              - generic [ref=e629]: GhostTest_1763939161696_mqdsxp
+              - generic [ref=e630]: ghosttest_1763939161696_mqdsxp@test.com
+            - cell "1" [ref=e631]
+            - cell "$1,500,000" [ref=e632]
+            - cell "PENDING" [ref=e633]
+            - cell "Nov 23, 2025" [ref=e634]
+            - cell "Edit" [ref=e635]:
+              - button "Edit" [ref=e636]
+          - row "PublicTest_1763862060061_0lvfzs publictest_1763862060061_0lvfzs@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e637] [cursor=pointer]:
+            - cell "PublicTest_1763862060061_0lvfzs publictest_1763862060061_0lvfzs@test.com" [ref=e638]:
+              - generic [ref=e639]: PublicTest_1763862060061_0lvfzs
+              - generic [ref=e640]: publictest_1763862060061_0lvfzs@test.com
+            - cell "1" [ref=e641]
+            - cell "$1,500,000" [ref=e642]
+            - cell "PENDING" [ref=e643]
+            - cell "Nov 22, 2025" [ref=e644]
+            - cell "Edit" [ref=e645]:
+              - button "Edit" [ref=e646]
+          - row "TourUpdateUI_1763931390338_pvgiyj tourupdateui_1763931390338_pvgiyj@test.com 2 $900,000 PENDING Nov 23, 2025 Edit" [ref=e647] [cursor=pointer]:
+            - cell "TourUpdateUI_1763931390338_pvgiyj tourupdateui_1763931390338_pvgiyj@test.com" [ref=e648]:
+              - generic [ref=e649]: TourUpdateUI_1763931390338_pvgiyj
+              - generic [ref=e650]: tourupdateui_1763931390338_pvgiyj@test.com
+            - cell "2" [ref=e651]
+            - cell "$900,000" [ref=e652]
+            - cell "PENDING" [ref=e653]
+            - cell "Nov 23, 2025" [ref=e654]
+            - cell "Edit" [ref=e655]:
+              - button "Edit" [ref=e656]
+          - row "GhostTest_1763931275489_isvxiq ghosttest_1763931275489_isvxiq@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e657] [cursor=pointer]:
+            - cell "GhostTest_1763931275489_isvxiq ghosttest_1763931275489_isvxiq@test.com" [ref=e658]:
+              - generic [ref=e659]: GhostTest_1763931275489_isvxiq
+              - generic [ref=e660]: ghosttest_1763931275489_isvxiq@test.com
+            - cell "1" [ref=e661]
+            - cell "$1,500,000" [ref=e662]
+            - cell "PENDING" [ref=e663]
+            - cell "Nov 23, 2025" [ref=e664]
+            - cell "Edit" [ref=e665]:
+              - button "Edit" [ref=e666]
+          - row "BlockedUI_1763931263626_0tttk4 blockedui_1763931263626_0tttk4@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e667] [cursor=pointer]:
+            - cell "BlockedUI_1763931263626_0tttk4 blockedui_1763931263626_0tttk4@test.com" [ref=e668]:
+              - generic [ref=e669]: BlockedUI_1763931263626_0tttk4
+              - generic [ref=e670]: blockedui_1763931263626_0tttk4@test.com
+            - cell "1" [ref=e671]
+            - cell "$1,500,000" [ref=e672]
+            - cell "PENDING" [ref=e673]
+            - cell "Nov 23, 2025" [ref=e674]
+            - cell "Edit" [ref=e675]:
+              - button "Edit" [ref=e676]
+          - row "StatusUpdate_1763867664819_j6rmr statusupdate_1763867664819_j6rmr@test.com 1 $1,500,000 CONFIRMED Nov 22, 2025 Edit" [ref=e677] [cursor=pointer]:
+            - cell "StatusUpdate_1763867664819_j6rmr statusupdate_1763867664819_j6rmr@test.com" [ref=e678]:
+              - generic [ref=e679]: StatusUpdate_1763867664819_j6rmr
+              - generic [ref=e680]: statusupdate_1763867664819_j6rmr@test.com
+            - cell "1" [ref=e681]
+            - cell "$1,500,000" [ref=e682]
+            - cell "CONFIRMED" [ref=e683]
+            - cell "Nov 22, 2025" [ref=e684]
+            - cell "Edit" [ref=e685]:
+              - button "Edit" [ref=e686]
+          - row "PrivateTest_1763931210059_zj7917 privatetest_1763931210059_zj7917@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e687] [cursor=pointer]:
+            - cell "PrivateTest_1763931210059_zj7917 privatetest_1763931210059_zj7917@test.com" [ref=e688]:
+              - generic [ref=e689]: PrivateTest_1763931210059_zj7917
+              - generic [ref=e690]: privatetest_1763931210059_zj7917@test.com
+            - cell "2" [ref=e691]
+            - cell "$2,200,000" [ref=e692]
+            - cell "PENDING" [ref=e693]
+            - cell "Nov 23, 2025" [ref=e694]
+            - cell "Edit" [ref=e695]:
+              - button "Edit" [ref=e696]
+          - row "TourUpdate_1763860045154_jwlp3u tourupdate_1763860045154_jwlp3u@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e697] [cursor=pointer]:
+            - cell "TourUpdate_1763860045154_jwlp3u tourupdate_1763860045154_jwlp3u@test.com" [ref=e698]:
+              - generic [ref=e699]: TourUpdate_1763860045154_jwlp3u
+              - generic [ref=e700]: tourupdate_1763860045154_jwlp3u@test.com
+            - cell "2" [ref=e701]
+            - cell "$900,000" [ref=e702]
+            - cell "PENDING" [ref=e703]
+            - cell "Nov 22, 2025" [ref=e704]
+            - cell "Edit" [ref=e705]:
+              - button "Edit" [ref=e706]
+          - row "BlockedUI_1763860079181_7vrog blockedui_1763860079181_7vrog@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e707] [cursor=pointer]:
+            - cell "BlockedUI_1763860079181_7vrog blockedui_1763860079181_7vrog@test.com" [ref=e708]:
+              - generic [ref=e709]: BlockedUI_1763860079181_7vrog
+              - generic [ref=e710]: blockedui_1763860079181_7vrog@test.com
+            - cell "1" [ref=e711]
+            - cell "$1,500,000" [ref=e712]
+            - cell "PENDING" [ref=e713]
+            - cell "Nov 22, 2025" [ref=e714]
+            - cell "Edit" [ref=e715]:
+              - button "Edit" [ref=e716]
+          - row "ConvertTest_1763862070966_nmaqy converttest_1763862070966_nmaqy@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e717] [cursor=pointer]:
+            - cell "ConvertTest_1763862070966_nmaqy converttest_1763862070966_nmaqy@test.com" [ref=e718]:
+              - generic [ref=e719]: ConvertTest_1763862070966_nmaqy
+              - generic [ref=e720]: converttest_1763862070966_nmaqy@test.com
+            - cell "1" [ref=e721]
+            - cell "$1,500,000" [ref=e722]
+            - cell "PENDING" [ref=e723]
+            - cell "Nov 22, 2025" [ref=e724]
+            - cell "Edit" [ref=e725]:
+              - button "Edit" [ref=e726]
+          - row "PublicTest_1763859674480_slhhdv publictest_1763859674480_slhhdv@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e727] [cursor=pointer]:
+            - cell "PublicTest_1763859674480_slhhdv publictest_1763859674480_slhhdv@test.com" [ref=e728]:
+              - generic [ref=e729]: PublicTest_1763859674480_slhhdv
+              - generic [ref=e730]: publictest_1763859674480_slhhdv@test.com
+            - cell "1" [ref=e731]
+            - cell "$1,500,000" [ref=e732]
+            - cell "PENDING" [ref=e733]
+            - cell "Nov 22, 2025" [ref=e734]
+            - cell "Edit" [ref=e735]:
+              - button "Edit" [ref=e736]
+          - row "PrivateTest_1763859764321_4s0c1b privatetest_1763859764321_4s0c1b@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e737] [cursor=pointer]:
+            - cell "PrivateTest_1763859764321_4s0c1b privatetest_1763859764321_4s0c1b@test.com" [ref=e738]:
+              - generic [ref=e739]: PrivateTest_1763859764321_4s0c1b
+              - generic [ref=e740]: privatetest_1763859764321_4s0c1b@test.com
+            - cell "2" [ref=e741]
+            - cell "$2,200,000" [ref=e742]
+            - cell "PENDING" [ref=e743]
+            - cell "Nov 22, 2025" [ref=e744]
+            - cell "Edit" [ref=e745]:
+              - button "Edit" [ref=e746]
+          - row "ConvertTest_1763860071328_h69hc5 converttest_1763860071328_h69hc5@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e747] [cursor=pointer]:
+            - cell "ConvertTest_1763860071328_h69hc5 converttest_1763860071328_h69hc5@test.com" [ref=e748]:
+              - generic [ref=e749]: ConvertTest_1763860071328_h69hc5
+              - generic [ref=e750]: converttest_1763860071328_h69hc5@test.com
+            - cell "1" [ref=e751]
+            - cell "$1,500,000" [ref=e752]
+            - cell "PENDING" [ref=e753]
+            - cell "Nov 22, 2025" [ref=e754]
+            - cell "Edit" [ref=e755]:
+              - button "Edit" [ref=e756]
+          - row "ConvertTest_1763950188555_la0m4b converttest_1763950188555_la0m4b@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e757] [cursor=pointer]:
+            - cell "ConvertTest_1763950188555_la0m4b converttest_1763950188555_la0m4b@test.com" [ref=e758]:
+              - generic [ref=e759]: ConvertTest_1763950188555_la0m4b
+              - generic [ref=e760]: converttest_1763950188555_la0m4b@test.com
+            - cell "1" [ref=e761]
+            - cell "$1,500,000" [ref=e762]
+            - cell "PENDING" [ref=e763]
+            - cell "Nov 23, 2025" [ref=e764]
+            - cell "Edit" [ref=e765]:
+              - button "Edit" [ref=e766]
+          - row "PrivateTest_1763934070742_l1vee privatetest_1763934070742_l1vee@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e767] [cursor=pointer]:
+            - cell "PrivateTest_1763934070742_l1vee privatetest_1763934070742_l1vee@test.com" [ref=e768]:
+              - generic [ref=e769]: PrivateTest_1763934070742_l1vee
+              - generic [ref=e770]: privatetest_1763934070742_l1vee@test.com
+            - cell "2" [ref=e771]
+            - cell "$2,200,000" [ref=e772]
+            - cell "PENDING" [ref=e773]
+            - cell "Nov 23, 2025" [ref=e774]
+            - cell "Edit" [ref=e775]:
+              - button "Edit" [ref=e776]
+          - row "BlockedUI_1763861709721_ctu4oxr blockedui_1763861709721_ctu4oxr@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e777] [cursor=pointer]:
+            - cell "BlockedUI_1763861709721_ctu4oxr blockedui_1763861709721_ctu4oxr@test.com" [ref=e778]:
+              - generic [ref=e779]: BlockedUI_1763861709721_ctu4oxr
+              - generic [ref=e780]: blockedui_1763861709721_ctu4oxr@test.com
+            - cell "1" [ref=e781]
+            - cell "$1,500,000" [ref=e782]
+            - cell "PENDING" [ref=e783]
+            - cell "Nov 22, 2025" [ref=e784]
+            - cell "Edit" [ref=e785]:
+              - button "Edit" [ref=e786]
+          - row "CapacityTest_1763859422512_7q8px capacitytest_1763859422512_7q8px@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e787] [cursor=pointer]:
+            - cell "CapacityTest_1763859422512_7q8px capacitytest_1763859422512_7q8px@test.com" [ref=e788]:
+              - generic [ref=e789]: CapacityTest_1763859422512_7q8px
+              - generic [ref=e790]: capacitytest_1763859422512_7q8px@test.com
+            - cell "2" [ref=e791]
+            - cell "$2,200,000" [ref=e792]
+            - cell "PENDING" [ref=e793]
+            - cell "Nov 22, 2025" [ref=e794]
+            - cell "Edit" [ref=e795]:
+              - button "Edit" [ref=e796]
+          - row "PrivateTest_1763860033907_poqhwj privatetest_1763860033907_poqhwj@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e797] [cursor=pointer]:
+            - cell "PrivateTest_1763860033907_poqhwj privatetest_1763860033907_poqhwj@test.com" [ref=e798]:
+              - generic [ref=e799]: PrivateTest_1763860033907_poqhwj
+              - generic [ref=e800]: privatetest_1763860033907_poqhwj@test.com
+            - cell "2" [ref=e801]
+            - cell "$2,200,000" [ref=e802]
+            - cell "PENDING" [ref=e803]
+            - cell "Nov 22, 2025" [ref=e804]
+            - cell "Edit" [ref=e805]:
+              - button "Edit" [ref=e806]
+          - row "PrivateTest_1763861849849_6c1mwl privatetest_1763861849849_6c1mwl@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e807] [cursor=pointer]:
+            - cell "PrivateTest_1763861849849_6c1mwl privatetest_1763861849849_6c1mwl@test.com" [ref=e808]:
+              - generic [ref=e809]: PrivateTest_1763861849849_6c1mwl
+              - generic [ref=e810]: privatetest_1763861849849_6c1mwl@test.com
+            - cell "2" [ref=e811]
+            - cell "$2,200,000" [ref=e812]
+            - cell "PENDING" [ref=e813]
+            - cell "Nov 22, 2025" [ref=e814]
+            - cell "Edit" [ref=e815]:
+              - button "Edit" [ref=e816]
+          - row "PrivateTest_1763950177134_59x1xe privatetest_1763950177134_59x1xe@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e817] [cursor=pointer]:
+            - cell "PrivateTest_1763950177134_59x1xe privatetest_1763950177134_59x1xe@test.com" [ref=e818]:
+              - generic [ref=e819]: PrivateTest_1763950177134_59x1xe
+              - generic [ref=e820]: privatetest_1763950177134_59x1xe@test.com
+            - cell "2" [ref=e821]
+            - cell "$2,200,000" [ref=e822]
+            - cell "PENDING" [ref=e823]
+            - cell "Nov 23, 2025" [ref=e824]
+            - cell "Edit" [ref=e825]:
+              - button "Edit" [ref=e826]
+          - row "BlockedUI_1763939143574_pnhxhk blockedui_1763939143574_pnhxhk@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e827] [cursor=pointer]:
+            - cell "BlockedUI_1763939143574_pnhxhk blockedui_1763939143574_pnhxhk@test.com" [ref=e828]:
+              - generic [ref=e829]: BlockedUI_1763939143574_pnhxhk
+              - generic [ref=e830]: blockedui_1763939143574_pnhxhk@test.com
+            - cell "1" [ref=e831]
+            - cell "$1,500,000" [ref=e832]
+            - cell "PENDING" [ref=e833]
+            - cell "Nov 23, 2025" [ref=e834]
+            - cell "Edit" [ref=e835]:
+              - button "Edit" [ref=e836]
+          - row "TourUpdateUI_1763939115761_sq6dyo tourupdateui_1763939115761_sq6dyo@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e837] [cursor=pointer]:
+            - cell "TourUpdateUI_1763939115761_sq6dyo tourupdateui_1763939115761_sq6dyo@test.com" [ref=e838]:
+              - generic [ref=e839]: TourUpdateUI_1763939115761_sq6dyo
+              - generic [ref=e840]: tourupdateui_1763939115761_sq6dyo@test.com
+            - cell "2" [ref=e841]
+            - cell "$900,000" [ref=e842]
+            - cell "CONFIRMED" [ref=e843]
+            - cell "Nov 23, 2025" [ref=e844]
+            - cell "Edit" [ref=e845]:
+              - button "Edit" [ref=e846]
+          - row "PrivateTest_1763861368177_g95oza privatetest_1763861368177_g95oza@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e847] [cursor=pointer]:
+            - cell "PrivateTest_1763861368177_g95oza privatetest_1763861368177_g95oza@test.com" [ref=e848]:
+              - generic [ref=e849]: PrivateTest_1763861368177_g95oza
+              - generic [ref=e850]: privatetest_1763861368177_g95oza@test.com
+            - cell "1" [ref=e851]
+            - cell "$1,500,000" [ref=e852]
+            - cell "PENDING" [ref=e853]
+            - cell "Nov 22, 2025" [ref=e854]
+            - cell "Edit" [ref=e855]:
+              - button "Edit" [ref=e856]
+          - row "PrivateTest_1763859240778_3pvacr privatetest_1763859240778_3pvacr@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e857] [cursor=pointer]:
+            - cell "PrivateTest_1763859240778_3pvacr privatetest_1763859240778_3pvacr@test.com" [ref=e858]:
+              - generic [ref=e859]: PrivateTest_1763859240778_3pvacr
+              - generic [ref=e860]: privatetest_1763859240778_3pvacr@test.com
+            - cell "2" [ref=e861]
+            - cell "$2,200,000" [ref=e862]
+            - cell "PENDING" [ref=e863]
+            - cell "Nov 22, 2025" [ref=e864]
+            - cell "Edit" [ref=e865]:
+              - button "Edit" [ref=e866]
+          - row "CapacityTest_1763859697267_gi6l7k capacitytest_1763859697267_gi6l7k@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e867] [cursor=pointer]:
+            - cell "CapacityTest_1763859697267_gi6l7k capacitytest_1763859697267_gi6l7k@test.com" [ref=e868]:
+              - generic [ref=e869]: CapacityTest_1763859697267_gi6l7k
+              - generic [ref=e870]: capacitytest_1763859697267_gi6l7k@test.com
+            - cell "2" [ref=e871]
+            - cell "$2,200,000" [ref=e872]
+            - cell "PENDING" [ref=e873]
+            - cell "Nov 22, 2025" [ref=e874]
+            - cell "Edit" [ref=e875]:
+              - button "Edit" [ref=e876]
+          - row "BlockedUI_1763939100431_xejww5 blockedui_1763939100431_xejww5@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e877] [cursor=pointer]:
+            - cell "BlockedUI_1763939100431_xejww5 blockedui_1763939100431_xejww5@test.com" [ref=e878]:
+              - generic [ref=e879]: BlockedUI_1763939100431_xejww5
+              - generic [ref=e880]: blockedui_1763939100431_xejww5@test.com
+            - cell "1" [ref=e881]
+            - cell "$1,500,000" [ref=e882]
+            - cell "PENDING" [ref=e883]
+            - cell "Nov 23, 2025" [ref=e884]
+            - cell "Edit" [ref=e885]:
+              - button "Edit" [ref=e886]
+          - row "DateUpdate_1763859254906_thrpux dateupdate_1763859254906_thrpux@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e887] [cursor=pointer]:
+            - cell "DateUpdate_1763859254906_thrpux dateupdate_1763859254906_thrpux@test.com" [ref=e888]:
+              - generic [ref=e889]: DateUpdate_1763859254906_thrpux
+              - generic [ref=e890]: dateupdate_1763859254906_thrpux@test.com
+            - cell "2" [ref=e891]
+            - cell "$2,200,000" [ref=e892]
+            - cell "PENDING" [ref=e893]
+            - cell "Nov 22, 2025" [ref=e894]
+            - cell "Edit" [ref=e895]:
+              - button "Edit" [ref=e896]
+          - row "BlockedUI_1763859272326_0rkpus blockedui_1763859272326_0rkpus@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e897] [cursor=pointer]:
+            - cell "BlockedUI_1763859272326_0rkpus blockedui_1763859272326_0rkpus@test.com" [ref=e898]:
+              - generic [ref=e899]: BlockedUI_1763859272326_0rkpus
+              - generic [ref=e900]: blockedui_1763859272326_0rkpus@test.com
+            - cell "1" [ref=e901]
+            - cell "$1,500,000" [ref=e902]
+            - cell "PENDING" [ref=e903]
+            - cell "Nov 22, 2025" [ref=e904]
+            - cell "Edit" [ref=e905]:
+              - button "Edit" [ref=e906]
+          - row "Test User 1763950118296 test1763950118296@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e907] [cursor=pointer]:
+            - cell "Test User 1763950118296 test1763950118296@example.com" [ref=e908]:
+              - generic [ref=e909]: Test User 1763950118296
+              - generic [ref=e910]: test1763950118296@example.com
+            - cell "2" [ref=e911]
+            - cell "$2,200,000" [ref=e912]
+            - cell "PENDING" [ref=e913]
+            - cell "Nov 23, 2025" [ref=e914]
+            - cell "Edit" [ref=e915]:
+              - button "Edit" [ref=e916]
+          - row "DateUpdate_1763931245144_znlbak dateupdate_1763931245144_znlbak@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e917] [cursor=pointer]:
+            - cell "DateUpdate_1763931245144_znlbak dateupdate_1763931245144_znlbak@test.com" [ref=e918]:
+              - generic [ref=e919]: DateUpdate_1763931245144_znlbak
+              - generic [ref=e920]: dateupdate_1763931245144_znlbak@test.com
+            - cell "2" [ref=e921]
+            - cell "$2,200,000" [ref=e922]
+            - cell "PENDING" [ref=e923]
+            - cell "Nov 23, 2025" [ref=e924]
+            - cell "Edit" [ref=e925]:
+              - button "Edit" [ref=e926]
+          - row "ConvertTest_1763859736366_e4302b converttest_1763859736366_e4302b@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e927] [cursor=pointer]:
+            - cell "ConvertTest_1763859736366_e4302b converttest_1763859736366_e4302b@test.com" [ref=e928]:
+              - generic [ref=e929]: ConvertTest_1763859736366_e4302b
+              - generic [ref=e930]: converttest_1763859736366_e4302b@test.com
+            - cell "1" [ref=e931]
+            - cell "$1,500,000" [ref=e932]
+            - cell "PENDING" [ref=e933]
+            - cell "Nov 22, 2025" [ref=e934]
+            - cell "Edit" [ref=e935]:
+              - button "Edit" [ref=e936]
+          - row "PrivateTest_1763861586315_sjlt4 privatetest_1763861586315_sjlt4@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e937] [cursor=pointer]:
+            - cell "PrivateTest_1763861586315_sjlt4 privatetest_1763861586315_sjlt4@test.com" [ref=e938]:
+              - generic [ref=e939]: PrivateTest_1763861586315_sjlt4
+              - generic [ref=e940]: privatetest_1763861586315_sjlt4@test.com
+            - cell "2" [ref=e941]
+            - cell "$2,200,000" [ref=e942]
+            - cell "PENDING" [ref=e943]
+            - cell "Nov 22, 2025" [ref=e944]
+            - cell "Edit" [ref=e945]:
+              - button "Edit" [ref=e946]
+          - row "PrivateTest_1763867441922_go1mt privatetest_1763867441922_go1mt@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e947] [cursor=pointer]:
+            - cell "PrivateTest_1763867441922_go1mt privatetest_1763867441922_go1mt@test.com" [ref=e948]:
+              - generic [ref=e949]: PrivateTest_1763867441922_go1mt
+              - generic [ref=e950]: privatetest_1763867441922_go1mt@test.com
+            - cell "2" [ref=e951]
+            - cell "$2,200,000" [ref=e952]
+            - cell "PENDING" [ref=e953]
+            - cell "Nov 22, 2025" [ref=e954]
+            - cell "Edit" [ref=e955]:
+              - button "Edit" [ref=e956]
+          - row "PublicTest_1763931333119_uun5ye publictest_1763931333119_uun5ye@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e957] [cursor=pointer]:
+            - cell "PublicTest_1763931333119_uun5ye publictest_1763931333119_uun5ye@test.com" [ref=e958]:
+              - generic [ref=e959]: PublicTest_1763931333119_uun5ye
+              - generic [ref=e960]: publictest_1763931333119_uun5ye@test.com
+            - cell "1" [ref=e961]
+            - cell "$1,500,000" [ref=e962]
+            - cell "PENDING" [ref=e963]
+            - cell "Nov 23, 2025" [ref=e964]
+            - cell "Edit" [ref=e965]:
+              - button "Edit" [ref=e966]
+          - row "DateUpdate_1763939176164_sdrh5h dateupdate_1763939176164_sdrh5h@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e967] [cursor=pointer]:
+            - cell "DateUpdate_1763939176164_sdrh5h dateupdate_1763939176164_sdrh5h@test.com" [ref=e968]:
+              - generic [ref=e969]: DateUpdate_1763939176164_sdrh5h
+              - generic [ref=e970]: dateupdate_1763939176164_sdrh5h@test.com
+            - cell "2" [ref=e971]
+            - cell "$2,200,000" [ref=e972]
+            - cell "PENDING" [ref=e973]
+            - cell "Nov 23, 2025" [ref=e974]
+            - cell "Edit" [ref=e975]:
+              - button "Edit" [ref=e976]
+          - row "PublicTest_1763859322265_qbq38a publictest_1763859322265_qbq38a@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e977] [cursor=pointer]:
+            - cell "PublicTest_1763859322265_qbq38a publictest_1763859322265_qbq38a@test.com" [ref=e978]:
+              - generic [ref=e979]: PublicTest_1763859322265_qbq38a
+              - generic [ref=e980]: publictest_1763859322265_qbq38a@test.com
+            - cell "1" [ref=e981]
+            - cell "$1,500,000" [ref=e982]
+            - cell "PENDING" [ref=e983]
+            - cell "Nov 22, 2025" [ref=e984]
+            - cell "Edit" [ref=e985]:
+              - button "Edit" [ref=e986]
+          - row "TourUpdate_1763859775582_ytc96 tourupdate_1763859775582_ytc96@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e987] [cursor=pointer]:
+            - cell "TourUpdate_1763859775582_ytc96 tourupdate_1763859775582_ytc96@test.com" [ref=e988]:
+              - generic [ref=e989]: TourUpdate_1763859775582_ytc96
+              - generic [ref=e990]: tourupdate_1763859775582_ytc96@test.com
+            - cell "2" [ref=e991]
+            - cell "$900,000" [ref=e992]
+            - cell "PENDING" [ref=e993]
+            - cell "Nov 22, 2025" [ref=e994]
+            - cell "Edit" [ref=e995]:
+              - button "Edit" [ref=e996]
+          - row "ConvertTest_1763953945879_f23luc converttest_1763953945879_f23luc@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e997] [cursor=pointer]:
+            - cell "ConvertTest_1763953945879_f23luc converttest_1763953945879_f23luc@test.com" [ref=e998]:
+              - generic [ref=e999]: ConvertTest_1763953945879_f23luc
+              - generic [ref=e1000]: converttest_1763953945879_f23luc@test.com
+            - cell "1" [ref=e1001]
+            - cell "$1,500,000" [ref=e1002]
+            - cell "PENDING" [ref=e1003]
+            - cell "Nov 23, 2025" [ref=e1004]
+            - cell "Edit" [ref=e1005]:
+              - button "Edit" [ref=e1006]
+          - row "DateUpdate_1763867675439_kf0918 dateupdate_1763867675439_kf0918@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1007] [cursor=pointer]:
+            - cell "DateUpdate_1763867675439_kf0918 dateupdate_1763867675439_kf0918@test.com" [ref=e1008]:
+              - generic [ref=e1009]: DateUpdate_1763867675439_kf0918
+              - generic [ref=e1010]: dateupdate_1763867675439_kf0918@test.com
+            - cell "2" [ref=e1011]
+            - cell "$2,200,000" [ref=e1012]
+            - cell "PENDING" [ref=e1013]
+            - cell "Nov 22, 2025" [ref=e1014]
+            - cell "Edit" [ref=e1015]:
+              - button "Edit" [ref=e1016]
+          - row "PrivateTest_1763861326600_6gxeb5 privatetest_1763861326600_6gxeb5@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1017] [cursor=pointer]:
+            - cell "PrivateTest_1763861326600_6gxeb5 privatetest_1763861326600_6gxeb5@test.com" [ref=e1018]:
+              - generic [ref=e1019]: PrivateTest_1763861326600_6gxeb5
+              - generic [ref=e1020]: privatetest_1763861326600_6gxeb5@test.com
+            - cell "1" [ref=e1021]
+            - cell "$1,500,000" [ref=e1022]
+            - cell "PENDING" [ref=e1023]
+            - cell "Nov 22, 2025" [ref=e1024]
+            - cell "Edit" [ref=e1025]:
+              - button "Edit" [ref=e1026]
+          - row "TourUpdateUI_1763862024983_9gp1v tourupdateui_1763862024983_9gp1v@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e1027] [cursor=pointer]:
+            - cell "TourUpdateUI_1763862024983_9gp1v tourupdateui_1763862024983_9gp1v@test.com" [ref=e1028]:
+              - generic [ref=e1029]: TourUpdateUI_1763862024983_9gp1v
+              - generic [ref=e1030]: tourupdateui_1763862024983_9gp1v@test.com
+            - cell "2" [ref=e1031]
+            - cell "$900,000" [ref=e1032]
+            - cell "PENDING" [ref=e1033]
+            - cell "Nov 22, 2025" [ref=e1034]
+            - cell "Edit" [ref=e1035]:
+              - button "Edit" [ref=e1036]
+          - row "GhostTest_1763931369738_1pfy7u ghosttest_1763931369738_1pfy7u@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1037] [cursor=pointer]:
+            - cell "GhostTest_1763931369738_1pfy7u ghosttest_1763931369738_1pfy7u@test.com" [ref=e1038]:
+              - generic [ref=e1039]: GhostTest_1763931369738_1pfy7u
+              - generic [ref=e1040]: ghosttest_1763931369738_1pfy7u@test.com
+            - cell "1" [ref=e1041]
+            - cell "$1,500,000" [ref=e1042]
+            - cell "PENDING" [ref=e1043]
+            - cell "Nov 23, 2025" [ref=e1044]
+            - cell "Edit" [ref=e1045]:
+              - button "Edit" [ref=e1046]
+          - row "StatusUpdate_1763931405998_n2s7m statusupdate_1763931405998_n2s7m@test.com 1 $1,500,000 CONFIRMED Nov 23, 2025 Edit" [ref=e1047] [cursor=pointer]:
+            - cell "StatusUpdate_1763931405998_n2s7m statusupdate_1763931405998_n2s7m@test.com" [ref=e1048]:
+              - generic [ref=e1049]: StatusUpdate_1763931405998_n2s7m
+              - generic [ref=e1050]: statusupdate_1763931405998_n2s7m@test.com
+            - cell "1" [ref=e1051]
+            - cell "$1,500,000" [ref=e1052]
+            - cell "CONFIRMED" [ref=e1053]
+            - cell "Nov 23, 2025" [ref=e1054]
+            - cell "Edit" [ref=e1055]:
+              - button "Edit" [ref=e1056]
+          - row "DateUpdate_1763859314079_t9kxh7 dateupdate_1763859314079_t9kxh7@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1057] [cursor=pointer]:
+            - cell "DateUpdate_1763859314079_t9kxh7 dateupdate_1763859314079_t9kxh7@test.com" [ref=e1058]:
+              - generic [ref=e1059]: DateUpdate_1763859314079_t9kxh7
+              - generic [ref=e1060]: dateupdate_1763859314079_t9kxh7@test.com
+            - cell "2" [ref=e1061]
+            - cell "$2,200,000" [ref=e1062]
+            - cell "PENDING" [ref=e1063]
+            - cell "Nov 22, 2025" [ref=e1064]
+            - cell "Edit" [ref=e1065]:
+              - button "Edit" [ref=e1066]
+          - row "ConvertTest_1763860006278_4hfoy7 converttest_1763860006278_4hfoy7@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1067] [cursor=pointer]:
+            - cell "ConvertTest_1763860006278_4hfoy7 converttest_1763860006278_4hfoy7@test.com" [ref=e1068]:
+              - generic [ref=e1069]: ConvertTest_1763860006278_4hfoy7
+              - generic [ref=e1070]: converttest_1763860006278_4hfoy7@test.com
+            - cell "1" [ref=e1071]
+            - cell "$1,500,000" [ref=e1072]
+            - cell "PENDING" [ref=e1073]
+            - cell "Nov 22, 2025" [ref=e1074]
+            - cell "Edit" [ref=e1075]:
+              - button "Edit" [ref=e1076]
+          - row "BlockedUI_1763859688162_39hhtt blockedui_1763859688162_39hhtt@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1077] [cursor=pointer]:
+            - cell "BlockedUI_1763859688162_39hhtt blockedui_1763859688162_39hhtt@test.com" [ref=e1078]:
+              - generic [ref=e1079]: BlockedUI_1763859688162_39hhtt
+              - generic [ref=e1080]: blockedui_1763859688162_39hhtt@test.com
+            - cell "1" [ref=e1081]
+            - cell "$1,500,000" [ref=e1082]
+            - cell "PENDING" [ref=e1083]
+            - cell "Nov 22, 2025" [ref=e1084]
+            - cell "Edit" [ref=e1085]:
+              - button "Edit" [ref=e1086]
+          - row "CapacityTest_1763931364528_j0zgwbr capacitytest_1763931364528_j0zgwbr@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1087] [cursor=pointer]:
+            - cell "CapacityTest_1763931364528_j0zgwbr capacitytest_1763931364528_j0zgwbr@test.com" [ref=e1088]:
+              - generic [ref=e1089]: CapacityTest_1763931364528_j0zgwbr
+              - generic [ref=e1090]: capacitytest_1763931364528_j0zgwbr@test.com
+            - cell "2" [ref=e1091]
+            - cell "$2,200,000" [ref=e1092]
+            - cell "PENDING" [ref=e1093]
+            - cell "Nov 23, 2025" [ref=e1094]
+            - cell "Edit" [ref=e1095]:
+              - button "Edit" [ref=e1096]
+          - row "CapacityTest_1763859354801_5xzseh capacitytest_1763859354801_5xzseh@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1097] [cursor=pointer]:
+            - cell "CapacityTest_1763859354801_5xzseh capacitytest_1763859354801_5xzseh@test.com" [ref=e1098]:
+              - generic [ref=e1099]: CapacityTest_1763859354801_5xzseh
+              - generic [ref=e1100]: capacitytest_1763859354801_5xzseh@test.com
+            - cell "2" [ref=e1101]
+            - cell "$2,200,000" [ref=e1102]
+            - cell "PENDING" [ref=e1103]
+            - cell "Nov 22, 2025" [ref=e1104]
+            - cell "Edit" [ref=e1105]:
+              - button "Edit" [ref=e1106]
+          - row "DateUpdate_1763860053311_utrne dateupdate_1763860053311_utrne@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1107] [cursor=pointer]:
+            - cell "DateUpdate_1763860053311_utrne dateupdate_1763860053311_utrne@test.com" [ref=e1108]:
+              - generic [ref=e1109]: DateUpdate_1763860053311_utrne
+              - generic [ref=e1110]: dateupdate_1763860053311_utrne@test.com
+            - cell "2" [ref=e1111]
+            - cell "$2,200,000" [ref=e1112]
+            - cell "PENDING" [ref=e1113]
+            - cell "Nov 22, 2025" [ref=e1114]
+            - cell "Edit" [ref=e1115]:
+              - button "Edit" [ref=e1116]
+          - row "TourUpdateUI_1763867467182_2jytqm tourupdateui_1763867467182_2jytqm@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e1117] [cursor=pointer]:
+            - cell "TourUpdateUI_1763867467182_2jytqm tourupdateui_1763867467182_2jytqm@test.com" [ref=e1118]:
+              - generic [ref=e1119]: TourUpdateUI_1763867467182_2jytqm
+              - generic [ref=e1120]: tourupdateui_1763867467182_2jytqm@test.com
+            - cell "2" [ref=e1121]
+            - cell "$900,000" [ref=e1122]
+            - cell "PENDING" [ref=e1123]
+            - cell "Nov 22, 2025" [ref=e1124]
+            - cell "Edit" [ref=e1125]:
+              - button "Edit" [ref=e1126]
+          - row "TourUpdate_1763859721942_j3atcy tourupdate_1763859721942_j3atcy@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1127] [cursor=pointer]:
+            - cell "TourUpdate_1763859721942_j3atcy tourupdate_1763859721942_j3atcy@test.com" [ref=e1128]:
+              - generic [ref=e1129]: TourUpdate_1763859721942_j3atcy
+              - generic [ref=e1130]: tourupdate_1763859721942_j3atcy@test.com
+            - cell "2" [ref=e1131]
+            - cell "$2,200,000" [ref=e1132]
+            - cell "PENDING" [ref=e1133]
+            - cell "Nov 22, 2025" [ref=e1134]
+            - cell "Edit" [ref=e1135]:
+              - button "Edit" [ref=e1136]
+          - row "CapacityTest_1763861721818_9ouwke capacitytest_1763861721818_9ouwke@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1137] [cursor=pointer]:
+            - cell "CapacityTest_1763861721818_9ouwke capacitytest_1763861721818_9ouwke@test.com" [ref=e1138]:
+              - generic [ref=e1139]: CapacityTest_1763861721818_9ouwke
+              - generic [ref=e1140]: capacitytest_1763861721818_9ouwke@test.com
+            - cell "2" [ref=e1141]
+            - cell "$2,200,000" [ref=e1142]
+            - cell "PENDING" [ref=e1143]
+            - cell "Nov 22, 2025" [ref=e1144]
+            - cell "Edit" [ref=e1145]:
+              - button "Edit" [ref=e1146]
+          - row "CapacityTest_1763939207507_1jzibc capacitytest_1763939207507_1jzibc@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1147] [cursor=pointer]:
+            - cell "CapacityTest_1763939207507_1jzibc capacitytest_1763939207507_1jzibc@test.com" [ref=e1148]:
+              - generic [ref=e1149]: CapacityTest_1763939207507_1jzibc
+              - generic [ref=e1150]: capacitytest_1763939207507_1jzibc@test.com
+            - cell "2" [ref=e1151]
+            - cell "$2,200,000" [ref=e1152]
+            - cell "PENDING" [ref=e1153]
+            - cell "Nov 23, 2025" [ref=e1154]
+            - cell "Edit" [ref=e1155]:
+              - button "Edit" [ref=e1156]
+          - row "ConvertTest_1763859403385_jivypv converttest_1763859403385_jivypv@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1157] [cursor=pointer]:
+            - cell "ConvertTest_1763859403385_jivypv converttest_1763859403385_jivypv@test.com" [ref=e1158]:
+              - generic [ref=e1159]: ConvertTest_1763859403385_jivypv
+              - generic [ref=e1160]: converttest_1763859403385_jivypv@test.com
+            - cell "1" [ref=e1161]
+            - cell "$1,500,000" [ref=e1162]
+            - cell "PENDING" [ref=e1163]
+            - cell "Nov 22, 2025" [ref=e1164]
+            - cell "Edit" [ref=e1165]:
+              - button "Edit" [ref=e1166]
+          - row "DateUpdate_1763950178184_aqsekp dateupdate_1763950178184_aqsekp@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1167] [cursor=pointer]:
+            - cell "DateUpdate_1763950178184_aqsekp dateupdate_1763950178184_aqsekp@test.com" [ref=e1168]:
+              - generic [ref=e1169]: DateUpdate_1763950178184_aqsekp
+              - generic [ref=e1170]: dateupdate_1763950178184_aqsekp@test.com
+            - cell "2" [ref=e1171]
+            - cell "$2,200,000" [ref=e1172]
+            - cell "PENDING" [ref=e1173]
+            - cell "Nov 23, 2025" [ref=e1174]
+            - cell "Edit" [ref=e1175]:
+              - button "Edit" [ref=e1176]
+          - row "PrivateTest_1763954219182_kvfsdq privatetest_1763954219182_kvfsdq@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1177] [cursor=pointer]:
+            - cell "PrivateTest_1763954219182_kvfsdq privatetest_1763954219182_kvfsdq@test.com" [ref=e1178]:
+              - generic [ref=e1179]: PrivateTest_1763954219182_kvfsdq
+              - generic [ref=e1180]: privatetest_1763954219182_kvfsdq@test.com
+            - cell "2" [ref=e1181]
+            - cell "$2,200,000" [ref=e1182]
+            - cell "PENDING" [ref=e1183]
+            - cell "Nov 23, 2025" [ref=e1184]
+            - cell "Edit" [ref=e1185]:
+              - button "Edit" [ref=e1186]
+          - row "CapacityTest_1763939101693_68opuho capacitytest_1763939101693_68opuho@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1187] [cursor=pointer]:
+            - cell "CapacityTest_1763939101693_68opuho capacitytest_1763939101693_68opuho@test.com" [ref=e1188]:
+              - generic [ref=e1189]: CapacityTest_1763939101693_68opuho
+              - generic [ref=e1190]: capacitytest_1763939101693_68opuho@test.com
+            - cell "2" [ref=e1191]
+            - cell "$2,200,000" [ref=e1192]
+            - cell "PENDING" [ref=e1193]
+            - cell "Nov 23, 2025" [ref=e1194]
+            - cell "Edit" [ref=e1195]:
+              - button "Edit" [ref=e1196]
+          - row "TourUpdateUI_1763931221450_ao47tq tourupdateui_1763931221450_ao47tq@test.com 2 $900,000 PENDING Nov 23, 2025 Edit" [ref=e1197] [cursor=pointer]:
+            - cell "TourUpdateUI_1763931221450_ao47tq tourupdateui_1763931221450_ao47tq@test.com" [ref=e1198]:
+              - generic [ref=e1199]: TourUpdateUI_1763931221450_ao47tq
+              - generic [ref=e1200]: tourupdateui_1763931221450_ao47tq@test.com
+            - cell "2" [ref=e1201]
+            - cell "$900,000" [ref=e1202]
+            - cell "PENDING" [ref=e1203]
+            - cell "Nov 23, 2025" [ref=e1204]
+            - cell "Edit" [ref=e1205]:
+              - button "Edit" [ref=e1206]
+          - row "CapacityTest_1763861908925_qr93cp capacitytest_1763861908925_qr93cp@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1207] [cursor=pointer]:
+            - cell "CapacityTest_1763861908925_qr93cp capacitytest_1763861908925_qr93cp@test.com" [ref=e1208]:
+              - generic [ref=e1209]: CapacityTest_1763861908925_qr93cp
+              - generic [ref=e1210]: capacitytest_1763861908925_qr93cp@test.com
+            - cell "2" [ref=e1211]
+            - cell "$2,200,000" [ref=e1212]
+            - cell "PENDING" [ref=e1213]
+            - cell "Nov 22, 2025" [ref=e1214]
+            - cell "Edit" [ref=e1215]:
+              - button "Edit" [ref=e1216]
+          - row "sussy lantern sussy@gmail.com 3 $2,850,000 PENDING Nov 23, 2025 Edit" [ref=e1217] [cursor=pointer]:
+            - cell "sussy lantern sussy@gmail.com" [ref=e1218]:
+              - generic [ref=e1219]: sussy lantern
+              - generic [ref=e1220]: sussy@gmail.com
+            - cell "3" [ref=e1221]
+            - cell "$2,850,000" [ref=e1222]
+            - cell "PENDING" [ref=e1223]
+            - cell "Nov 23, 2025" [ref=e1224]
+            - cell "Edit" [ref=e1225]:
+              - button "Edit" [ref=e1226]
+          - row "PrivateTest_1763861668059_ix14oo privatetest_1763861668059_ix14oo@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1227] [cursor=pointer]:
+            - cell "PrivateTest_1763861668059_ix14oo privatetest_1763861668059_ix14oo@test.com" [ref=e1228]:
+              - generic [ref=e1229]: PrivateTest_1763861668059_ix14oo
+              - generic [ref=e1230]: privatetest_1763861668059_ix14oo@test.com
+            - cell "2" [ref=e1231]
+            - cell "$2,200,000" [ref=e1232]
+            - cell "PENDING" [ref=e1233]
+            - cell "Nov 22, 2025" [ref=e1234]
+            - cell "Edit" [ref=e1235]:
+              - button "Edit" [ref=e1236]
+          - row "GhostTest_1763859767872_jmvqh4 ghosttest_1763859767872_jmvqh4@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1237] [cursor=pointer]:
+            - cell "GhostTest_1763859767872_jmvqh4 ghosttest_1763859767872_jmvqh4@test.com" [ref=e1238]:
+              - generic [ref=e1239]: GhostTest_1763859767872_jmvqh4
+              - generic [ref=e1240]: ghosttest_1763859767872_jmvqh4@test.com
+            - cell "1" [ref=e1241]
+            - cell "$1,500,000" [ref=e1242]
+            - cell "PENDING" [ref=e1243]
+            - cell "Nov 22, 2025" [ref=e1244]
+            - cell "Edit" [ref=e1245]:
+              - button "Edit" [ref=e1246]
+          - row "Test User 1763950202083 test1763950202083@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1247] [cursor=pointer]:
+            - cell "Test User 1763950202083 test1763950202083@example.com" [ref=e1248]:
+              - generic [ref=e1249]: Test User 1763950202083
+              - generic [ref=e1250]: test1763950202083@example.com
+            - cell "2" [ref=e1251]
+            - cell "$2,200,000" [ref=e1252]
+            - cell "PENDING" [ref=e1253]
+            - cell "Nov 23, 2025" [ref=e1254]
+            - cell "Edit" [ref=e1255]:
+              - button "Edit" [ref=e1256]
+          - row "BlockedUI_1763859809774_bgq9oc blockedui_1763859809774_bgq9oc@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1257] [cursor=pointer]:
+            - cell "BlockedUI_1763859809774_bgq9oc blockedui_1763859809774_bgq9oc@test.com" [ref=e1258]:
+              - generic [ref=e1259]: BlockedUI_1763859809774_bgq9oc
+              - generic [ref=e1260]: blockedui_1763859809774_bgq9oc@test.com
+            - cell "1" [ref=e1261]
+            - cell "$1,500,000" [ref=e1262]
+            - cell "PENDING" [ref=e1263]
+            - cell "Nov 22, 2025" [ref=e1264]
+            - cell "Edit" [ref=e1265]:
+              - button "Edit" [ref=e1266]
+          - row "ConvertTest_1763931344454_eqg4v converttest_1763931344454_eqg4v@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1267] [cursor=pointer]:
+            - cell "ConvertTest_1763931344454_eqg4v converttest_1763931344454_eqg4v@test.com" [ref=e1268]:
+              - generic [ref=e1269]: ConvertTest_1763931344454_eqg4v
+              - generic [ref=e1270]: converttest_1763931344454_eqg4v@test.com
+            - cell "1" [ref=e1271]
+            - cell "$1,500,000" [ref=e1272]
+            - cell "PENDING" [ref=e1273]
+            - cell "Nov 23, 2025" [ref=e1274]
+            - cell "Edit" [ref=e1275]:
+              - button "Edit" [ref=e1276]
+          - row "CapacityTest_1763939156184_4dywik capacitytest_1763939156184_4dywik@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1277] [cursor=pointer]:
+            - cell "CapacityTest_1763939156184_4dywik capacitytest_1763939156184_4dywik@test.com" [ref=e1278]:
+              - generic [ref=e1279]: CapacityTest_1763939156184_4dywik
+              - generic [ref=e1280]: capacitytest_1763939156184_4dywik@test.com
+            - cell "2" [ref=e1281]
+            - cell "$2,200,000" [ref=e1282]
+            - cell "PENDING" [ref=e1283]
+            - cell "Nov 23, 2025" [ref=e1284]
+            - cell "Edit" [ref=e1285]:
+              - button "Edit" [ref=e1286]
+          - row "ConvertTest_1763939095743_77h8v9 converttest_1763939095743_77h8v9@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1287] [cursor=pointer]:
+            - cell "ConvertTest_1763939095743_77h8v9 converttest_1763939095743_77h8v9@test.com" [ref=e1288]:
+              - generic [ref=e1289]: ConvertTest_1763939095743_77h8v9
+              - generic [ref=e1290]: converttest_1763939095743_77h8v9@test.com
+            - cell "1" [ref=e1291]
+            - cell "$1,500,000" [ref=e1292]
+            - cell "PENDING" [ref=e1293]
+            - cell "Nov 23, 2025" [ref=e1294]
+            - cell "Edit" [ref=e1295]:
+              - button "Edit" [ref=e1296]
+          - row "PublicTest_1763861884918_2wnnrw publictest_1763861884918_2wnnrw@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1297] [cursor=pointer]:
+            - cell "PublicTest_1763861884918_2wnnrw publictest_1763861884918_2wnnrw@test.com" [ref=e1298]:
+              - generic [ref=e1299]: PublicTest_1763861884918_2wnnrw
+              - generic [ref=e1300]: publictest_1763861884918_2wnnrw@test.com
+            - cell "1" [ref=e1301]
+            - cell "$1,500,000" [ref=e1302]
+            - cell "PENDING" [ref=e1303]
+            - cell "Nov 22, 2025" [ref=e1304]
+            - cell "Edit" [ref=e1305]:
+              - button "Edit" [ref=e1306]
+          - row "GhostTest_1763860096343_im6r5m ghosttest_1763860096343_im6r5m@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1307] [cursor=pointer]:
+            - cell "GhostTest_1763860096343_im6r5m ghosttest_1763860096343_im6r5m@test.com" [ref=e1308]:
+              - generic [ref=e1309]: GhostTest_1763860096343_im6r5m
+              - generic [ref=e1310]: ghosttest_1763860096343_im6r5m@test.com
+            - cell "1" [ref=e1311]
+            - cell "$1,500,000" [ref=e1312]
+            - cell "PENDING" [ref=e1313]
+            - cell "Nov 22, 2025" [ref=e1314]
+            - cell "Edit" [ref=e1315]:
+              - button "Edit" [ref=e1316]
+          - row "StatusUpdate_1763867479734_sgs5xa statusupdate_1763867479734_sgs5xa@test.com 1 $1,500,000 CONFIRMED Nov 22, 2025 Edit" [ref=e1317] [cursor=pointer]:
+            - cell "StatusUpdate_1763867479734_sgs5xa statusupdate_1763867479734_sgs5xa@test.com" [ref=e1318]:
+              - generic [ref=e1319]: StatusUpdate_1763867479734_sgs5xa
+              - generic [ref=e1320]: statusupdate_1763867479734_sgs5xa@test.com
+            - cell "1" [ref=e1321]
+            - cell "$1,500,000" [ref=e1322]
+            - cell "CONFIRMED" [ref=e1323]
+            - cell "Nov 22, 2025" [ref=e1324]
+            - cell "Edit" [ref=e1325]:
+              - button "Edit" [ref=e1326]
+          - row "PrivateTest_1763859978780_64u3gd privatetest_1763859978780_64u3gd@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1327] [cursor=pointer]:
+            - cell "PrivateTest_1763859978780_64u3gd privatetest_1763859978780_64u3gd@test.com" [ref=e1328]:
+              - generic [ref=e1329]: PrivateTest_1763859978780_64u3gd
+              - generic [ref=e1330]: privatetest_1763859978780_64u3gd@test.com
+            - cell "2" [ref=e1331]
+            - cell "$2,200,000" [ref=e1332]
+            - cell "PENDING" [ref=e1333]
+            - cell "Nov 22, 2025" [ref=e1334]
+            - cell "Edit" [ref=e1335]:
+              - button "Edit" [ref=e1336]
+          - row "PublicTest_1763859731237_9kbckh publictest_1763859731237_9kbckh@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1337] [cursor=pointer]:
+            - cell "PublicTest_1763859731237_9kbckh publictest_1763859731237_9kbckh@test.com" [ref=e1338]:
+              - generic [ref=e1339]: PublicTest_1763859731237_9kbckh
+              - generic [ref=e1340]: publictest_1763859731237_9kbckh@test.com
+            - cell "1" [ref=e1341]
+            - cell "$1,500,000" [ref=e1342]
+            - cell "PENDING" [ref=e1343]
+            - cell "Nov 22, 2025" [ref=e1344]
+            - cell "Edit" [ref=e1345]:
+              - button "Edit" [ref=e1346]
+          - row "GhostTest_1763861393495_p9ah3 ghosttest_1763861393495_p9ah3@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1347] [cursor=pointer]:
+            - cell "GhostTest_1763861393495_p9ah3 ghosttest_1763861393495_p9ah3@test.com" [ref=e1348]:
+              - generic [ref=e1349]: GhostTest_1763861393495_p9ah3
+              - generic [ref=e1350]: ghosttest_1763861393495_p9ah3@test.com
+            - cell "1" [ref=e1351]
+            - cell "$1,500,000" [ref=e1352]
+            - cell "PENDING" [ref=e1353]
+            - cell "Nov 22, 2025" [ref=e1354]
+            - cell "Edit" [ref=e1355]:
+              - button "Edit" [ref=e1356]
+          - row "CapacityTest_1763861313233_x9cuj capacitytest_1763861313233_x9cuj@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1357] [cursor=pointer]:
+            - cell "CapacityTest_1763861313233_x9cuj capacitytest_1763861313233_x9cuj@test.com" [ref=e1358]:
+              - generic [ref=e1359]: CapacityTest_1763861313233_x9cuj
+              - generic [ref=e1360]: capacitytest_1763861313233_x9cuj@test.com
+            - cell "2" [ref=e1361]
+            - cell "$2,200,000" [ref=e1362]
+            - cell "PENDING" [ref=e1363]
+            - cell "Nov 22, 2025" [ref=e1364]
+            - cell "Edit" [ref=e1365]:
+              - button "Edit" [ref=e1366]
+          - row "DateUpdate_1763862053819_annirb dateupdate_1763862053819_annirb@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1367] [cursor=pointer]:
+            - cell "DateUpdate_1763862053819_annirb dateupdate_1763862053819_annirb@test.com" [ref=e1368]:
+              - generic [ref=e1369]: DateUpdate_1763862053819_annirb
+              - generic [ref=e1370]: dateupdate_1763862053819_annirb@test.com
+            - cell "2" [ref=e1371]
+            - cell "$2,200,000" [ref=e1372]
+            - cell "PENDING" [ref=e1373]
+            - cell "Nov 22, 2025" [ref=e1374]
+            - cell "Edit" [ref=e1375]:
+              - button "Edit" [ref=e1376]
+          - row "GhostTest_1763859826478_4i57t ghosttest_1763859826478_4i57t@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1377] [cursor=pointer]:
+            - cell "GhostTest_1763859826478_4i57t ghosttest_1763859826478_4i57t@test.com" [ref=e1378]:
+              - generic [ref=e1379]: GhostTest_1763859826478_4i57t
+              - generic [ref=e1380]: ghosttest_1763859826478_4i57t@test.com
+            - cell "1" [ref=e1381]
+            - cell "$1,500,000" [ref=e1382]
+            - cell "PENDING" [ref=e1383]
+            - cell "Nov 22, 2025" [ref=e1384]
+            - cell "Edit" [ref=e1385]:
+              - button "Edit" [ref=e1386]
+          - row "GhostTest_1763939207369_pb78p ghosttest_1763939207369_pb78p@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1387] [cursor=pointer]:
+            - cell "GhostTest_1763939207369_pb78p ghosttest_1763939207369_pb78p@test.com" [ref=e1388]:
+              - generic [ref=e1389]: GhostTest_1763939207369_pb78p
+              - generic [ref=e1390]: ghosttest_1763939207369_pb78p@test.com
+            - cell "1" [ref=e1391]
+            - cell "$1,500,000" [ref=e1392]
+            - cell "PENDING" [ref=e1393]
+            - cell "Nov 23, 2025" [ref=e1394]
+            - cell "Edit" [ref=e1395]:
+              - button "Edit" [ref=e1396]
+          - row "GhostTest_1763860023369_4c59cb ghosttest_1763860023369_4c59cb@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1397] [cursor=pointer]:
+            - cell "GhostTest_1763860023369_4c59cb ghosttest_1763860023369_4c59cb@test.com" [ref=e1398]:
+              - generic [ref=e1399]: GhostTest_1763860023369_4c59cb
+              - generic [ref=e1400]: ghosttest_1763860023369_4c59cb@test.com
+            - cell "1" [ref=e1401]
+            - cell "$1,500,000" [ref=e1402]
+            - cell "PENDING" [ref=e1403]
+            - cell "Nov 22, 2025" [ref=e1404]
+            - cell "Edit" [ref=e1405]:
+              - button "Edit" [ref=e1406]
+          - row "TourUpdateUI_1763861933209_39929p tourupdateui_1763861933209_39929p@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e1407] [cursor=pointer]:
+            - cell "TourUpdateUI_1763861933209_39929p tourupdateui_1763861933209_39929p@test.com" [ref=e1408]:
+              - generic [ref=e1409]: TourUpdateUI_1763861933209_39929p
+              - generic [ref=e1410]: tourupdateui_1763861933209_39929p@test.com
+            - cell "2" [ref=e1411]
+            - cell "$900,000" [ref=e1412]
+            - cell "PENDING" [ref=e1413]
+            - cell "Nov 22, 2025" [ref=e1414]
+            - cell "Edit" [ref=e1415]:
+              - button "Edit" [ref=e1416]
+          - row "StatusUpdate_1763931312801_6lg73o statusupdate_1763931312801_6lg73o@test.com 1 $1,500,000 CONFIRMED Nov 23, 2025 Edit" [ref=e1417] [cursor=pointer]:
+            - cell "StatusUpdate_1763931312801_6lg73o statusupdate_1763931312801_6lg73o@test.com" [ref=e1418]:
+              - generic [ref=e1419]: StatusUpdate_1763931312801_6lg73o
+              - generic [ref=e1420]: statusupdate_1763931312801_6lg73o@test.com
+            - cell "1" [ref=e1421]
+            - cell "$1,500,000" [ref=e1422]
+            - cell "CONFIRMED" [ref=e1423]
+            - cell "Nov 23, 2025" [ref=e1424]
+            - cell "Edit" [ref=e1425]:
+              - button "Edit" [ref=e1426]
+          - row "CapacityTest_1763861354089_ie4vw capacitytest_1763861354089_ie4vw@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1427] [cursor=pointer]:
+            - cell "CapacityTest_1763861354089_ie4vw capacitytest_1763861354089_ie4vw@test.com" [ref=e1428]:
+              - generic [ref=e1429]: CapacityTest_1763861354089_ie4vw
+              - generic [ref=e1430]: capacitytest_1763861354089_ie4vw@test.com
+            - cell "2" [ref=e1431]
+            - cell "$2,200,000" [ref=e1432]
+            - cell "PENDING" [ref=e1433]
+            - cell "Nov 22, 2025" [ref=e1434]
+            - cell "Edit" [ref=e1435]:
+              - button "Edit" [ref=e1436]
+          - row "PublicTest_1763931249511_wnev8q publictest_1763931249511_wnev8q@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1437] [cursor=pointer]:
+            - cell "PublicTest_1763931249511_wnev8q publictest_1763931249511_wnev8q@test.com" [ref=e1438]:
+              - generic [ref=e1439]: PublicTest_1763931249511_wnev8q
+              - generic [ref=e1440]: publictest_1763931249511_wnev8q@test.com
+            - cell "1" [ref=e1441]
+            - cell "$1,500,000" [ref=e1442]
+            - cell "PENDING" [ref=e1443]
+            - cell "Nov 23, 2025" [ref=e1444]
+            - cell "Edit" [ref=e1445]:
+              - button "Edit" [ref=e1446]
+          - row "PrivateTest_1763862013762_u0uh7f privatetest_1763862013762_u0uh7f@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1447] [cursor=pointer]:
+            - cell "PrivateTest_1763862013762_u0uh7f privatetest_1763862013762_u0uh7f@test.com" [ref=e1448]:
+              - generic [ref=e1449]: PrivateTest_1763862013762_u0uh7f
+              - generic [ref=e1450]: privatetest_1763862013762_u0uh7f@test.com
+            - cell "2" [ref=e1451]
+            - cell "$2,200,000" [ref=e1452]
+            - cell "PENDING" [ref=e1453]
+            - cell "Nov 22, 2025" [ref=e1454]
+            - cell "Edit" [ref=e1455]:
+              - button "Edit" [ref=e1456]
+          - row "ConvertTest_1763954234470_y06wl converttest_1763954234470_y06wl@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1457] [cursor=pointer]:
+            - cell "ConvertTest_1763954234470_y06wl converttest_1763954234470_y06wl@test.com" [ref=e1458]:
+              - generic [ref=e1459]: ConvertTest_1763954234470_y06wl
+              - generic [ref=e1460]: converttest_1763954234470_y06wl@test.com
+            - cell "1" [ref=e1461]
+            - cell "$1,500,000" [ref=e1462]
+            - cell "PENDING" [ref=e1463]
+            - cell "Nov 23, 2025" [ref=e1464]
+            - cell "Edit" [ref=e1465]:
+              - button "Edit" [ref=e1466]
+          - row "GhostTest_1763934130867_raszun ghosttest_1763934130867_raszun@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1467] [cursor=pointer]:
+            - cell "GhostTest_1763934130867_raszun ghosttest_1763934130867_raszun@test.com" [ref=e1468]:
+              - generic [ref=e1469]: GhostTest_1763934130867_raszun
+              - generic [ref=e1470]: ghosttest_1763934130867_raszun@test.com
+            - cell "1" [ref=e1471]
+            - cell "$1,500,000" [ref=e1472]
+            - cell "PENDING" [ref=e1473]
+            - cell "Nov 23, 2025" [ref=e1474]
+            - cell "Edit" [ref=e1475]:
+              - button "Edit" [ref=e1476]
+          - row "PrivateTest_1763953934579_koi5w7 privatetest_1763953934579_koi5w7@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1477] [cursor=pointer]:
+            - cell "PrivateTest_1763953934579_koi5w7 privatetest_1763953934579_koi5w7@test.com" [ref=e1478]:
+              - generic [ref=e1479]: PrivateTest_1763953934579_koi5w7
+              - generic [ref=e1480]: privatetest_1763953934579_koi5w7@test.com
+            - cell "2" [ref=e1481]
+            - cell "$2,200,000" [ref=e1482]
+            - cell "PENDING" [ref=e1483]
+            - cell "Nov 23, 2025" [ref=e1484]
+            - cell "Edit" [ref=e1485]:
+              - button "Edit" [ref=e1486]
+          - row "CapacityTest_1763860157705_8nzmsg capacitytest_1763860157705_8nzmsg@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1487] [cursor=pointer]:
+            - cell "CapacityTest_1763860157705_8nzmsg capacitytest_1763860157705_8nzmsg@test.com" [ref=e1488]:
+              - generic [ref=e1489]: CapacityTest_1763860157705_8nzmsg
+              - generic [ref=e1490]: capacitytest_1763860157705_8nzmsg@test.com
+            - cell "2" [ref=e1491]
+            - cell "$2,200,000" [ref=e1492]
+            - cell "PENDING" [ref=e1493]
+            - cell "Nov 22, 2025" [ref=e1494]
+            - cell "Edit" [ref=e1495]:
+              - button "Edit" [ref=e1496]
+          - row "PrivateTest_1763861368177_g95oza privatetest_1763861368177_g95oza@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1497] [cursor=pointer]:
+            - cell "PrivateTest_1763861368177_g95oza privatetest_1763861368177_g95oza@test.com" [ref=e1498]:
+              - generic [ref=e1499]: PrivateTest_1763861368177_g95oza
+              - generic [ref=e1500]: privatetest_1763861368177_g95oza@test.com
+            - cell "2" [ref=e1501]
+            - cell "$2,200,000" [ref=e1502]
+            - cell "PENDING" [ref=e1503]
+            - cell "Nov 22, 2025" [ref=e1504]
+            - cell "Edit" [ref=e1505]:
+              - button "Edit" [ref=e1506]
+          - row "BlockedUI_1763867693635_7aiswex blockedui_1763867693635_7aiswex@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1507] [cursor=pointer]:
+            - cell "BlockedUI_1763867693635_7aiswex blockedui_1763867693635_7aiswex@test.com" [ref=e1508]:
+              - generic [ref=e1509]: BlockedUI_1763867693635_7aiswex
+              - generic [ref=e1510]: blockedui_1763867693635_7aiswex@test.com
+            - cell "1" [ref=e1511]
+            - cell "$1,500,000" [ref=e1512]
+            - cell "PENDING" [ref=e1513]
+            - cell "Nov 22, 2025" [ref=e1514]
+            - cell "Edit" [ref=e1515]:
+              - button "Edit" [ref=e1516]
+          - row "DateUpdate_1763934096674_3p0iq dateupdate_1763934096674_3p0iq@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1517] [cursor=pointer]:
+            - cell "DateUpdate_1763934096674_3p0iq dateupdate_1763934096674_3p0iq@test.com" [ref=e1518]:
+              - generic [ref=e1519]: DateUpdate_1763934096674_3p0iq
+              - generic [ref=e1520]: dateupdate_1763934096674_3p0iq@test.com
+            - cell "2" [ref=e1521]
+            - cell "$2,200,000" [ref=e1522]
+            - cell "PENDING" [ref=e1523]
+            - cell "Nov 23, 2025" [ref=e1524]
+            - cell "Edit" [ref=e1525]:
+              - button "Edit" [ref=e1526]
+          - row "ConvertTest_1763939135131_0tp5wm converttest_1763939135131_0tp5wm@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1527] [cursor=pointer]:
+            - cell "ConvertTest_1763939135131_0tp5wm converttest_1763939135131_0tp5wm@test.com" [ref=e1528]:
+              - generic [ref=e1529]: ConvertTest_1763939135131_0tp5wm
+              - generic [ref=e1530]: converttest_1763939135131_0tp5wm@test.com
+            - cell "1" [ref=e1531]
+            - cell "$1,500,000" [ref=e1532]
+            - cell "PENDING" [ref=e1533]
+            - cell "Nov 23, 2025" [ref=e1534]
+            - cell "Edit" [ref=e1535]:
+              - button "Edit" [ref=e1536]
+          - row "PrivateTest_1763939116336_5keixi privatetest_1763939116336_5keixi@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1537] [cursor=pointer]:
+            - cell "PrivateTest_1763939116336_5keixi privatetest_1763939116336_5keixi@test.com" [ref=e1538]:
+              - generic [ref=e1539]: PrivateTest_1763939116336_5keixi
+              - generic [ref=e1540]: privatetest_1763939116336_5keixi@test.com
+            - cell "2" [ref=e1541]
+            - cell "$2,200,000" [ref=e1542]
+            - cell "PENDING" [ref=e1543]
+            - cell "Nov 23, 2025" [ref=e1544]
+            - cell "Edit" [ref=e1545]:
+              - button "Edit" [ref=e1546]
+          - row "Test User 1763950154756 test1763950154756@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1547] [cursor=pointer]:
+            - cell "Test User 1763950154756 test1763950154756@example.com" [ref=e1548]:
+              - generic [ref=e1549]: Test User 1763950154756
+              - generic [ref=e1550]: test1763950154756@example.com
+            - cell "2" [ref=e1551]
+            - cell "$2,200,000" [ref=e1552]
+            - cell "PENDING" [ref=e1553]
+            - cell "Nov 23, 2025" [ref=e1554]
+            - cell "Edit" [ref=e1555]:
+              - button "Edit" [ref=e1556]
+          - row "TourUpdateUI_1763931297831_i2mvtf tourupdateui_1763931297831_i2mvtf@test.com 2 $900,000 PENDING Nov 23, 2025 Edit" [ref=e1557] [cursor=pointer]:
+            - cell "TourUpdateUI_1763931297831_i2mvtf tourupdateui_1763931297831_i2mvtf@test.com" [ref=e1558]:
+              - generic [ref=e1559]: TourUpdateUI_1763931297831_i2mvtf
+              - generic [ref=e1560]: tourupdateui_1763931297831_i2mvtf@test.com
+            - cell "2" [ref=e1561]
+            - cell "$900,000" [ref=e1562]
+            - cell "PENDING" [ref=e1563]
+            - cell "Nov 23, 2025" [ref=e1564]
+            - cell "Edit" [ref=e1565]:
+              - button "Edit" [ref=e1566]
+          - row "PrivateTest_1763861606701_9lxmvk privatetest_1763861606701_9lxmvk@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1567] [cursor=pointer]:
+            - cell "PrivateTest_1763861606701_9lxmvk privatetest_1763861606701_9lxmvk@test.com" [ref=e1568]:
+              - generic [ref=e1569]: PrivateTest_1763861606701_9lxmvk
+              - generic [ref=e1570]: privatetest_1763861606701_9lxmvk@test.com
+            - cell "1" [ref=e1571]
+            - cell "$1,500,000" [ref=e1572]
+            - cell "PENDING" [ref=e1573]
+            - cell "Nov 22, 2025" [ref=e1574]
+            - cell "Edit" [ref=e1575]:
+              - button "Edit" [ref=e1576]
+          - row "BlockedUI_1763861899469_diknbp blockedui_1763861899469_diknbp@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1577] [cursor=pointer]:
+            - cell "BlockedUI_1763861899469_diknbp blockedui_1763861899469_diknbp@test.com" [ref=e1578]:
+              - generic [ref=e1579]: BlockedUI_1763861899469_diknbp
+              - generic [ref=e1580]: blockedui_1763861899469_diknbp@test.com
+            - cell "1" [ref=e1581]
+            - cell "$1,500,000" [ref=e1582]
+            - cell "PENDING" [ref=e1583]
+            - cell "Nov 22, 2025" [ref=e1584]
+            - cell "Edit" [ref=e1585]:
+              - button "Edit" [ref=e1586]
+          - row "BlockedUI_1763859410909_nf4816 blockedui_1763859410909_nf4816@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1587] [cursor=pointer]:
+            - cell "BlockedUI_1763859410909_nf4816 blockedui_1763859410909_nf4816@test.com" [ref=e1588]:
+              - generic [ref=e1589]: BlockedUI_1763859410909_nf4816
+              - generic [ref=e1590]: blockedui_1763859410909_nf4816@test.com
+            - cell "1" [ref=e1591]
+            - cell "$1,500,000" [ref=e1592]
+            - cell "PENDING" [ref=e1593]
+            - cell "Nov 22, 2025" [ref=e1594]
+            - cell "Edit" [ref=e1595]:
+              - button "Edit" [ref=e1596]
+          - row "PrivateTest_1763859777764_tjjy8o privatetest_1763859777764_tjjy8o@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1597] [cursor=pointer]:
+            - cell "PrivateTest_1763859777764_tjjy8o privatetest_1763859777764_tjjy8o@test.com" [ref=e1598]:
+              - generic [ref=e1599]: PrivateTest_1763859777764_tjjy8o
+              - generic [ref=e1600]: privatetest_1763859777764_tjjy8o@test.com
+            - cell "2" [ref=e1601]
+            - cell "$2,200,000" [ref=e1602]
+            - cell "PENDING" [ref=e1603]
+            - cell "Nov 22, 2025" [ref=e1604]
+            - cell "Edit" [ref=e1605]:
+              - button "Edit" [ref=e1606]
+          - row "santa clos sansta@gmail.com 3 $6,250,000 PENDING Nov 23, 2025 Edit" [ref=e1607] [cursor=pointer]:
+            - cell "santa clos sansta@gmail.com" [ref=e1608]:
+              - generic [ref=e1609]: santa clos
+              - generic [ref=e1610]: sansta@gmail.com
+            - cell "3" [ref=e1611]
+            - cell "$6,250,000" [ref=e1612]
+            - cell "PENDING" [ref=e1613]
+            - cell "Nov 23, 2025" [ref=e1614]
+            - cell "Edit" [ref=e1615]:
+              - button "Edit" [ref=e1616]
+          - row "CapacityTest_1763867703095_il1i4t capacitytest_1763867703095_il1i4t@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1617] [cursor=pointer]:
+            - cell "CapacityTest_1763867703095_il1i4t capacitytest_1763867703095_il1i4t@test.com" [ref=e1618]:
+              - generic [ref=e1619]: CapacityTest_1763867703095_il1i4t
+              - generic [ref=e1620]: capacitytest_1763867703095_il1i4t@test.com
+            - cell "2" [ref=e1621]
+            - cell "$2,200,000" [ref=e1622]
+            - cell "PENDING" [ref=e1623]
+            - cell "Nov 22, 2025" [ref=e1624]
+            - cell "Edit" [ref=e1625]:
+              - button "Edit" [ref=e1626]
+          - row "TourUpdate_1763859789223_irjflc tourupdate_1763859789223_irjflc@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e1627] [cursor=pointer]:
+            - cell "TourUpdate_1763859789223_irjflc tourupdate_1763859789223_irjflc@test.com" [ref=e1628]:
+              - generic [ref=e1629]: TourUpdate_1763859789223_irjflc
+              - generic [ref=e1630]: tourupdate_1763859789223_irjflc@test.com
+            - cell "2" [ref=e1631]
+            - cell "$900,000" [ref=e1632]
+            - cell "PENDING" [ref=e1633]
+            - cell "Nov 22, 2025" [ref=e1634]
+            - cell "Edit" [ref=e1635]:
+              - button "Edit" [ref=e1636]
+          - row "PrivateTest_1763859295182_ky0mhvh privatetest_1763859295182_ky0mhvh@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1637] [cursor=pointer]:
+            - cell "PrivateTest_1763859295182_ky0mhvh privatetest_1763859295182_ky0mhvh@test.com" [ref=e1638]:
+              - generic [ref=e1639]: PrivateTest_1763859295182_ky0mhvh
+              - generic [ref=e1640]: privatetest_1763859295182_ky0mhvh@test.com
+            - cell "2" [ref=e1641]
+            - cell "$2,200,000" [ref=e1642]
+            - cell "PENDING" [ref=e1643]
+            - cell "Nov 22, 2025" [ref=e1644]
+            - cell "Edit" [ref=e1645]:
+              - button "Edit" [ref=e1646]
+          - row "DateUpdate_1763859723803_jaig3 dateupdate_1763859723803_jaig3@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1647] [cursor=pointer]:
+            - cell "DateUpdate_1763859723803_jaig3 dateupdate_1763859723803_jaig3@test.com" [ref=e1648]:
+              - generic [ref=e1649]: DateUpdate_1763859723803_jaig3
+              - generic [ref=e1650]: dateupdate_1763859723803_jaig3@test.com
+            - cell "2" [ref=e1651]
+            - cell "$2,200,000" [ref=e1652]
+            - cell "PENDING" [ref=e1653]
+            - cell "Nov 22, 2025" [ref=e1654]
+            - cell "Edit" [ref=e1655]:
+              - button "Edit" [ref=e1656]
+          - row "GhostTest_1763950195668_jt5brg ghosttest_1763950195668_jt5brg@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1657] [cursor=pointer]:
+            - cell "GhostTest_1763950195668_jt5brg ghosttest_1763950195668_jt5brg@test.com" [ref=e1658]:
+              - generic [ref=e1659]: GhostTest_1763950195668_jt5brg
+              - generic [ref=e1660]: ghosttest_1763950195668_jt5brg@test.com
+            - cell "1" [ref=e1661]
+            - cell "$1,500,000" [ref=e1662]
+            - cell "PENDING" [ref=e1663]
+            - cell "Nov 23, 2025" [ref=e1664]
+            - cell "Edit" [ref=e1665]:
+              - button "Edit" [ref=e1666]
+          - row "GhostTest_1763860162091_czvy9o ghosttest_1763860162091_czvy9o@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1667] [cursor=pointer]:
+            - cell "GhostTest_1763860162091_czvy9o ghosttest_1763860162091_czvy9o@test.com" [ref=e1668]:
+              - generic [ref=e1669]: GhostTest_1763860162091_czvy9o
+              - generic [ref=e1670]: ghosttest_1763860162091_czvy9o@test.com
+            - cell "1" [ref=e1671]
+            - cell "$1,500,000" [ref=e1672]
+            - cell "PENDING" [ref=e1673]
+            - cell "Nov 22, 2025" [ref=e1674]
+            - cell "Edit" [ref=e1675]:
+              - button "Edit" [ref=e1676]
+          - row "ConvertTest_1763859266919_f52ezz converttest_1763859266919_f52ezz@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1677] [cursor=pointer]:
+            - cell "ConvertTest_1763859266919_f52ezz converttest_1763859266919_f52ezz@test.com" [ref=e1678]:
+              - generic [ref=e1679]: ConvertTest_1763859266919_f52ezz
+              - generic [ref=e1680]: converttest_1763859266919_f52ezz@test.com
+            - cell "1" [ref=e1681]
+            - cell "$1,500,000" [ref=e1682]
+            - cell "PENDING" [ref=e1683]
+            - cell "Nov 22, 2025" [ref=e1684]
+            - cell "Edit" [ref=e1685]:
+              - button "Edit" [ref=e1686]
+          - row "GhostTest_1763859284820_s6u8oo ghosttest_1763859284820_s6u8oo@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1687] [cursor=pointer]:
+            - cell "GhostTest_1763859284820_s6u8oo ghosttest_1763859284820_s6u8oo@test.com" [ref=e1688]:
+              - generic [ref=e1689]: GhostTest_1763859284820_s6u8oo
+              - generic [ref=e1690]: ghosttest_1763859284820_s6u8oo@test.com
+            - cell "1" [ref=e1691]
+            - cell "$1,500,000" [ref=e1692]
+            - cell "PENDING" [ref=e1693]
+            - cell "Nov 22, 2025" [ref=e1694]
+            - cell "Edit" [ref=e1695]:
+              - button "Edit" [ref=e1696]
+          - row "ConvertTest_1763859333695_ejfhla converttest_1763859333695_ejfhla@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1697] [cursor=pointer]:
+            - cell "ConvertTest_1763859333695_ejfhla converttest_1763859333695_ejfhla@test.com" [ref=e1698]:
+              - generic [ref=e1699]: ConvertTest_1763859333695_ejfhla
+              - generic [ref=e1700]: converttest_1763859333695_ejfhla@test.com
+            - cell "1" [ref=e1701]
+            - cell "$1,500,000" [ref=e1702]
+            - cell "PENDING" [ref=e1703]
+            - cell "Nov 22, 2025" [ref=e1704]
+            - cell "Edit" [ref=e1705]:
+              - button "Edit" [ref=e1706]
+          - row "PublicTest_1763931425388_epcey7 publictest_1763931425388_epcey7@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1707] [cursor=pointer]:
+            - cell "PublicTest_1763931425388_epcey7 publictest_1763931425388_epcey7@test.com" [ref=e1708]:
+              - generic [ref=e1709]: PublicTest_1763931425388_epcey7
+              - generic [ref=e1710]: publictest_1763931425388_epcey7@test.com
+            - cell "1" [ref=e1711]
+            - cell "$1,500,000" [ref=e1712]
+            - cell "PENDING" [ref=e1713]
+            - cell "Nov 23, 2025" [ref=e1714]
+            - cell "Edit" [ref=e1715]:
+              - button "Edit" [ref=e1716]
+          - row "BlockedUI_1763860011582_l49k0p blockedui_1763860011582_l49k0p@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1717] [cursor=pointer]:
+            - cell "BlockedUI_1763860011582_l49k0p blockedui_1763860011582_l49k0p@test.com" [ref=e1718]:
+              - generic [ref=e1719]: BlockedUI_1763860011582_l49k0p
+              - generic [ref=e1720]: blockedui_1763860011582_l49k0p@test.com
+            - cell "1" [ref=e1721]
+            - cell "$1,500,000" [ref=e1722]
+            - cell "PENDING" [ref=e1723]
+            - cell "Nov 22, 2025" [ref=e1724]
+            - cell "Edit" [ref=e1725]:
+              - button "Edit" [ref=e1726]
+          - row "GhostTest_1763954245555_jps8zg ghosttest_1763954245555_jps8zg@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1727] [cursor=pointer]:
+            - cell "GhostTest_1763954245555_jps8zg ghosttest_1763954245555_jps8zg@test.com" [ref=e1728]:
+              - generic [ref=e1729]: GhostTest_1763954245555_jps8zg
+              - generic [ref=e1730]: ghosttest_1763954245555_jps8zg@test.com
+            - cell "1" [ref=e1731]
+            - cell "$1,500,000" [ref=e1732]
+            - cell "PENDING" [ref=e1733]
+            - cell "Nov 23, 2025" [ref=e1734]
+            - cell "Edit" [ref=e1735]:
+              - button "Edit" [ref=e1736]
+          - row "TourUpdateUI_1763954222279_jvdp7y tourupdateui_1763954222279_jvdp7y@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e1737] [cursor=pointer]:
+            - cell "TourUpdateUI_1763954222279_jvdp7y tourupdateui_1763954222279_jvdp7y@test.com" [ref=e1738]:
+              - generic [ref=e1739]: TourUpdateUI_1763954222279_jvdp7y
+              - generic [ref=e1740]: tourupdateui_1763954222279_jvdp7y@test.com
+            - cell "2" [ref=e1741]
+            - cell "$900,000" [ref=e1742]
+            - cell "CONFIRMED" [ref=e1743]
+            - cell "Nov 23, 2025" [ref=e1744]
+            - cell "Edit" [ref=e1745]:
+              - button "Edit" [ref=e1746]
+          - row "GhostTest_1763861727024_m3vteo ghosttest_1763861727024_m3vteo@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1747] [cursor=pointer]:
+            - cell "GhostTest_1763861727024_m3vteo ghosttest_1763861727024_m3vteo@test.com" [ref=e1748]:
+              - generic [ref=e1749]: GhostTest_1763861727024_m3vteo
+              - generic [ref=e1750]: ghosttest_1763861727024_m3vteo@test.com
+            - cell "1" [ref=e1751]
+            - cell "$1,500,000" [ref=e1752]
+            - cell "PENDING" [ref=e1753]
+            - cell "Nov 22, 2025" [ref=e1754]
+            - cell "Edit" [ref=e1755]:
+              - button "Edit" [ref=e1756]
+          - row "GhostTest_1763867705594_ybxcel ghosttest_1763867705594_ybxcel@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1757] [cursor=pointer]:
+            - cell "GhostTest_1763867705594_ybxcel ghosttest_1763867705594_ybxcel@test.com" [ref=e1758]:
+              - generic [ref=e1759]: GhostTest_1763867705594_ybxcel
+              - generic [ref=e1760]: ghosttest_1763867705594_ybxcel@test.com
+            - cell "1" [ref=e1761]
+            - cell "$1,500,000" [ref=e1762]
+            - cell "PENDING" [ref=e1763]
+            - cell "Nov 22, 2025" [ref=e1764]
+            - cell "Edit" [ref=e1765]:
+              - button "Edit" [ref=e1766]
+          - row "PrivateTest_1763861698295_xhx9s privatetest_1763861698295_xhx9s@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1767] [cursor=pointer]:
+            - cell "PrivateTest_1763861698295_xhx9s privatetest_1763861698295_xhx9s@test.com" [ref=e1768]:
+              - generic [ref=e1769]: PrivateTest_1763861698295_xhx9s
+              - generic [ref=e1770]: privatetest_1763861698295_xhx9s@test.com
+            - cell "2" [ref=e1771]
+            - cell "$2,200,000" [ref=e1772]
+            - cell "PENDING" [ref=e1773]
+            - cell "Nov 22, 2025" [ref=e1774]
+            - cell "Edit" [ref=e1775]:
+              - button "Edit" [ref=e1776]
+          - row "PrivateTest_1763861294265_3am9fq privatetest_1763861294265_3am9fq@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1777] [cursor=pointer]:
+            - cell "PrivateTest_1763861294265_3am9fq privatetest_1763861294265_3am9fq@test.com" [ref=e1778]:
+              - generic [ref=e1779]: PrivateTest_1763861294265_3am9fq
+              - generic [ref=e1780]: privatetest_1763861294265_3am9fq@test.com
+            - cell "2" [ref=e1781]
+            - cell "$2,200,000" [ref=e1782]
+            - cell "PENDING" [ref=e1783]
+            - cell "Nov 22, 2025" [ref=e1784]
+            - cell "Edit" [ref=e1785]:
+              - button "Edit" [ref=e1786]
+          - row "PublicTest_1763860129453_9hr1w publictest_1763860129453_9hr1w@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1787] [cursor=pointer]:
+            - cell "PublicTest_1763860129453_9hr1w publictest_1763860129453_9hr1w@test.com" [ref=e1788]:
+              - generic [ref=e1789]: PublicTest_1763860129453_9hr1w
+              - generic [ref=e1790]: publictest_1763860129453_9hr1w@test.com
+            - cell "1" [ref=e1791]
+            - cell "$1,500,000" [ref=e1792]
+            - cell "PENDING" [ref=e1793]
+            - cell "Nov 22, 2025" [ref=e1794]
+            - cell "Edit" [ref=e1795]:
+              - button "Edit" [ref=e1796]
+          - row "PrivateTest_1763859369470_4szdg privatetest_1763859369470_4szdg@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1797] [cursor=pointer]:
+            - cell "PrivateTest_1763859369470_4szdg privatetest_1763859369470_4szdg@test.com" [ref=e1798]:
+              - generic [ref=e1799]: PrivateTest_1763859369470_4szdg
+              - generic [ref=e1800]: privatetest_1763859369470_4szdg@test.com
+            - cell "2" [ref=e1801]
+            - cell "$2,200,000" [ref=e1802]
+            - cell "PENDING" [ref=e1803]
+            - cell "Nov 22, 2025" [ref=e1804]
+            - cell "Edit" [ref=e1805]:
+              - button "Edit" [ref=e1806]
+          - row "DateUpdate_1763859385813_cxax7a dateupdate_1763859385813_cxax7a@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e1807] [cursor=pointer]:
+            - cell "DateUpdate_1763859385813_cxax7a dateupdate_1763859385813_cxax7a@test.com" [ref=e1808]:
+              - generic [ref=e1809]: DateUpdate_1763859385813_cxax7a
+              - generic [ref=e1810]: dateupdate_1763859385813_cxax7a@test.com
+            - cell "2" [ref=e1811]
+            - cell "$2,200,000" [ref=e1812]
+            - cell "PENDING" [ref=e1813]
+            - cell "Nov 22, 2025" [ref=e1814]
+            - cell "Edit" [ref=e1815]:
+              - button "Edit" [ref=e1816]
+          - row "CapacityTest_1763931455780_ms2vy capacitytest_1763931455780_ms2vy@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1817] [cursor=pointer]:
+            - cell "CapacityTest_1763931455780_ms2vy capacitytest_1763931455780_ms2vy@test.com" [ref=e1818]:
+              - generic [ref=e1819]: CapacityTest_1763931455780_ms2vy
+              - generic [ref=e1820]: capacitytest_1763931455780_ms2vy@test.com
+            - cell "2" [ref=e1821]
+            - cell "$2,200,000" [ref=e1822]
+            - cell "PENDING" [ref=e1823]
+            - cell "Nov 23, 2025" [ref=e1824]
+            - cell "Edit" [ref=e1825]:
+              - button "Edit" [ref=e1826]
+          - row "GhostTest_1763931460325_d4bnb ghosttest_1763931460325_d4bnb@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1827] [cursor=pointer]:
+            - cell "GhostTest_1763931460325_d4bnb ghosttest_1763931460325_d4bnb@test.com" [ref=e1828]:
+              - generic [ref=e1829]: GhostTest_1763931460325_d4bnb
+              - generic [ref=e1830]: ghosttest_1763931460325_d4bnb@test.com
+            - cell "1" [ref=e1831]
+            - cell "$1,500,000" [ref=e1832]
+            - cell "PENDING" [ref=e1833]
+            - cell "Nov 23, 2025" [ref=e1834]
+            - cell "Edit" [ref=e1835]:
+              - button "Edit" [ref=e1836]
+          - row "GhostTest_1763862004310_hxcdhi ghosttest_1763862004310_hxcdhi@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1837] [cursor=pointer]:
+            - cell "GhostTest_1763862004310_hxcdhi ghosttest_1763862004310_hxcdhi@test.com" [ref=e1838]:
+              - generic [ref=e1839]: GhostTest_1763862004310_hxcdhi
+              - generic [ref=e1840]: ghosttest_1763862004310_hxcdhi@test.com
+            - cell "1" [ref=e1841]
+            - cell "$1,500,000" [ref=e1842]
+            - cell "PENDING" [ref=e1843]
+            - cell "Nov 22, 2025" [ref=e1844]
+            - cell "Edit" [ref=e1845]:
+              - button "Edit" [ref=e1846]
+          - row "GhostTest_1763861763182_4ohivb ghosttest_1763861763182_4ohivb@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1847] [cursor=pointer]:
+            - cell "GhostTest_1763861763182_4ohivb ghosttest_1763861763182_4ohivb@test.com" [ref=e1848]:
+              - generic [ref=e1849]: GhostTest_1763861763182_4ohivb
+              - generic [ref=e1850]: ghosttest_1763861763182_4ohivb@test.com
+            - cell "1" [ref=e1851]
+            - cell "$1,500,000" [ref=e1852]
+            - cell "PENDING" [ref=e1853]
+            - cell "Nov 22, 2025" [ref=e1854]
+            - cell "Edit" [ref=e1855]:
+              - button "Edit" [ref=e1856]
+          - row "ConvertTest_1763859742808_lsysz converttest_1763859742808_lsysz@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1857] [cursor=pointer]:
+            - cell "ConvertTest_1763859742808_lsysz converttest_1763859742808_lsysz@test.com" [ref=e1858]:
+              - generic [ref=e1859]: ConvertTest_1763859742808_lsysz
+              - generic [ref=e1860]: converttest_1763859742808_lsysz@test.com
+            - cell "1" [ref=e1861]
+            - cell "$1,500,000" [ref=e1862]
+            - cell "PENDING" [ref=e1863]
+            - cell "Nov 22, 2025" [ref=e1864]
+            - cell "Edit" [ref=e1865]:
+              - button "Edit" [ref=e1866]
+          - row "CapacityTest_1763931272816_aw116 capacitytest_1763931272816_aw116@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1867] [cursor=pointer]:
+            - cell "CapacityTest_1763931272816_aw116 capacitytest_1763931272816_aw116@test.com" [ref=e1868]:
+              - generic [ref=e1869]: CapacityTest_1763931272816_aw116
+              - generic [ref=e1870]: capacitytest_1763931272816_aw116@test.com
+            - cell "2" [ref=e1871]
+            - cell "$2,200,000" [ref=e1872]
+            - cell "PENDING" [ref=e1873]
+            - cell "Nov 23, 2025" [ref=e1874]
+            - cell "Edit" [ref=e1875]:
+              - button "Edit" [ref=e1876]
+          - row "PublicTest_1763859392597_gx33zs publictest_1763859392597_gx33zs@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1877] [cursor=pointer]:
+            - cell "PublicTest_1763859392597_gx33zs publictest_1763859392597_gx33zs@test.com" [ref=e1878]:
+              - generic [ref=e1879]: PublicTest_1763859392597_gx33zs
+              - generic [ref=e1880]: publictest_1763859392597_gx33zs@test.com
+            - cell "1" [ref=e1881]
+            - cell "$1,500,000" [ref=e1882]
+            - cell "PENDING" [ref=e1883]
+            - cell "Nov 22, 2025" [ref=e1884]
+            - cell "Edit" [ref=e1885]:
+              - button "Edit" [ref=e1886]
+          - row "PublicTest_1763859727936_balhvp publictest_1763859727936_balhvp@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1887] [cursor=pointer]:
+            - cell "PublicTest_1763859727936_balhvp publictest_1763859727936_balhvp@test.com" [ref=e1888]:
+              - generic [ref=e1889]: PublicTest_1763859727936_balhvp
+              - generic [ref=e1890]: publictest_1763859727936_balhvp@test.com
+            - cell "1" [ref=e1891]
+            - cell "$1,500,000" [ref=e1892]
+            - cell "PENDING" [ref=e1893]
+            - cell "Nov 22, 2025" [ref=e1894]
+            - cell "Edit" [ref=e1895]:
+              - button "Edit" [ref=e1896]
+          - row "DateUpdate_1763931419138_w8gyzh dateupdate_1763931419138_w8gyzh@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1897] [cursor=pointer]:
+            - cell "DateUpdate_1763931419138_w8gyzh dateupdate_1763931419138_w8gyzh@test.com" [ref=e1898]:
+              - generic [ref=e1899]: DateUpdate_1763931419138_w8gyzh
+              - generic [ref=e1900]: dateupdate_1763931419138_w8gyzh@test.com
+            - cell "2" [ref=e1901]
+            - cell "$2,200,000" [ref=e1902]
+            - cell "PENDING" [ref=e1903]
+            - cell "Nov 23, 2025" [ref=e1904]
+            - cell "Edit" [ref=e1905]:
+              - button "Edit" [ref=e1906]
+          - row "StatusUpdate_1763861947988_d826po statusupdate_1763861947988_d826po@test.com 1 $1,500,000 CONFIRMED Nov 22, 2025 Edit" [ref=e1907] [cursor=pointer]:
+            - cell "StatusUpdate_1763861947988_d826po statusupdate_1763861947988_d826po@test.com" [ref=e1908]:
+              - generic [ref=e1909]: StatusUpdate_1763861947988_d826po
+              - generic [ref=e1910]: statusupdate_1763861947988_d826po@test.com
+            - cell "1" [ref=e1911]
+            - cell "$1,500,000" [ref=e1912]
+            - cell "CONFIRMED" [ref=e1913]
+            - cell "Nov 22, 2025" [ref=e1914]
+            - cell "Edit" [ref=e1915]:
+              - button "Edit" [ref=e1916]
+          - row "DateUpdate_1763931326413_mchagt dateupdate_1763931326413_mchagt@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1917] [cursor=pointer]:
+            - cell "DateUpdate_1763931326413_mchagt dateupdate_1763931326413_mchagt@test.com" [ref=e1918]:
+              - generic [ref=e1919]: DateUpdate_1763931326413_mchagt
+              - generic [ref=e1920]: dateupdate_1763931326413_mchagt@test.com
+            - cell "2" [ref=e1921]
+            - cell "$2,200,000" [ref=e1922]
+            - cell "PENDING" [ref=e1923]
+            - cell "Nov 23, 2025" [ref=e1924]
+            - cell "Edit" [ref=e1925]:
+              - button "Edit" [ref=e1926]
+          - row "ConvertTest_1763861979355_1efe converttest_1763861979355_1efe@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1927] [cursor=pointer]:
+            - cell "ConvertTest_1763861979355_1efe converttest_1763861979355_1efe@test.com" [ref=e1928]:
+              - generic [ref=e1929]: ConvertTest_1763861979355_1efe
+              - generic [ref=e1930]: converttest_1763861979355_1efe@test.com
+            - cell "1" [ref=e1931]
+            - cell "$1,500,000" [ref=e1932]
+            - cell "PENDING" [ref=e1933]
+            - cell "Nov 22, 2025" [ref=e1934]
+            - cell "Edit" [ref=e1935]:
+              - button "Edit" [ref=e1936]
+          - row "TourUpdateUI_1763953935147_y6z4w tourupdateui_1763953935147_y6z4w@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e1937] [cursor=pointer]:
+            - cell "TourUpdateUI_1763953935147_y6z4w tourupdateui_1763953935147_y6z4w@test.com" [ref=e1938]:
+              - generic [ref=e1939]: TourUpdateUI_1763953935147_y6z4w
+              - generic [ref=e1940]: tourupdateui_1763953935147_y6z4w@test.com
+            - cell "2" [ref=e1941]
+            - cell "$900,000" [ref=e1942]
+            - cell "CONFIRMED" [ref=e1943]
+            - cell "Nov 23, 2025" [ref=e1944]
+            - cell "Edit" [ref=e1945]:
+              - button "Edit" [ref=e1946]
+          - row "BlockedUI_1763861746916_c3q3d9 blockedui_1763861746916_c3q3d9@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1947] [cursor=pointer]:
+            - cell "BlockedUI_1763861746916_c3q3d9 blockedui_1763861746916_c3q3d9@test.com" [ref=e1948]:
+              - generic [ref=e1949]: BlockedUI_1763861746916_c3q3d9
+              - generic [ref=e1950]: blockedui_1763861746916_c3q3d9@test.com
+            - cell "1" [ref=e1951]
+            - cell "$1,500,000" [ref=e1952]
+            - cell "PENDING" [ref=e1953]
+            - cell "Nov 22, 2025" [ref=e1954]
+            - cell "Edit" [ref=e1955]:
+              - button "Edit" [ref=e1956]
+          - row "PublicTest_1763934101284_743rkd publictest_1763934101284_743rkd@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1957] [cursor=pointer]:
+            - cell "PublicTest_1763934101284_743rkd publictest_1763934101284_743rkd@test.com" [ref=e1958]:
+              - generic [ref=e1959]: PublicTest_1763934101284_743rkd
+              - generic [ref=e1960]: publictest_1763934101284_743rkd@test.com
+            - cell "1" [ref=e1961]
+            - cell "$1,500,000" [ref=e1962]
+            - cell "PENDING" [ref=e1963]
+            - cell "Nov 23, 2025" [ref=e1964]
+            - cell "Edit" [ref=e1965]:
+              - button "Edit" [ref=e1966]
+          - row "GhostTest_1763859360091_i4mgyh ghosttest_1763859360091_i4mgyh@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e1967] [cursor=pointer]:
+            - cell "GhostTest_1763859360091_i4mgyh ghosttest_1763859360091_i4mgyh@test.com" [ref=e1968]:
+              - generic [ref=e1969]: GhostTest_1763859360091_i4mgyh
+              - generic [ref=e1970]: ghosttest_1763859360091_i4mgyh@test.com
+            - cell "1" [ref=e1971]
+            - cell "$1,500,000" [ref=e1972]
+            - cell "PENDING" [ref=e1973]
+            - cell "Nov 22, 2025" [ref=e1974]
+            - cell "Edit" [ref=e1975]:
+              - button "Edit" [ref=e1976]
+          - row "PrivateTest_1763931379125_dfvuki privatetest_1763931379125_dfvuki@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e1977] [cursor=pointer]:
+            - cell "PrivateTest_1763931379125_dfvuki privatetest_1763931379125_dfvuki@test.com" [ref=e1978]:
+              - generic [ref=e1979]: PrivateTest_1763931379125_dfvuki
+              - generic [ref=e1980]: privatetest_1763931379125_dfvuki@test.com
+            - cell "2" [ref=e1981]
+            - cell "$2,200,000" [ref=e1982]
+            - cell "PENDING" [ref=e1983]
+            - cell "Nov 23, 2025" [ref=e1984]
+            - cell "Edit" [ref=e1985]:
+              - button "Edit" [ref=e1986]
+          - row "PublicTest_1763950184198_7t4g4v publictest_1763950184198_7t4g4v@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e1987] [cursor=pointer]:
+            - cell "PublicTest_1763950184198_7t4g4v publictest_1763950184198_7t4g4v@test.com" [ref=e1988]:
+              - generic [ref=e1989]: PublicTest_1763950184198_7t4g4v
+              - generic [ref=e1990]: publictest_1763950184198_7t4g4v@test.com
+            - cell "1" [ref=e1991]
+            - cell "$1,500,000" [ref=e1992]
+            - cell "PENDING" [ref=e1993]
+            - cell "Nov 23, 2025" [ref=e1994]
+            - cell "Edit" [ref=e1995]:
+              - button "Edit" [ref=e1996]
+          - row "TourUpdate_1763860116579_px8t56 tourupdate_1763860116579_px8t56@test.com 2 $900,000 PENDING Nov 22, 2025 Edit" [ref=e1997] [cursor=pointer]:
+            - cell "TourUpdate_1763860116579_px8t56 tourupdate_1763860116579_px8t56@test.com" [ref=e1998]:
+              - generic [ref=e1999]: TourUpdate_1763860116579_px8t56
+              - generic [ref=e2000]: tourupdate_1763860116579_px8t56@test.com
+            - cell "2" [ref=e2001]
+            - cell "$900,000" [ref=e2002]
+            - cell "PENDING" [ref=e2003]
+            - cell "Nov 22, 2025" [ref=e2004]
+            - cell "Edit" [ref=e2005]:
+              - button "Edit" [ref=e2006]
+          - row "PublicTest_1763939133543_e5wp5ck publictest_1763939133543_e5wp5ck@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2007] [cursor=pointer]:
+            - cell "PublicTest_1763939133543_e5wp5ck publictest_1763939133543_e5wp5ck@test.com" [ref=e2008]:
+              - generic [ref=e2009]: PublicTest_1763939133543_e5wp5ck
+              - generic [ref=e2010]: publictest_1763939133543_e5wp5ck@test.com
+            - cell "1" [ref=e2011]
+            - cell "$1,500,000" [ref=e2012]
+            - cell "PENDING" [ref=e2013]
+            - cell "Nov 23, 2025" [ref=e2014]
+            - cell "Edit" [ref=e2015]:
+              - button "Edit" [ref=e2016]
+          - row "BlockedUI_1763860146725_5aymv6 blockedui_1763860146725_5aymv6@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2017] [cursor=pointer]:
+            - cell "BlockedUI_1763860146725_5aymv6 blockedui_1763860146725_5aymv6@test.com" [ref=e2018]:
+              - generic [ref=e2019]: BlockedUI_1763860146725_5aymv6
+              - generic [ref=e2020]: blockedui_1763860146725_5aymv6@test.com
+            - cell "1" [ref=e2021]
+            - cell "$1,500,000" [ref=e2022]
+            - cell "PENDING" [ref=e2023]
+            - cell "Nov 22, 2025" [ref=e2024]
+            - cell "Edit" [ref=e2025]:
+              - button "Edit" [ref=e2026]
+          - row "BlockedUI_1763859814107_q1s89c blockedui_1763859814107_q1s89c@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2027] [cursor=pointer]:
+            - cell "BlockedUI_1763859814107_q1s89c blockedui_1763859814107_q1s89c@test.com" [ref=e2028]:
+              - generic [ref=e2029]: BlockedUI_1763859814107_q1s89c
+              - generic [ref=e2030]: blockedui_1763859814107_q1s89c@test.com
+            - cell "1" [ref=e2031]
+            - cell "$1,500,000" [ref=e2032]
+            - cell "PENDING" [ref=e2033]
+            - cell "Nov 22, 2025" [ref=e2034]
+            - cell "Edit" [ref=e2035]:
+              - button "Edit" [ref=e2036]
+          - row "ConvertTest_1763939189832_pq7qel converttest_1763939189832_pq7qel@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2037] [cursor=pointer]:
+            - cell "ConvertTest_1763939189832_pq7qel converttest_1763939189832_pq7qel@test.com" [ref=e2038]:
+              - generic [ref=e2039]: ConvertTest_1763939189832_pq7qel
+              - generic [ref=e2040]: converttest_1763939189832_pq7qel@test.com
+            - cell "1" [ref=e2041]
+            - cell "$1,500,000" [ref=e2042]
+            - cell "PENDING" [ref=e2043]
+            - cell "Nov 23, 2025" [ref=e2044]
+            - cell "Edit" [ref=e2045]:
+              - button "Edit" [ref=e2046]
+          - row "GhostTest_1763859754085_h4h8yg ghosttest_1763859754085_h4h8yg@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2047] [cursor=pointer]:
+            - cell "GhostTest_1763859754085_h4h8yg ghosttest_1763859754085_h4h8yg@test.com" [ref=e2048]:
+              - generic [ref=e2049]: GhostTest_1763859754085_h4h8yg
+              - generic [ref=e2050]: ghosttest_1763859754085_h4h8yg@test.com
+            - cell "1" [ref=e2051]
+            - cell "$1,500,000" [ref=e2052]
+            - cell "PENDING" [ref=e2053]
+            - cell "Nov 22, 2025" [ref=e2054]
+            - cell "Edit" [ref=e2055]:
+              - button "Edit" [ref=e2056]
+          - row "TourUpdateUI_1763939170450_auiw9 tourupdateui_1763939170450_auiw9@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e2057] [cursor=pointer]:
+            - cell "TourUpdateUI_1763939170450_auiw9 tourupdateui_1763939170450_auiw9@test.com" [ref=e2058]:
+              - generic [ref=e2059]: TourUpdateUI_1763939170450_auiw9
+              - generic [ref=e2060]: tourupdateui_1763939170450_auiw9@test.com
+            - cell "2" [ref=e2061]
+            - cell "$900,000" [ref=e2062]
+            - cell "CONFIRMED" [ref=e2063]
+            - cell "Nov 23, 2025" [ref=e2064]
+            - cell "Edit" [ref=e2065]:
+              - button "Edit" [ref=e2066]
+          - row "DateUpdate_1763861961442_xwjz1 dateupdate_1763861961442_xwjz1@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2067] [cursor=pointer]:
+            - cell "DateUpdate_1763861961442_xwjz1 dateupdate_1763861961442_xwjz1@test.com" [ref=e2068]:
+              - generic [ref=e2069]: DateUpdate_1763861961442_xwjz1
+              - generic [ref=e2070]: dateupdate_1763861961442_xwjz1@test.com
+            - cell "2" [ref=e2071]
+            - cell "$2,200,000" [ref=e2072]
+            - cell "PENDING" [ref=e2073]
+            - cell "Nov 22, 2025" [ref=e2074]
+            - cell "Edit" [ref=e2075]:
+              - button "Edit" [ref=e2076]
+          - row "CapacityTest_1763934128147_26a1ho capacitytest_1763934128147_26a1ho@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2077] [cursor=pointer]:
+            - cell "CapacityTest_1763934128147_26a1ho capacitytest_1763934128147_26a1ho@test.com" [ref=e2078]:
+              - generic [ref=e2079]: CapacityTest_1763934128147_26a1ho
+              - generic [ref=e2080]: capacitytest_1763934128147_26a1ho@test.com
+            - cell "2" [ref=e2081]
+            - cell "$2,200,000" [ref=e2082]
+            - cell "PENDING" [ref=e2083]
+            - cell "Nov 23, 2025" [ref=e2084]
+            - cell "Edit" [ref=e2085]:
+              - button "Edit" [ref=e2086]
+          - row "CapacityTest_1763859281997_lpxgh7 capacitytest_1763859281997_lpxgh7@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2087] [cursor=pointer]:
+            - cell "CapacityTest_1763859281997_lpxgh7 capacitytest_1763859281997_lpxgh7@test.com" [ref=e2088]:
+              - generic [ref=e2089]: CapacityTest_1763859281997_lpxgh7
+              - generic [ref=e2090]: capacitytest_1763859281997_lpxgh7@test.com
+            - cell "2" [ref=e2091]
+            - cell "$2,200,000" [ref=e2092]
+            - cell "PENDING" [ref=e2093]
+            - cell "Nov 22, 2025" [ref=e2094]
+            - cell "Edit" [ref=e2095]:
+              - button "Edit" [ref=e2096]
+          - row "CapacityTest_1763859825766_qr82t capacitytest_1763859825766_qr82t@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2097] [cursor=pointer]:
+            - cell "CapacityTest_1763859825766_qr82t capacitytest_1763859825766_qr82t@test.com" [ref=e2098]:
+              - generic [ref=e2099]: CapacityTest_1763859825766_qr82t
+              - generic [ref=e2100]: capacitytest_1763859825766_qr82t@test.com
+            - cell "2" [ref=e2101]
+            - cell "$2,200,000" [ref=e2102]
+            - cell "PENDING" [ref=e2103]
+            - cell "Nov 22, 2025" [ref=e2104]
+            - cell "Edit" [ref=e2105]:
+              - button "Edit" [ref=e2106]
+          - row "ConvertTest_1763860139728_p9jruh converttest_1763860139728_p9jruh@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2107] [cursor=pointer]:
+            - cell "ConvertTest_1763860139728_p9jruh converttest_1763860139728_p9jruh@test.com" [ref=e2108]:
+              - generic [ref=e2109]: ConvertTest_1763860139728_p9jruh
+              - generic [ref=e2110]: converttest_1763860139728_p9jruh@test.com
+            - cell "1" [ref=e2111]
+            - cell "$1,500,000" [ref=e2112]
+            - cell "PENDING" [ref=e2113]
+            - cell "Nov 22, 2025" [ref=e2114]
+            - cell "Edit" [ref=e2115]:
+              - button "Edit" [ref=e2116]
+          - row "TourUpdateUI_1763939085262_r9t3c8 tourupdateui_1763939085262_r9t3c8@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e2117] [cursor=pointer]:
+            - cell "TourUpdateUI_1763939085262_r9t3c8 tourupdateui_1763939085262_r9t3c8@test.com" [ref=e2118]:
+              - generic [ref=e2119]: TourUpdateUI_1763939085262_r9t3c8
+              - generic [ref=e2120]: tourupdateui_1763939085262_r9t3c8@test.com
+            - cell "2" [ref=e2121]
+            - cell "$900,000" [ref=e2122]
+            - cell "CONFIRMED" [ref=e2123]
+            - cell "Nov 23, 2025" [ref=e2124]
+            - cell "Edit" [ref=e2125]:
+              - button "Edit" [ref=e2126]
+          - row "BlockedUI_1763953951579_pz05va blockedui_1763953951579_pz05va@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2127] [cursor=pointer]:
+            - cell "BlockedUI_1763953951579_pz05va blockedui_1763953951579_pz05va@test.com" [ref=e2128]:
+              - generic [ref=e2129]: BlockedUI_1763953951579_pz05va
+              - generic [ref=e2130]: blockedui_1763953951579_pz05va@test.com
+            - cell "1" [ref=e2131]
+            - cell "$1,500,000" [ref=e2132]
+            - cell "PENDING" [ref=e2133]
+            - cell "Nov 23, 2025" [ref=e2134]
+            - cell "Edit" [ref=e2135]:
+              - button "Edit" [ref=e2136]
+          - row "GhostTest_1763859427043_zzqq0n ghosttest_1763859427043_zzqq0n@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2137] [cursor=pointer]:
+            - cell "GhostTest_1763859427043_zzqq0n ghosttest_1763859427043_zzqq0n@test.com" [ref=e2138]:
+              - generic [ref=e2139]: GhostTest_1763859427043_zzqq0n
+              - generic [ref=e2140]: ghosttest_1763859427043_zzqq0n@test.com
+            - cell "1" [ref=e2141]
+            - cell "$1,500,000" [ref=e2142]
+            - cell "PENDING" [ref=e2143]
+            - cell "Nov 22, 2025" [ref=e2144]
+            - cell "Edit" [ref=e2145]:
+              - button "Edit" [ref=e2146]
+          - row "PrivateTest_1763861564956_up3utf privatetest_1763861564956_up3utf@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2147] [cursor=pointer]:
+            - cell "PrivateTest_1763861564956_up3utf privatetest_1763861564956_up3utf@test.com" [ref=e2148]:
+              - generic [ref=e2149]: PrivateTest_1763861564956_up3utf
+              - generic [ref=e2150]: privatetest_1763861564956_up3utf@test.com
+            - cell "1" [ref=e2151]
+            - cell "$1,500,000" [ref=e2152]
+            - cell "PENDING" [ref=e2153]
+            - cell "Nov 22, 2025" [ref=e2154]
+            - cell "Edit" [ref=e2155]:
+              - button "Edit" [ref=e2156]
+          - row "CapacityTest_1763860020855_pqyn2 capacitytest_1763860020855_pqyn2@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2157] [cursor=pointer]:
+            - cell "CapacityTest_1763860020855_pqyn2 capacitytest_1763860020855_pqyn2@test.com" [ref=e2158]:
+              - generic [ref=e2159]: CapacityTest_1763860020855_pqyn2
+              - generic [ref=e2160]: capacitytest_1763860020855_pqyn2@test.com
+            - cell "2" [ref=e2161]
+            - cell "$2,200,000" [ref=e2162]
+            - cell "PENDING" [ref=e2163]
+            - cell "Nov 22, 2025" [ref=e2164]
+            - cell "Edit" [ref=e2165]:
+              - button "Edit" [ref=e2166]
+          - row "BlockedUI_1763859750807_6ve33 blockedui_1763859750807_6ve33@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2167] [cursor=pointer]:
+            - cell "BlockedUI_1763859750807_6ve33 blockedui_1763859750807_6ve33@test.com" [ref=e2168]:
+              - generic [ref=e2169]: BlockedUI_1763859750807_6ve33
+              - generic [ref=e2170]: blockedui_1763859750807_6ve33@test.com
+            - cell "1" [ref=e2171]
+            - cell "$1,500,000" [ref=e2172]
+            - cell "PENDING" [ref=e2173]
+            - cell "Nov 22, 2025" [ref=e2174]
+            - cell "Edit" [ref=e2175]:
+              - button "Edit" [ref=e2176]
+          - row "GhostTest_1763953952834_wxq7njo ghosttest_1763953952834_wxq7njo@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2177] [cursor=pointer]:
+            - cell "GhostTest_1763953952834_wxq7njo ghosttest_1763953952834_wxq7njo@test.com" [ref=e2178]:
+              - generic [ref=e2179]: GhostTest_1763953952834_wxq7njo
+              - generic [ref=e2180]: ghosttest_1763953952834_wxq7njo@test.com
+            - cell "1" [ref=e2181]
+            - cell "$1,500,000" [ref=e2182]
+            - cell "PENDING" [ref=e2183]
+            - cell "Nov 23, 2025" [ref=e2184]
+            - cell "Edit" [ref=e2185]:
+              - button "Edit" [ref=e2186]
+          - row "PublicTest_1763859258582_0ippr publictest_1763859258582_0ippr@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2187] [cursor=pointer]:
+            - cell "PublicTest_1763859258582_0ippr publictest_1763859258582_0ippr@test.com" [ref=e2188]:
+              - generic [ref=e2189]: PublicTest_1763859258582_0ippr
+              - generic [ref=e2190]: publictest_1763859258582_0ippr@test.com
+            - cell "1" [ref=e2191]
+            - cell "$1,500,000" [ref=e2192]
+            - cell "PENDING" [ref=e2193]
+            - cell "Nov 22, 2025" [ref=e2194]
+            - cell "Edit" [ref=e2195]:
+              - button "Edit" [ref=e2196]
+          - row "DateUpdate_1763859783949_miazts dateupdate_1763859783949_miazts@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2197] [cursor=pointer]:
+            - cell "DateUpdate_1763859783949_miazts dateupdate_1763859783949_miazts@test.com" [ref=e2198]:
+              - generic [ref=e2199]: DateUpdate_1763859783949_miazts
+              - generic [ref=e2200]: dateupdate_1763859783949_miazts@test.com
+            - cell "2" [ref=e2201]
+            - cell "$2,200,000" [ref=e2202]
+            - cell "PENDING" [ref=e2203]
+            - cell "Nov 22, 2025" [ref=e2204]
+            - cell "Edit" [ref=e2205]:
+              - button "Edit" [ref=e2206]
+          - row "PrivateTest_1763861564956_up3utf privatetest_1763861564956_up3utf@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2207] [cursor=pointer]:
+            - cell "PrivateTest_1763861564956_up3utf privatetest_1763861564956_up3utf@test.com" [ref=e2208]:
+              - generic [ref=e2209]: PrivateTest_1763861564956_up3utf
+              - generic [ref=e2210]: privatetest_1763861564956_up3utf@test.com
+            - cell "2" [ref=e2211]
+            - cell "$2,200,000" [ref=e2212]
+            - cell "PENDING" [ref=e2213]
+            - cell "Nov 22, 2025" [ref=e2214]
+            - cell "Edit" [ref=e2215]:
+              - button "Edit" [ref=e2216]
+          - row "PublicTest_1763859791052_modb0j publictest_1763859791052_modb0j@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2217] [cursor=pointer]:
+            - cell "PublicTest_1763859791052_modb0j publictest_1763859791052_modb0j@test.com" [ref=e2218]:
+              - generic [ref=e2219]: PublicTest_1763859791052_modb0j
+              - generic [ref=e2220]: publictest_1763859791052_modb0j@test.com
+            - cell "1" [ref=e2221]
+            - cell "$1,500,000" [ref=e2222]
+            - cell "PENDING" [ref=e2223]
+            - cell "Nov 22, 2025" [ref=e2224]
+            - cell "Edit" [ref=e2225]:
+              - button "Edit" [ref=e2226]
+          - row "PrivateTest_1763859835490_8zmwem privatetest_1763859835490_8zmwem@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2227] [cursor=pointer]:
+            - cell "PrivateTest_1763859835490_8zmwem privatetest_1763859835490_8zmwem@test.com" [ref=e2228]:
+              - generic [ref=e2229]: PrivateTest_1763859835490_8zmwem
+              - generic [ref=e2230]: privatetest_1763859835490_8zmwem@test.com
+            - cell "2" [ref=e2231]
+            - cell "$2,200,000" [ref=e2232]
+            - cell "PENDING" [ref=e2233]
+            - cell "Nov 22, 2025" [ref=e2234]
+            - cell "Edit" [ref=e2235]:
+              - button "Edit" [ref=e2236]
+          - row "PrivateTest_1763859709635_vx9ja4 privatetest_1763859709635_vx9ja4@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2237] [cursor=pointer]:
+            - cell "PrivateTest_1763859709635_vx9ja4 privatetest_1763859709635_vx9ja4@test.com" [ref=e2238]:
+              - generic [ref=e2239]: PrivateTest_1763859709635_vx9ja4
+              - generic [ref=e2240]: privatetest_1763859709635_vx9ja4@test.com
+            - cell "2" [ref=e2241]
+            - cell "$2,200,000" [ref=e2242]
+            - cell "PENDING" [ref=e2243]
+            - cell "Nov 22, 2025" [ref=e2244]
+            - cell "Edit" [ref=e2245]:
+              - button "Edit" [ref=e2246]
+          - row "ConvertTest_1763931258301_fyj59q converttest_1763931258301_fyj59q@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2247] [cursor=pointer]:
+            - cell "ConvertTest_1763931258301_fyj59q converttest_1763931258301_fyj59q@test.com" [ref=e2248]:
+              - generic [ref=e2249]: ConvertTest_1763931258301_fyj59q
+              - generic [ref=e2250]: converttest_1763931258301_fyj59q@test.com
+            - cell "1" [ref=e2251]
+            - cell "$1,500,000" [ref=e2252]
+            - cell "PENDING" [ref=e2253]
+            - cell "Nov 23, 2025" [ref=e2254]
+            - cell "Edit" [ref=e2255]:
+              - button "Edit" [ref=e2256]
+          - row "CapacityTest_1763860091141_4fqkli capacitytest_1763860091141_4fqkli@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2257] [cursor=pointer]:
+            - cell "CapacityTest_1763860091141_4fqkli capacitytest_1763860091141_4fqkli@test.com" [ref=e2258]:
+              - generic [ref=e2259]: CapacityTest_1763860091141_4fqkli
+              - generic [ref=e2260]: capacitytest_1763860091141_4fqkli@test.com
+            - cell "2" [ref=e2261]
+            - cell "$2,200,000" [ref=e2262]
+            - cell "PENDING" [ref=e2263]
+            - cell "Nov 22, 2025" [ref=e2264]
+            - cell "Edit" [ref=e2265]:
+              - button "Edit" [ref=e2266]
+          - row "StatusUpdate_1763862040456_pjhtaj statusupdate_1763862040456_pjhtaj@test.com 1 $1,500,000 CONFIRMED Nov 22, 2025 Edit" [ref=e2267] [cursor=pointer]:
+            - cell "StatusUpdate_1763862040456_pjhtaj statusupdate_1763862040456_pjhtaj@test.com" [ref=e2268]:
+              - generic [ref=e2269]: StatusUpdate_1763862040456_pjhtaj
+              - generic [ref=e2270]: statusupdate_1763862040456_pjhtaj@test.com
+            - cell "1" [ref=e2271]
+            - cell "$1,500,000" [ref=e2272]
+            - cell "CONFIRMED" [ref=e2273]
+            - cell "Nov 22, 2025" [ref=e2274]
+            - cell "Edit" [ref=e2275]:
+              - button "Edit" [ref=e2276]
+          - row "BlockedUI_1763931352182_oas5yk blockedui_1763931352182_oas5yk@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2277] [cursor=pointer]:
+            - cell "BlockedUI_1763931352182_oas5yk blockedui_1763931352182_oas5yk@test.com" [ref=e2278]:
+              - generic [ref=e2279]: BlockedUI_1763931352182_oas5yk
+              - generic [ref=e2280]: blockedui_1763931352182_oas5yk@test.com
+            - cell "1" [ref=e2281]
+            - cell "$1,500,000" [ref=e2282]
+            - cell "PENDING" [ref=e2283]
+            - cell "Nov 23, 2025" [ref=e2284]
+            - cell "Edit" [ref=e2285]:
+              - button "Edit" [ref=e2286]
+          - row "GhostTest_1763862094874_ip89yn ghosttest_1763862094874_ip89yn@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2287] [cursor=pointer]:
+            - cell "GhostTest_1763862094874_ip89yn ghosttest_1763862094874_ip89yn@test.com" [ref=e2288]:
+              - generic [ref=e2289]: GhostTest_1763862094874_ip89yn
+              - generic [ref=e2290]: ghosttest_1763862094874_ip89yn@test.com
+            - cell "1" [ref=e2291]
+            - cell "$1,500,000" [ref=e2292]
+            - cell "PENDING" [ref=e2293]
+            - cell "Nov 22, 2025" [ref=e2294]
+            - cell "Edit" [ref=e2295]:
+              - button "Edit" [ref=e2296]
+          - row "ConvertTest_1763859801790_v3yatc converttest_1763859801790_v3yatc@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2297] [cursor=pointer]:
+            - cell "ConvertTest_1763859801790_v3yatc converttest_1763859801790_v3yatc@test.com" [ref=e2298]:
+              - generic [ref=e2299]: ConvertTest_1763859801790_v3yatc
+              - generic [ref=e2300]: converttest_1763859801790_v3yatc@test.com
+            - cell "1" [ref=e2301]
+            - cell "$1,500,000" [ref=e2302]
+            - cell "PENDING" [ref=e2303]
+            - cell "Nov 22, 2025" [ref=e2304]
+            - cell "Edit" [ref=e2305]:
+              - button "Edit" [ref=e2306]
+          - row "GhostTest_1763939104741_6tnx9e ghosttest_1763939104741_6tnx9e@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2307] [cursor=pointer]:
+            - cell "GhostTest_1763939104741_6tnx9e ghosttest_1763939104741_6tnx9e@test.com" [ref=e2308]:
+              - generic [ref=e2309]: GhostTest_1763939104741_6tnx9e
+              - generic [ref=e2310]: ghosttest_1763939104741_6tnx9e@test.com
+            - cell "1" [ref=e2311]
+            - cell "$1,500,000" [ref=e2312]
+            - cell "PENDING" [ref=e2313]
+            - cell "Nov 23, 2025" [ref=e2314]
+            - cell "Edit" [ref=e2315]:
+              - button "Edit" [ref=e2316]
+          - row "BlockedUI_1763954240504_nij9l blockedui_1763954240504_nij9l@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2317] [cursor=pointer]:
+            - cell "BlockedUI_1763954240504_nij9l blockedui_1763954240504_nij9l@test.com" [ref=e2318]:
+              - generic [ref=e2319]: BlockedUI_1763954240504_nij9l
+              - generic [ref=e2320]: blockedui_1763954240504_nij9l@test.com
+            - cell "1" [ref=e2321]
+            - cell "$1,500,000" [ref=e2322]
+            - cell "PENDING" [ref=e2323]
+            - cell "Nov 23, 2025" [ref=e2324]
+            - cell "Edit" [ref=e2325]:
+              - button "Edit" [ref=e2326]
+          - row "GhostTest_1763861359284_mj90id ghosttest_1763861359284_mj90id@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2327] [cursor=pointer]:
+            - cell "GhostTest_1763861359284_mj90id ghosttest_1763861359284_mj90id@test.com" [ref=e2328]:
+              - generic [ref=e2329]: GhostTest_1763861359284_mj90id
+              - generic [ref=e2330]: ghosttest_1763861359284_mj90id@test.com
+            - cell "1" [ref=e2331]
+            - cell "$1,500,000" [ref=e2332]
+            - cell "PENDING" [ref=e2333]
+            - cell "Nov 22, 2025" [ref=e2334]
+            - cell "Edit" [ref=e2335]:
+              - button "Edit" [ref=e2336]
+          - row "CapacityTest_1763859751484_0n9hv capacitytest_1763859751484_0n9hv@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2337] [cursor=pointer]:
+            - cell "CapacityTest_1763859751484_0n9hv capacitytest_1763859751484_0n9hv@test.com" [ref=e2338]:
+              - generic [ref=e2339]: CapacityTest_1763859751484_0n9hv
+              - generic [ref=e2340]: capacitytest_1763859751484_0n9hv@test.com
+            - cell "2" [ref=e2341]
+            - cell "$2,200,000" [ref=e2342]
+            - cell "PENDING" [ref=e2343]
+            - cell "Nov 22, 2025" [ref=e2344]
+            - cell "Edit" [ref=e2345]:
+              - button "Edit" [ref=e2346]
+          - row "CapacityTest_1763861758659_tdbzin capacitytest_1763861758659_tdbzin@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2347] [cursor=pointer]:
+            - cell "CapacityTest_1763861758659_tdbzin capacitytest_1763861758659_tdbzin@test.com" [ref=e2348]:
+              - generic [ref=e2349]: CapacityTest_1763861758659_tdbzin
+              - generic [ref=e2350]: capacitytest_1763861758659_tdbzin@test.com
+            - cell "2" [ref=e2351]
+            - cell "$2,200,000" [ref=e2352]
+            - cell "PENDING" [ref=e2353]
+            - cell "Nov 22, 2025" [ref=e2354]
+            - cell "Edit" [ref=e2355]:
+              - button "Edit" [ref=e2356]
+          - row "Test User 1763954252161 test1763954252161@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2357] [cursor=pointer]:
+            - cell "Test User 1763954252161 test1763954252161@example.com" [ref=e2358]:
+              - generic [ref=e2359]: Test User 1763954252161
+              - generic [ref=e2360]: test1763954252161@example.com
+            - cell "2" [ref=e2361]
+            - cell "$2,200,000" [ref=e2362]
+            - cell "PENDING" [ref=e2363]
+            - cell "Nov 23, 2025" [ref=e2364]
+            - cell "Edit" [ref=e2365]:
+              - button "Edit" [ref=e2366]
+          - row "CapacityTest_1763954242730_33lqv capacitytest_1763954242730_33lqv@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2367] [cursor=pointer]:
+            - cell "CapacityTest_1763954242730_33lqv capacitytest_1763954242730_33lqv@test.com" [ref=e2368]:
+              - generic [ref=e2369]: CapacityTest_1763954242730_33lqv
+              - generic [ref=e2370]: capacitytest_1763954242730_33lqv@test.com
+            - cell "2" [ref=e2371]
+            - cell "$2,200,000" [ref=e2372]
+            - cell "PENDING" [ref=e2373]
+            - cell "Nov 23, 2025" [ref=e2374]
+            - cell "Edit" [ref=e2375]:
+              - button "Edit" [ref=e2376]
+          - row "GhostTest_1763859830054_0e8vh ghosttest_1763859830054_0e8vh@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2377] [cursor=pointer]:
+            - cell "GhostTest_1763859830054_0e8vh ghosttest_1763859830054_0e8vh@test.com" [ref=e2378]:
+              - generic [ref=e2379]: GhostTest_1763859830054_0e8vh
+              - generic [ref=e2380]: ghosttest_1763859830054_0e8vh@test.com
+            - cell "1" [ref=e2381]
+            - cell "$1,500,000" [ref=e2382]
+            - cell "PENDING" [ref=e2383]
+            - cell "Nov 22, 2025" [ref=e2384]
+            - cell "Edit" [ref=e2385]:
+              - button "Edit" [ref=e2386]
+          - row "TourUpdate_1763859380038_g3szln tourupdate_1763859380038_g3szln@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2387] [cursor=pointer]:
+            - cell "TourUpdate_1763859380038_g3szln tourupdate_1763859380038_g3szln@test.com" [ref=e2388]:
+              - generic [ref=e2389]: TourUpdate_1763859380038_g3szln
+              - generic [ref=e2390]: tourupdate_1763859380038_g3szln@test.com
+            - cell "2" [ref=e2391]
+            - cell "$2,200,000" [ref=e2392]
+            - cell "PENDING" [ref=e2393]
+            - cell "Nov 22, 2025" [ref=e2394]
+            - cell "Edit" [ref=e2395]:
+              - button "Edit" [ref=e2396]
+          - row "CapacityTest_1763861999189_44923n capacitytest_1763861999189_44923n@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2397] [cursor=pointer]:
+            - cell "CapacityTest_1763861999189_44923n capacitytest_1763861999189_44923n@test.com" [ref=e2398]:
+              - generic [ref=e2399]: CapacityTest_1763861999189_44923n
+              - generic [ref=e2400]: capacitytest_1763861999189_44923n@test.com
+            - cell "2" [ref=e2401]
+            - cell "$2,200,000" [ref=e2402]
+            - cell "PENDING" [ref=e2403]
+            - cell "Nov 22, 2025" [ref=e2404]
+            - cell "Edit" [ref=e2405]:
+              - button "Edit" [ref=e2406]
+          - row "PrivateTest_1763939086218_gdetzs privatetest_1763939086218_gdetzs@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2407] [cursor=pointer]:
+            - cell "PrivateTest_1763939086218_gdetzs privatetest_1763939086218_gdetzs@test.com" [ref=e2408]:
+              - generic [ref=e2409]: PrivateTest_1763939086218_gdetzs
+              - generic [ref=e2410]: privatetest_1763939086218_gdetzs@test.com
+            - cell "2" [ref=e2411]
+            - cell "$2,200,000" [ref=e2412]
+            - cell "PENDING" [ref=e2413]
+            - cell "Nov 23, 2025" [ref=e2414]
+            - cell "Edit" [ref=e2415]:
+              - button "Edit" [ref=e2416]
+          - row "BlockedUI_1763859741662_2fhjsj blockedui_1763859741662_2fhjsj@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2417] [cursor=pointer]:
+            - cell "BlockedUI_1763859741662_2fhjsj blockedui_1763859741662_2fhjsj@test.com" [ref=e2418]:
+              - generic [ref=e2419]: BlockedUI_1763859741662_2fhjsj
+              - generic [ref=e2420]: blockedui_1763859741662_2fhjsj@test.com
+            - cell "1" [ref=e2421]
+            - cell "$1,500,000" [ref=e2422]
+            - cell "PENDING" [ref=e2423]
+            - cell "Nov 22, 2025" [ref=e2424]
+            - cell "Edit" [ref=e2425]:
+              - button "Edit" [ref=e2426]
+          - row "PrivateTest_1763861736161_7er12 privatetest_1763861736161_7er12@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2427] [cursor=pointer]:
+            - cell "PrivateTest_1763861736161_7er12 privatetest_1763861736161_7er12@test.com" [ref=e2428]:
+              - generic [ref=e2429]: PrivateTest_1763861736161_7er12
+              - generic [ref=e2430]: privatetest_1763861736161_7er12@test.com
+            - cell "2" [ref=e2431]
+            - cell "$2,200,000" [ref=e2432]
+            - cell "PENDING" [ref=e2433]
+            - cell "Nov 22, 2025" [ref=e2434]
+            - cell "Edit" [ref=e2435]:
+              - button "Edit" [ref=e2436]
+          - row "BlockedUI_1763861676475_zhelf blockedui_1763861676475_zhelf@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2437] [cursor=pointer]:
+            - cell "BlockedUI_1763861676475_zhelf blockedui_1763861676475_zhelf@test.com" [ref=e2438]:
+              - generic [ref=e2439]: BlockedUI_1763861676475_zhelf
+              - generic [ref=e2440]: blockedui_1763861676475_zhelf@test.com
+            - cell "1" [ref=e2441]
+            - cell "$1,500,000" [ref=e2442]
+            - cell "PENDING" [ref=e2443]
+            - cell "Nov 22, 2025" [ref=e2444]
+            - cell "Edit" [ref=e2445]:
+              - button "Edit" [ref=e2446]
+          - row "GhostTest_1763861911673_yjtj6 ghosttest_1763861911673_yjtj6@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2447] [cursor=pointer]:
+            - cell "GhostTest_1763861911673_yjtj6 ghosttest_1763861911673_yjtj6@test.com" [ref=e2448]:
+              - generic [ref=e2449]: GhostTest_1763861911673_yjtj6
+              - generic [ref=e2450]: ghosttest_1763861911673_yjtj6@test.com
+            - cell "1" [ref=e2451]
+            - cell "$1,500,000" [ref=e2452]
+            - cell "PENDING" [ref=e2453]
+            - cell "Nov 22, 2025" [ref=e2454]
+            - cell "Edit" [ref=e2455]:
+              - button "Edit" [ref=e2456]
+          - row "Test User 1763951670484 test1763951670484@example.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2457] [cursor=pointer]:
+            - cell "Test User 1763951670484 test1763951670484@example.com" [ref=e2458]:
+              - generic [ref=e2459]: Test User 1763951670484
+              - generic [ref=e2460]: test1763951670484@example.com
+            - cell "2" [ref=e2461]
+            - cell "$2,200,000" [ref=e2462]
+            - cell "PENDING" [ref=e2463]
+            - cell "Nov 23, 2025" [ref=e2464]
+            - cell "Edit" [ref=e2465]:
+              - button "Edit" [ref=e2466]
+          - row "TourUpdateUI_1763932027614_ryff89 tourupdateui_1763932027614_ryff89@test.com 2 $900,000 PENDING Nov 23, 2025 Edit" [ref=e2467] [cursor=pointer]:
+            - cell "TourUpdateUI_1763932027614_ryff89 tourupdateui_1763932027614_ryff89@test.com" [ref=e2468]:
+              - generic [ref=e2469]: TourUpdateUI_1763932027614_ryff89
+              - generic [ref=e2470]: tourupdateui_1763932027614_ryff89@test.com
+            - cell "2" [ref=e2471]
+            - cell "$900,000" [ref=e2472]
+            - cell "PENDING" [ref=e2473]
+            - cell "Nov 23, 2025" [ref=e2474]
+            - cell "Edit" [ref=e2475]:
+              - button "Edit" [ref=e2476]
+          - row "BlockedUI_1763931443978_pxvaa8 blockedui_1763931443978_pxvaa8@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2477] [cursor=pointer]:
+            - cell "BlockedUI_1763931443978_pxvaa8 blockedui_1763931443978_pxvaa8@test.com" [ref=e2478]:
+              - generic [ref=e2479]: BlockedUI_1763931443978_pxvaa8
+              - generic [ref=e2480]: blockedui_1763931443978_pxvaa8@test.com
+            - cell "1" [ref=e2481]
+            - cell "$1,500,000" [ref=e2482]
+            - cell "PENDING" [ref=e2483]
+            - cell "Nov 23, 2025" [ref=e2484]
+            - cell "Edit" [ref=e2485]:
+              - button "Edit" [ref=e2486]
+          - row "GhostTest_1763861688236_rx1x2b ghosttest_1763861688236_rx1x2b@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2487] [cursor=pointer]:
+            - cell "GhostTest_1763861688236_rx1x2b ghosttest_1763861688236_rx1x2b@test.com" [ref=e2488]:
+              - generic [ref=e2489]: GhostTest_1763861688236_rx1x2b
+              - generic [ref=e2490]: ghosttest_1763861688236_rx1x2b@test.com
+            - cell "1" [ref=e2491]
+            - cell "$1,500,000" [ref=e2492]
+            - cell "PENDING" [ref=e2493]
+            - cell "Nov 22, 2025" [ref=e2494]
+            - cell "Edit" [ref=e2495]:
+              - button "Edit" [ref=e2496]
+          - row "GhostTest_1763859699726_tw4lo ghosttest_1763859699726_tw4lo@test.com 1 $1,500,000 PENDING Nov 22, 2025 Edit" [ref=e2497] [cursor=pointer]:
+            - cell "GhostTest_1763859699726_tw4lo ghosttest_1763859699726_tw4lo@test.com" [ref=e2498]:
+              - generic [ref=e2499]: GhostTest_1763859699726_tw4lo
+              - generic [ref=e2500]: ghosttest_1763859699726_tw4lo@test.com
+            - cell "1" [ref=e2501]
+            - cell "$1,500,000" [ref=e2502]
+            - cell "PENDING" [ref=e2503]
+            - cell "Nov 22, 2025" [ref=e2504]
+            - cell "Edit" [ref=e2505]:
+              - button "Edit" [ref=e2506]
+          - row "BlockedUI_1763939194956_d5sqko blockedui_1763939194956_d5sqko@test.com 1 $1,500,000 PENDING Nov 23, 2025 Edit" [ref=e2507] [cursor=pointer]:
+            - cell "BlockedUI_1763939194956_d5sqko blockedui_1763939194956_d5sqko@test.com" [ref=e2508]:
+              - generic [ref=e2509]: BlockedUI_1763939194956_d5sqko
+              - generic [ref=e2510]: blockedui_1763939194956_d5sqko@test.com
+            - cell "1" [ref=e2511]
+            - cell "$1,500,000" [ref=e2512]
+            - cell "PENDING" [ref=e2513]
+            - cell "Nov 23, 2025" [ref=e2514]
+            - cell "Edit" [ref=e2515]:
+              - button "Edit" [ref=e2516]
+          - row "TourUpdateUI_1763933841670_81us4c tourupdateui_1763933841670_81us4c@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e2517] [cursor=pointer]:
+            - cell "TourUpdateUI_1763933841670_81us4c tourupdateui_1763933841670_81us4c@test.com" [ref=e2518]:
+              - generic [ref=e2519]: TourUpdateUI_1763933841670_81us4c
+              - generic [ref=e2520]: tourupdateui_1763933841670_81us4c@test.com
+            - cell "2" [ref=e2521]
+            - cell "$900,000" [ref=e2522]
+            - cell "CONFIRMED" [ref=e2523]
+            - cell "Nov 23, 2025" [ref=e2524]
+            - cell "Edit" [ref=e2525]:
+              - button "Edit" [ref=e2526]
+          - row "TourUpdateUI_1763934080938_w44dx tourupdateui_1763934080938_w44dx@test.com 2 $900,000 CONFIRMED Nov 23, 2025 Edit" [ref=e2527] [cursor=pointer]:
+            - cell "TourUpdateUI_1763934080938_w44dx tourupdateui_1763934080938_w44dx@test.com" [ref=e2528]:
+              - generic [ref=e2529]: TourUpdateUI_1763934080938_w44dx
+              - generic [ref=e2530]: tourupdateui_1763934080938_w44dx@test.com
+            - cell "2" [ref=e2531]
+            - cell "$900,000" [ref=e2532]
+            - cell "CONFIRMED" [ref=e2533]
+            - cell "Nov 23, 2025" [ref=e2534]
+            - cell "Edit" [ref=e2535]:
+              - button "Edit" [ref=e2536]
+          - row "TourUpdate_1763859306220_tk7smn tourupdate_1763859306220_tk7smn@test.com 2 $2,200,000 PENDING Nov 22, 2025 Edit" [ref=e2537] [cursor=pointer]:
+            - cell "TourUpdate_1763859306220_tk7smn tourupdate_1763859306220_tk7smn@test.com" [ref=e2538]:
+              - generic [ref=e2539]: TourUpdate_1763859306220_tk7smn
+              - generic [ref=e2540]: tourupdate_1763859306220_tk7smn@test.com
+            - cell "2" [ref=e2541]
+            - cell "$2,200,000" [ref=e2542]
+            - cell "PENDING" [ref=e2543]
+            - cell "Nov 22, 2025" [ref=e2544]
+            - cell "Edit" [ref=e2545]:
+              - button "Edit" [ref=e2546]
+          - row "DateUpdate_1763953934783_tlrfee dateupdate_1763953934783_tlrfee@test.com 2 $2,200,000 PENDING Nov 23, 2025 Edit" [ref=e2547] [cursor=pointer]:
+            - cell "DateUpdate_1763953934783_tlrfee dateupdate_1763953934783_tlrfee@test.com" [ref=e2548]:
+              - generic [ref=e2549]: DateUpdate_1763953934783_tlrfee
+              - generic [ref=e2550]: dateupdate_1763953934783_tlrfee@test.com
+            - cell "2" [ref=e2551]
+            - cell "$2,200,000" [ref=e2552]
+            - cell "PENDING" [ref=e2553]
+            - cell "Nov 23, 2025" [ref=e2554]
+            - cell "Edit" [ref=e2555]:
+              - button "Edit" [ref=e2556]
+```

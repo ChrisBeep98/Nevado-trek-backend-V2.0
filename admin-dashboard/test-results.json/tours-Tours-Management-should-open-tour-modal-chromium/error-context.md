@@ -1,0 +1,142 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - complementary:
+        - generic:
+          - generic:
+            - generic: "N"
+          - navigation:
+            - link:
+              - /url: /
+              - img
+              - generic: Calendar
+            - link:
+              - /url: /bookings
+              - img
+              - generic: Bookings
+            - link:
+              - /url: /tours
+              - img
+              - generic: Tours
+            - link:
+              - /url: /stats
+              - img
+              - generic: Stats
+        - button:
+          - img
+      - main:
+        - generic:
+          - generic:
+            - heading [level=1]: Dashboard
+          - generic:
+            - generic:
+              - img
+              - textbox:
+                - /placeholder: Search...
+            - generic:
+              - img
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=2]: Tours
+              - button:
+                - img
+                - generic: New Tour
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic: Active
+                - generic:
+                  - generic:
+                    - heading [level=3]: Santa Isabel Glacier Trek
+                    - paragraph: Discover the pristine beauty of Santa Isabel's ancient glaciers on this immersive 3-day trekking adventure. Located in the heart of Los Nevados National Park, this expedition offers a perfect blend of challenge and natural wonder. Trek through páramo ecosystems, camp under star-filled skies, and witness the dramatic ice formations that have shaped this landscape for millennia.
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: 3 Days
+                    - generic:
+                      - img
+                      - generic: From $213
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic: Active
+                - generic:
+                  - generic:
+                    - heading [level=3]: Nevado del Ruiz Summit Expedition
+                    - paragraph: Embark on an unforgettable journey to the summit of Nevado del Ruiz, one of Colombia's most iconic active volcanoes. This multi-day expedition takes you through diverse ecosystems, from lush cloud forests to barren volcanic landscapes, culminating in a challenging ascent to the 5,321-meter summit. Experience breathtaking panoramic views, walk on ancient glaciers, and witness the raw power of nature in this bucket-list adventure.
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: 2 Days
+                    - generic:
+                      - img
+                      - generic: From $163
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic: Active
+                - generic:
+                  - generic:
+                    - heading [level=3]: Tolima Volcano Complete Circuit
+                    - paragraph: Experience the ultimate Andean adventure on this challenging 4-day circuit around Nevado del Tolima. This comprehensive expedition combines technical mountaineering, wilderness camping, and cultural immersion as you traverse one of Colombia's most spectacular volcanic landscapes. From thermal hot springs to glacial peaks, this journey offers the complete mountain experience for seasoned trekkers.
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: 4 Days
+                    - generic:
+                      - img
+                      - generic: From $275
+  - dialog "New Tour" [ref=e2]:
+    - generic [ref=e3]:
+      - heading "New Tour" [level=2] [ref=e4]
+      - button [active] [ref=e5]:
+        - img [ref=e6]
+    - generic [ref=e10]:
+      - tablist [ref=e12]:
+        - tab "Basic" [selected] [ref=e13]
+        - tab "Pricing" [ref=e14]
+        - tab "Itinerary" [ref=e15]
+        - tab "Details" [ref=e16]
+        - tab "Images" [ref=e17]
+      - tabpanel "Basic" [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - text: Name (ES)
+            - textbox "Nombre del tour" [ref=e22]
+          - generic [ref=e23]:
+            - text: Name (EN)
+            - textbox "Tour Name" [ref=e24]
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - text: Description (ES)
+            - textbox "Descripción..." [ref=e27]
+          - generic [ref=e28]:
+            - text: Description (EN)
+            - textbox "Description..." [ref=e29]
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - text: Type
+            - combobox [ref=e32]:
+              - option "Multi-Day" [selected]
+              - option "Single-Day"
+          - generic [ref=e33]:
+            - text: Total Days
+            - spinbutton [ref=e34]: "1"
+          - generic [ref=e35]:
+            - text: Difficulty
+            - textbox [ref=e36]: Medium
+        - generic [ref=e37]:
+          - checkbox "Active (Visible to Public)" [checked] [ref=e38]
+          - generic [ref=e39]: Active (Visible to Public)
+      - generic [ref=e40]:
+        - button "Cancel" [ref=e41]
+        - button "Create Tour" [ref=e42]
+```
