@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingsService } from '../services/bookings.service';
+import { useToast } from '../context/ToastContext';
 
 export function useBookings(departureId?: string) {
   return useQuery({
@@ -17,6 +18,7 @@ export function useBookings(departureId?: string) {
 
 export function useBookingMutations() {
   const queryClient = useQueryClient();
+  const { success } = useToast();
 
   const createBooking = useMutation({
     mutationFn: bookingsService.create,
@@ -24,6 +26,7 @@ export function useBookingMutations() {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
       queryClient.invalidateQueries({ queryKey: ['departures'] });
       queryClient.invalidateQueries({ queryKey: ['booking'] });
+      success('Booking created successfully');
     }
   });
 

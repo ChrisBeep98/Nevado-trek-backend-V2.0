@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+console.error('AUTH TEST LOADED');
+
 const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
 
 test.describe('Authentication', () => {

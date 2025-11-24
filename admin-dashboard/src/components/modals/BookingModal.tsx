@@ -142,6 +142,13 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
 
 
+    // Initialize date from departure
+    useEffect(() => {
+        if (departure?.date) {
+            setNewDate(new Date(departure.date).toISOString().split('T')[0]);
+        }
+    }, [departure]);
+
     const onSubmit = (data: BookingFormValues) => {
         if (bookingId) {
             // Update existing booking details
@@ -207,12 +214,17 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
     };
 
     const handleApplyPrice = () => {
-        if (!bookingId) return;
+        if (!bookingId || !booking) return;
 
         if (priceMode === 'discount' && discountAmount > 0 && discountReason) {
+            // Calculate new final price based on CURRENT final price
+            // This ensures we apply discount to the modified price if it was changed manually
+            const currentPrice = booking.finalPrice || 0;
+            const targetPrice = Math.max(0, currentPrice - discountAmount);
+
             applyDiscount.mutate({
                 id: bookingId,
-                discountAmount,
+                newFinalPrice: targetPrice,
                 reason: discountReason
             });
             setDiscountAmount(0);
@@ -234,7 +246,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                 { id: booking.departureId, newDate: new Date(newDate).toISOString() },
                 {
                     onSuccess: () => {
-                        setNewDate('');
+                        // Don't clear date, keep it as current
                         success('Departure date updated successfully');
                     }
                 }
@@ -381,7 +393,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                 <div>
                                                     <span className="text-white/60">Discount:</span>
                                                     <span className="text-amber-400 ml-2">
-                                                        ${((booking.originalPrice || 0) - (booking.finalPrice || 0)).toLocaleString()}
+                                                        ${Math.max(0, (booking.originalPrice || 0) - (booking.finalPrice || 0)).toLocaleString()}
                                                     </span>
                                                 </div>
                                             )}

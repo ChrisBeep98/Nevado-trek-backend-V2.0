@@ -24,8 +24,22 @@ test.describe('Booking Management - Comprehensive E2E Tests', () => {
         const firstBooking = page.locator('table tbody tr').first();
         await firstBooking.click();
 
-        // Wait for modal to open
-        await page.waitForSelector('[data-testid="booking-type-chip"]', { timeout: 5000 });
+        // Wait for modal content to appear (title)
+        await expect(page.getByRole('heading', { name: /Manage Booking|New Booking/ })).toBeVisible();
+
+        // Check for chip or "No Departure" or Loading
+        try {
+            await page.waitForSelector('[data-testid="booking-type-chip"]', { timeout: 5000 });
+        } catch (e) {
+            console.log('Chip not found. Checking for alternatives...');
+            const noDeparture = await page.getByText('No Departure').isVisible();
+            const loading = await page.locator('.animate-pulse').isVisible();
+            const modalText = await page.locator('[role="dialog"]').innerText();
+            console.log(`No Departure visible: ${noDeparture}`);
+            console.log(`Loading visible: ${loading}`);
+            console.log(`Modal text: ${modalText}`);
+            throw new Error('Booking type chip not found');
+        }
 
         // Verify chip exists and shows either "Public" or "Private"
         const chip = page.locator('[data-testid="booking-type-chip"]');
