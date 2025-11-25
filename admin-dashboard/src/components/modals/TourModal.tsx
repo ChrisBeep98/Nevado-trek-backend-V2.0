@@ -1,13 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as Tabs from '@radix-ui/react-tabs';
-import { X, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { X, Plus, Trash2, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { LiquidButton } from '../ui/LiquidButton';
 import { useTour, useTours } from '../../hooks/useTours';
+import { useToast } from '../../context/ToastContext';
 import { ItineraryDay } from './tour/ItineraryDay';
+import { ImagePreview } from './tour/ImagePreview';
 
 // Schema
 const bilingualSchema = z.object({ es: z.string().min(1), en: z.string().min(1) });
@@ -60,6 +62,8 @@ interface TourModalProps {
 export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
     const { data: tour } = useTour(tourId);
     const { createTour, updateTour, isCreating, isUpdating } = useTours();
+    const { error: showError, success: showSuccess } = useToast();
+    const [activeTab, setActiveTab] = useState('basic');
 
     const { register, control, handleSubmit, reset, formState: { errors } } = useForm<TourFormValues>({
         resolver: zodResolver(tourSchema),
@@ -88,6 +92,29 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
             images: []
         }
     });
+
+    // Watch form values for progress calculation
+    const watchedValues = useWatch({ control });
+
+    // Calculate progress
+    const progress = useMemo(() => {
+        if (!watchedValues) return 0;
+
+        const requiredFields = [
+            watchedValues.name?.es,
+            watchedValues.name?.en,
+            watchedValues.description?.es,
+            watchedValues.description?.en,
+            watchedValues.difficulty,
+            watchedValues.location?.es,
+            watchedValues.location?.en,
+            watchedValues.altitude?.es,
+            watchedValues.altitude?.en
+        ];
+
+        const filledFields = requiredFields.filter(field => field && field.trim().length > 0).length;
+        return Math.round((filledFields / requiredFields.length) * 100);
+    }, [watchedValues]);
 
     const { fields: pricingFields } = useFieldArray({ control, name: "pricingTiers" });
     const { fields: faqFields, append: appendFaq, remove: removeFaq } = useFieldArray({ control, name: "faqs" });
@@ -129,6 +156,26 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
     }, [tour, tourId, reset]);
 
     const onSubmit = (data: TourFormValues) => {
+        // Validate required fields and show helpful messages
+        const missingFields: string[] = [];
+
+        if (!data.name?.es || !data.name?.en) missingFields.push('Name (ES/EN)');
+        if (!data.description?.es || !data.description?.en) missingFields.push('Description (ES/EN)');
+        if (!data.difficulty) missingFields.push('Difficulty');
+        if (!data.location?.es || !data.location?.en) missingFields.push('Location (ES/EN) in Details tab');
+        if (!data.altitude?.es || !data.altitude?.en) missingFields.push('Altitude (ES/EN) in Details tab');
+
+        if (missingFields.length > 0) {
+            showError(`Missing required fields: ${missingFields.join(', ')}`);
+            // Navigate to first tab with missing fields
+            if (!data.name?.es || !data.name?.en || !data.description?.es || !data.description?.en || !data.difficulty) {
+                setActiveTab('basic');
+            } else if (!data.location?.es || !data.location?.en || !data.altitude?.es || !data.altitude?.en) {
+                setActiveTab('details');
+            }
+            return;
+        }
+
         if (tourId) {
             updateTour({ id: tourId, data }, { onSuccess: onClose });
         } else {
@@ -151,8 +198,36 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                         </Dialog.Close>
                     </div>
 
+                    {/* Progress Bar - Only show when creating new tour */}
+                    {!tourId && (
+                        <div className="px-6 py-3 border-b border-white/10 bg-slate-900/50">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs text-white/60">Completion Progress</span>
+                                <span className="text-xs font-medium text-white">{progress}%</span>
+                            </div>
+                            <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 ease-out"
+                                    style={{ width: `${progress}%` }}
+                                />
+                            </div>
+                            {progress < 100 && (
+                                <p className="text-xs text-white/40 mt-2 flex items-center gap-1">
+                                    <AlertCircle size={12} />
+                                    Fill all required fields in Basic and Details tabs
+                                </p>
+                            )}
+                            {progress === 100 && (
+                                <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
+                                    <CheckCircle2 size={12} />
+                                    All required fields completed!
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
-                        <Tabs.Root defaultValue="basic" className="flex-1 flex flex-col overflow-hidden">
+                        <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
                             <div className="px-6 border-b border-white/10">
                                 <Tabs.List className="flex gap-6 overflow-x-auto">
                                     {['Basic', 'Pricing', 'Itinerary', 'Details', 'Images'].map(tab => (
@@ -413,18 +488,38 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         {imageFields.map((field, index) => (
-                                            <div key={field.id} className="glass-panel p-2 rounded-xl relative group aspect-video flex items-center justify-center bg-black/20">
-                                                <button type="button" onClick={() => removeImage(index)} className="absolute top-2 right-2 bg-black/50 p-1 rounded-full text-white hover:text-rose-400 z-10"><Trash2 size={14} /></button>
+                                            <div key={field.id} className="glass-panel p-3 rounded-xl relative group">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute top-2 right-2 bg-black/70 p-1.5 rounded-full text-white hover:text-rose-400 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+
+                                                {/* Image Preview */}
+                                                <div className="aspect-video mb-2 rounded-lg overflow-hidden bg-slate-800/50">
+                                                    <ImagePreview url={watchedValues?.images?.[index] || ''} />
+                                                </div>
+
+                                                {/* URL Input */}
                                                 <input
                                                     {...register(`images.${index}` as any)}
-                                                    className="glass-input w-full absolute bottom-2 left-2 right-2 text-xs bg-black/80"
-                                                    placeholder="Image URL"
+                                                    className="glass-input w-full text-xs"
+                                                    placeholder="https://example.com/image.jpg"
                                                 />
-                                                <ImageIcon className="text-white/20" size={32} />
-                                                {/* Preview logic would go here */}
                                             </div>
                                         ))}
                                     </div>
+                                    {imageFields.length === 0 && (
+                                        <div className="text-center py-12 border-2 border-dashed border-white/10 rounded-xl text-white/40">
+                                            <ImageIcon className="mx-auto mb-2" size={32} />
+                                            <p>No images added yet</p>
+                                            <LiquidButton type="button" size="sm" variant="ghost" onClick={() => appendImage('https://')} className="mt-4">
+                                                Add First Image
+                                            </LiquidButton>
+                                        </div>
+                                    )}
                                 </Tabs.Content>
                             </div>
 
