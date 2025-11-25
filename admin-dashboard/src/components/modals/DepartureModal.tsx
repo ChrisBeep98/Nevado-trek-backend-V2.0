@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { firestoreTimestampToDate, formatDateUTC } from '../../utils/dates';
 import type { Departure } from '../../types';
-import { useBookings } from '../../hooks/useBookings';
+import { useBookings, useBookingMutations } from '../../hooks/useBookings';
 import { useDepartureMutations } from '../../hooks/useDepartures';
 import { useTours } from '../../hooks/useTours';
 import { LiquidButton } from '../ui/LiquidButton';
@@ -32,6 +32,7 @@ type EditFormValues = z.infer<typeof editSchema>;
 export function DepartureModal({ isOpen, onClose, departure }: DepartureModalProps) {
     const { data: bookings, isLoading } = useBookings(departure?.departureId);
     const { updateDeparture, splitDeparture, deleteDeparture, updateDate, updateTour, createDeparture } = useDepartureMutations();
+    const { convertType } = useBookingMutations();
     const { data: tours, isLoading: isLoadingTours } = useTours();
 
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -144,6 +145,19 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                     onClose();
                 }
             });
+        }
+    };
+
+    const handleConvertToPublic = () => {
+        if (bookings && bookings.length > 0 && departure.type === 'private') {
+            if (confirm('Are you sure you want to convert this private departure to public? This will allow other bookings to join.')) {
+                // Get the first booking (private departures should only have 1 booking)
+                const booking = bookings[0];
+                convertType.mutate(
+                    { id: booking.bookingId, targetType: 'public' },
+                    { onSuccess: () => onClose() }
+                );
+            }
         }
     };
 
@@ -440,6 +454,31 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                     </LiquidButton>
                                                 </div>
                                             </div>
+
+                                            {/* Convert to Public - Only for Private departures */}
+                                            {departure.type === 'private' && (
+                                                <div className="glass-panel p-4 rounded-xl space-y-4 border border-indigo-500/20">
+                                                    <h3 className="text-white font-medium flex items-center gap-2">
+                                                        <ArrowRightLeft size={18} /> Convert to Public
+                                                    </h3>
+                                                    <p className="text-sm text-white/60">
+                                                        Convert this private departure to a public one. The booking will become public and the departure can accept additional bookings.
+                                                    </p>
+                                                    {bookings && bookings.length > 0 && (
+                                                        <p className="text-xs text-amber-200 bg-amber-500/10 p-2 rounded">
+                                                            ⚠️ This will convert {bookings.length} booking(s) to public
+                                                        </p>
+                                                    )}
+                                                    <LiquidButton
+                                                        onClick={handleConvertToPublic}
+                                                        isLoading={convertType.isPending}
+                                                        disabled={!bookings || bookings.length === 0}
+                                                        data-testid="convert-to-public-button"
+                                                    >
+                                                        Convert to Public
+                                                    </LiquidButton>
+                                                </div>
+                                            )}
 
                                             <div className="glass-panel p-4 rounded-xl border border-rose-500/20">
                                                 <h3 className="text-rose-400 font-bold mb-2 flex items-center gap-2">

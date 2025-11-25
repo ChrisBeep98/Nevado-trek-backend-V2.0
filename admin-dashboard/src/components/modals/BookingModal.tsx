@@ -204,6 +204,13 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
 
     const handleStatusChange = (status: string) => {
         if (bookingId) {
+            // Warn user that cancellation is irreversible
+            if (status === 'cancelled') {
+                if (!confirm('⚠️ WARNING: Cancellation is IRREVERSIBLE. Once cancelled, this booking cannot be reactivated. Are you sure you want to proceed?')) {
+                    return; // User cancelled the action
+                }
+            }
+
             updateStatus.mutate(
                 { id: bookingId, status },
                 {
