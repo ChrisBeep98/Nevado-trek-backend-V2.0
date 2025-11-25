@@ -1,19 +1,36 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useDepartures } from '../hooks/useDepartures';
+import { useBookings } from '../hooks/useBookings';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Loader2, Plus } from 'lucide-react';
 import { LiquidButton } from '../components/ui/LiquidButton';
-import type { Departure } from '../types';
+import * as Tooltip from '@radix-ui/react-tooltip';
+import type { Departure, Booking } from '../types';
 import { DepartureModal } from '../components/modals/DepartureModal';
 
 export default function Home() {
     const [dateRange, setDateRange] = useState<{ start: Date; end: Date } | undefined>();
     const { data: departures, isLoading } = useDepartures(dateRange?.start?.toISOString(), dateRange?.end?.toISOString());
+    const { data: bookings } = useBookings();
     const [selectedDeparture, setSelectedDeparture] = useState<Departure | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Map bookings by departureId
+    const bookingsByDeparture = useMemo(() => {
+        const map = new Map<string, Booking[]>();
+        bookings?.forEach(booking => {
+            if (booking.status !== 'cancelled' && booking.departureId) {
+                if (!map.has(booking.departureId)) {
+                    map.set(booking.departureId, []);
+                }
+                map.get(booking.departureId)!.push(booking);
+            }
+        });
+        return map;
+    }, [bookings]);
 
     const handleDatesSet = (arg: { start: Date; end: Date }) => {
         setDateRange({ start: arg.start, end: arg.end });
@@ -35,14 +52,23 @@ export default function Home() {
         setIsModalOpen(true);
     };
 
-    const events = departures?.map((dep: Departure) => ({
-        id: dep.departureId,
-        title: `${Math.max(0, dep.currentPax)}/${dep.maxPax} Pax`,
-        start: dep.date,
-        backgroundColor: dep.type === 'private' ? '#8b5cf6' : (dep.currentPax >= dep.maxPax ? '#f43f5e' : '#10b981'),
-        borderColor: 'transparent',
-        extendedProps: { ...dep }
-    })) || [];
+    const events = departures?.map((dep: Departure) => {
+        const isCancelled = dep.status === 'cancelled';
+        const isPrivateCancelled = isCancelled && dep.type === 'private';
+
+        return {
+            id: dep.departureId,
+            title: `${Math.max(0, dep.currentPax)}/${dep.maxPax} Pax`,
+            start: dep.date,
+            backgroundColor: isPrivateCancelled
+                ? 'rgba(239, 68, 68, 0.3)' // Faint red for cancelled private
+                : dep.type === 'private'
+                    ? '#8b5cf6'
+                    : (dep.currentPax >= dep.maxPax ? '#f43f5e' : '#10b981'),
+            borderColor: 'transparent',
+            extendedProps: { ...dep, isCancelled }
+        };
+    }) || [];
 
     return (
         <div className="flex flex-col gap-6 h-full">
@@ -81,14 +107,58 @@ export default function Home() {
                         events={events}
                         datesSet={handleDatesSet}
                         height="100%"
-                        eventContent={(arg) => (
-                            <div className="flex flex-col gap-1 p-1" data-testid={`event-${arg.event.id}`}>
-                                <div className="text-xs font-bold">{arg.event.title}</div>
-                                <div className="text-[10px] opacity-80 truncate">
-                                    {arg.event.extendedProps.type === 'private' ? 'Private' : 'Public'}
-                                </div>
-                            </div>
-                        )}
+                        eventContent={(arg) => {
+                            const dep = arg.event.extendedProps as Departure & { isCancelled: boolean };
+                            const depBookings = bookingsByDeparture.get(dep.departureId) || [];
+                            const bookingNames = depBookings.map(b => b.customer.name).join(', ');
+
+                            return (
+                                <Tooltip.Provider delayDuration={200}>
+                                    <Tooltip.Root>
+                                        <Tooltip.Trigger asChild>
+                                            <div
+                                                className={`flex flex-col gap-1 p-1 cursor-pointer ${dep.isCancelled ? 'opacity-40' : ''}`}
+                                                data-testid={`event-${arg.event.id}`}
+                                            >
+                                                <div className="text-xs font-bold">{arg.event.title}</div>
+                                                {bookingNames && (
+                                                    <div className="text-[10px] opacity-80 truncate" title={bookingNames}>
+                                                        {bookingNames}
+                                                    </div>
+                                                )}
+                                                {dep.isCancelled && (
+                                                    <div className="text-[9px] opacity-60 uppercase font-semibold">Cancelled</div>
+                                                )}
+                                            </div>
+                                        </Tooltip.Trigger>
+                                        <Tooltip.Portal>
+                                            <Tooltip.Content
+                                                className="glass-card p-3 text-sm space-y-2 max-w-xs z-50"
+                                                sideOffset={5}
+                                            >
+                                                <div className="font-semibold text-white">Departure Details</div>
+                                                <div className="space-y-1 text-xs text-white/80">
+                                                    <div><span className="font-medium">Status:</span> {dep.status}</div>
+                                                    <div><span className="font-medium">Type:</span> {dep.type}</div>
+                                                    <div><span className="font-medium">Capacity:</span> {dep.currentPax}/{dep.maxPax}</div>
+                                                    {depBookings.length > 0 && (
+                                                        <div>
+                                                            <span className="font-medium">Customers:</span>
+                                                            <div className="mt-1 space-y-0.5">
+                                                                {depBookings.map((b, i) => (
+                                                                    <div key={i}>• {b.customer.name}</div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <Tooltip.Arrow className="fill-slate-800/90" />
+                                            </Tooltip.Content>
+                                        </Tooltip.Portal>
+                                    </Tooltip.Root>
+                                </Tooltip.Provider>
+                            );
+                        }}
                         eventClick={(info) => {
                             setSelectedDeparture(info.event.extendedProps as Departure);
                             setIsModalOpen(true);
