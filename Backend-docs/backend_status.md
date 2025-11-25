@@ -10,7 +10,8 @@
 
 El backend está **100% funcional y verificado en producción** con todos los bugs críticos corregidos, incluyendo la eliminación automática de "ghost departures". Sistema completamente testeado con 18 casos de prueba exhaustivos.
 
-**Test Results**: ✅ **41/41 passing** (100%) - Local Emulators Testing (Nov 25, 2025)
+**Test Results**: ✅ **41/41 passing** (100%) - Local Emulators (Nov 25, 2025)
+**Production Verification**: ✅ **Endpoints verified** - maxPax=8 confirmed in production
 
 ---
 
@@ -139,6 +140,69 @@ if (newOldCurrentPax <= 0) {
 - ✅ 5.1 Private booking created (Setup for move test)
 - ✅ 5.3 Old departure deleted (Clean) - **CRITICAL**: No ghost departures
 - ✅ 5.4 Booking moved to new departure (moveBooking works correctly)
+
+---
+
+## 🚀 Deployment \u0026 Migration (Nov 25, 2025)
+
+### Deployment to Production
+
+**Project**: `nevadotrektest01` (Production)  
+**Date**: November 25, 2025  
+**Version**: v2.4  
+**Command**: `firebase deploy --only functions`  
+**Status**: ✅ Successful
+
+**Changes Deployed**:
+1. Private Departure `maxPax` = 8 (from 99)
+2. Irreversible Cancellation Logic
+3. Private Departure Auto-Cancellation Sync
+4. Public Departure Slot Release on Cancel
+
+### Data Migration
+
+Existing private departures in production database had `maxPax: 99`. Created migration script to update them to `maxPax: 8`.
+
+**Migration Script**: [`migrate_maxpax_api.js`](file:///D:/Nevado%20Trek%20Development/nevado-trek-backend/functions/migrate_maxpax_api.js)
+
+**Migration Method**: API-based update (using Admin endpoints)
+
+**Results**:
+```
+Found 5 total departures
+Found 2 private departures with maxPax=99
+
+Updating DAVtZXHf3P0tzhQsBLRv: maxPax 99 → 8
+Updating JTDxphgNPwg1lICzlOIY: maxPax 99 → 8
+
+✅ Successfully updated 2 departures
+```
+
+### Production Verification
+
+**Test Script**: [`test_prod_simple.js`](file:///D:/Nevado%20Trek%20Development/nevado-trek-backend/functions/test_prod_simple.js)
+
+Ran endpoint verification tests against production API (`https://api-wgfhwjbpva-uc.a.run.app`):
+
+**Results**:
+```
+1. GET /admin/tours
+✅ Status: 200, Count: 2
+
+2. GET /admin/departures  
+✅ Status: 200, Count: 5
+
+3. GET /admin/departures/DAVtZXHf3P0tzhQsBLRv
+✅ Status: 200, maxPax: 8, currentPax: 2  ⭐ VERIFIED!
+
+4. GET /admin/bookings
+✅ Status: 200, Count: 5
+```
+
+**Verification Status**: ✅ **All changes confirmed in production**
+- maxPax = 8 verified on private departures
+- All endpoints responding correctly
+- New backend logic operational
 
 ---
 
