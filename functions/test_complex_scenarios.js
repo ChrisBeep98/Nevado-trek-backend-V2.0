@@ -6,7 +6,7 @@
 
 const axios = require('axios');
 
-const API_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
+const API_URL = 'http://127.0.0.1:5001/nevadotrektest01/us-central1/api'; // Emulator URL
 const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
 
 const api = axios.create({
@@ -47,6 +47,7 @@ async function runTests() {
         const tourRes = await api.post('/admin/tours', {
             name: { es: 'Test Tour', en: 'Test Tour' },
             description: { es: 'Test', en: 'Test' },
+            shortDescription: { es: 'Short', en: 'Short' },
             type: 'single-day',
             totalDays: 1,
             difficulty: 'easy',
@@ -71,6 +72,7 @@ async function runTests() {
         const tour2Res = await api.post('/admin/tours', {
             name: { es: 'Test Tour 2', en: 'Test Tour 2' },
             description: { es: 'Test', en: 'Test' },
+            shortDescription: { es: 'Short', en: 'Short' },
             type: 'single-day',
             totalDays: 1,
             difficulty: 'easy',

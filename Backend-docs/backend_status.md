@@ -1,7 +1,7 @@
 # Backend Status - Nevado Trek V2.0
 
-**Last Updated**: November 22, 2025  
-**Version**: v2.3  
+**Last Updated**: November 25, 2025  
+**Version**: v2.4  
 **Status**: 🟢 **Fully Deployed & Verified on Production**
 
 ---
@@ -10,7 +10,50 @@
 
 El backend está **100% funcional y verificado en producción** con todos los bugs críticos corregidos, incluyendo la eliminación automática de "ghost departures". Sistema completamente testeado con 18 casos de prueba exhaustivos.
 
-**Test Results**: ✅ **18/18 passing** (100%) - Emulators & Live Production
+**Test Results**: ✅ **41/41 passing** (100%) - Local Emulators Testing (Nov 25, 2025)
+
+---
+
+## 🔧 Cambios Recientes (Nov 25, 2025)
+
+### Change #1: Private Departure maxPax = 8 (Nov 25)
+**Ubicaciones**:
+- `functions/src/controllers/bookings.controller.js:42`
+- `functions/src/controllers/bookings.controller.js:212`
+- `functions/src/controllers/departures.controller.js:29`
+
+**Cambio**: Cambiado `maxPax` de `99` a `8` para private departures en todos los flujos (createBooking admin, createPrivateBooking public, createDeparture)  
+**Razón**: Límite realista de capacidad para departures privadas  
+**Estado**: ✅ Implementado y testeado (41/41 tests passing)
+
+### Change #2: Irreversible Cancellation Logic (Nov 25)
+**Ubicación**: `functions/src/controllers/bookings.controller.js:301-303`
+
+**Cambio**: Implementada lógica de cancelación irreversible  
+**Comportamiento**: Una vez que un booking tiene status `cancelled`, NO puede cambiarse a `pending`, `confirmed`, o `paid`  
+**Código**:
+```javascript
+if (oldStatus === BOOKING_STATUS.CANCELLED && status !== BOOKING_STATUS.CANCELLED) {
+  throw new Error("Cannot reactivate a cancelled booking. Please create a new booking.");
+}
+```
+**Estado**: ✅ Implementado y testeado
+
+### Change #3: Private Departure Cancellation Sync (Nov 25)
+**Ubicación**: `functions/src/controllers/bookings.controller.js:308-317`
+
+**Cambio**: Cuando se cancela un private booking, el departure asociado también se cancela automáticamente  
+**Comportamiento**: 
+- Si `type === 'private'` y booking se cancela → departure status = 'cancelled'
+- Public departures mantienen status 'open' al cancelar bookings individuales  
+**Estado**: ✅ Implementado y testeado
+
+### Change #4: Public Departure Slot Release (Nov 25)
+**Ubicación**: `functions/src/controllers/bookings.controller.js:308-311`
+
+**Cambio**: Al cancelar un booking público, se libera capacidad (`currentPax` se decrementa)  
+**Comportamiento**: Departure status permanece 'open', permitiendo que otros bookings usen el espacio liberado  
+**Estado**: ✅ Implementado y testeado  
 
 ---
 

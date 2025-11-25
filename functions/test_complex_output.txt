@@ -1,0 +1,39 @@
+================================================================================
+COMPLEX SCENARIOS VERIFICATION
+================================================================================
+
+📋 SETUP: Creating Tours
+   Tours created: 80E0eLcHTQFV1DYI48Sm, RAC5GNPMNhEbBvQIpcGu
+
+TEST 1: Pax Updates & Capacity
+✅ 1.1 Initial capacity correct
+✅ 1.2 Capacity increased correctly
+✅ 1.3 Capacity decreased correctly
+
+TEST 2: Public -> Private Conversion (Split Logic)
+✅ 2.1 Pre-split capacity correct
+✅ 2.2 Original departure capacity reduced
+✅ 2.3 New private departure created
+✅ 2.4 New departure capacity correct
+✅ 2.5 New departure type is private
+
+TEST 3: Private -> Public Conversion
+✅ 3.1 Converted back to public
+✅ 3.2 Departure type updated to public
+✅ 3.3 Max pax updated to 8
+
+TEST 4: Date/Tour Updates
+✅ 4.1 Private date updated
+✅ 4.2 Private tour updated
+✅ 4.3 Public date updated
+✅ 4.4 Booking still linked after date update
+
+TEST 5: Move Booking & Ghost Departure Check
+✅ 5.1 Private booking created
+✅ 5.3 Old departure deleted (Clean)
+✅ 5.4 Booking moved to new departure
+
+================================================================================
+✅ Passed: 18
+❌ Failed: 0
+================================================================================

@@ -39,7 +39,7 @@ exports.createBooking = async (req, res) => {
         date: bookingDate,
         type: type,
         status: DEPARTURE_STATUS.OPEN,
-        maxPax: type === DEPARTURE_TYPES.PUBLIC ? 8 : 99,
+        maxPax: 8, // FIXED: Always 8 per user request (Public & Private)
         currentPax: pax, // Start with booking's pax
         pricingSnapshot: tourData.pricingTiers,
         createdAt: new Date(),
@@ -208,7 +208,7 @@ exports.createPrivateBooking = async (req, res) => {
         date: bookingDate,
         type: DEPARTURE_TYPES.PRIVATE,
         status: DEPARTURE_STATUS.OPEN,
-        maxPax: 99,
+        maxPax: 8, // FIXED: Changed from 99 to 8 per user request
         currentPax: pax,
         pricingSnapshot: tourData.pricingTiers,
         createdAt: new Date(),
@@ -295,23 +295,25 @@ exports.updateBookingStatus = async (req, res) => {
 
       const depData = depDoc.data();
 
-      // 3. Calculate capacity changes
-      let newCurrentPax = depData.currentPax;
+      // 3. Calculate capacity changes & Validate Irreversibility
 
-      // Changing TO cancelled: free up space
-      if (status === BOOKING_STATUS.CANCELLED && oldStatus !== BOOKING_STATUS.CANCELLED) {
-        newCurrentPax = Math.max(0, depData.currentPax - bookingData.pax);
+      // CRITICAL: Cancellation is IRREVERSIBLE
+      if (oldStatus === BOOKING_STATUS.CANCELLED && status !== BOOKING_STATUS.CANCELLED) {
+        throw new Error("Cannot reactivate a cancelled booking. Please create a new booking.");
       }
 
-      // Changing FROM cancelled: occupy space
-      if (status !== BOOKING_STATUS.CANCELLED && oldStatus === BOOKING_STATUS.CANCELLED) {
-        // Validate capacity
-        if (depData.currentPax + bookingData.pax > depData.maxPax) {
-          throw new Error(
-            `Insufficient capacity to un-cancel. Available: ${depData.maxPax - depData.currentPax}, Required: ${bookingData.pax}`,
-          );
+      let newCurrentPax = depData.currentPax;
+      let shouldCancelDeparture = false;
+
+      // Changing TO cancelled
+      if (status === BOOKING_STATUS.CANCELLED && oldStatus !== BOOKING_STATUS.CANCELLED) {
+        // Free up space
+        newCurrentPax = Math.max(0, depData.currentPax - bookingData.pax);
+
+        // If Private Departure -> Cancel Departure too
+        if (depData.type === DEPARTURE_TYPES.PRIVATE) {
+          shouldCancelDeparture = true;
         }
-        newCurrentPax = depData.currentPax + bookingData.pax;
       }
 
       // 4. Update Booking
@@ -320,13 +322,24 @@ exports.updateBookingStatus = async (req, res) => {
         updatedAt: new Date(),
       });
 
-      // 5. Update Departure if capacity changed
+      // 5. Update Departure
+      const depUpdates = {
+        updatedAt: new Date(),
+      };
+
       if (newCurrentPax !== depData.currentPax) {
-        t.update(depRef, {
-          currentPax: newCurrentPax,
-          updatedAt: new Date(),
-        });
+        depUpdates.currentPax = newCurrentPax;
       }
+
+      if (shouldCancelDeparture) {
+        depUpdates.status = DEPARTURE_STATUS.CANCELLED;
+      }
+
+      if (shouldCancelDeparture) {
+        depUpdates.status = DEPARTURE_STATUS.CANCELLED;
+      }
+
+      t.update(depRef, depUpdates);
     });
 
     return res.status(200).json({ success: true, message: "Booking status updated" });
@@ -804,3 +817,6 @@ exports.getBooking = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+

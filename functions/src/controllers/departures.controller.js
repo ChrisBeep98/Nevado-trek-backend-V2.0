@@ -26,7 +26,7 @@ exports.createDeparture = async (req, res) => {
       date: new Date(date), // Ensure date object
       type: type || DEPARTURE_TYPES.PRIVATE,
       status: DEPARTURE_STATUS.OPEN,
-      maxPax: maxPax || (type === DEPARTURE_TYPES.PUBLIC ? 8 : 99),
+      maxPax: maxPax || (type === DEPARTURE_TYPES.PUBLIC ? 8 : 8), // FIXED: Both default to 8
       currentPax: 0,
       pricingSnapshot: tourData.pricingTiers, // Snapshot pricing
       createdAt: new Date(),
