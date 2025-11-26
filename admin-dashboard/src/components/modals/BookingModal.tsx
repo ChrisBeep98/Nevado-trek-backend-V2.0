@@ -38,7 +38,7 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ isOpen, onClose, bookingId, departureId }: BookingModalProps) {
-    const { createBooking, updateDetails, updatePax, updateStatus, applyDiscount, convertType } = useBookingMutations();
+    const { createBooking, updateDetails, updatePax, updateStatus, applyDiscount, convertType, moveBooking } = useBookingMutations();
     const { updateDate, updateTour } = useDepartureMutations();
     const { success } = useToast();
 
@@ -50,6 +50,7 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
     const [newTourId, setNewTourId] = useState('');
     const [newDate, setNewDate] = useState('');
     const [newType, setNewType] = useState<'private' | 'public'>('private');
+    const [selectedTransferDepartureId, setSelectedTransferDepartureId] = useState('');
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<BookingFormValues>({
         resolver: zodResolver(bookingSchema),
@@ -114,6 +115,24 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
             return bookings.filter((b: Booking) => b.bookingId !== bookingId);
         },
         enabled: !!booking?.departureId && departure?.type === 'public'
+    });
+
+    // Fetch available departures for transfer (same tour, future dates)
+    const { data: availableDepartures = [] } = useQuery({
+        queryKey: ['departures', 'transfer', tour?.tourId],
+        queryFn: async () => {
+            if (!tour?.tourId) return [];
+            const { data } = await api.get(endpoints.admin.departures);
+            const departures = data.departures || data;
+            return departures.filter((d: any) =>
+                d.tourId === tour.tourId &&
+                d.departureId !== booking?.departureId && // Exclude current departure
+                d.type === 'public' && // Only public departures
+                d.status === 'open' && // Only open departures
+                new Date(d.date) >= new Date() // Future dates only
+            );
+        },
+        enabled: !!booking && !!tour
     });
 
     // FIXED: Use booking.type field instead of pax comparison
@@ -223,6 +242,77 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                 alert('Please select a Tour and Date');
             }
         }
+    };
+
+    // Transfer handlers
+    const handleJoinPublicDeparture = () => {
+        if (!selectedTransferDepartureId || !bookingId || !tour) return;
+
+        const targetDeparture = availableDepartures.find((d: any) => d.departureId === selectedTransferDepartureId);
+        if (!targetDeparture) return;
+
+        // Check capacity
+        const availableSpace = targetDeparture.maxPax - (targetDeparture.currentPax || 0);
+        if (booking && booking.pax > availableSpace) {
+            alert(`Not enough capacity. Only ${availableSpace} space(s) available.`);
+            return;
+        }
+
+        if (!confirm(
+            `⚠️ This will:\n` +
+            `1. Convert your private booking to public\n` +
+            `2. Join the departure on ${formatDateUTC(targetDeparture.date)}\n` +
+            `\nContinue?`
+        )) return;
+
+        // First convert to public, then move
+        convertType.mutate(
+            { id: bookingId, targetType: 'public' },
+            {
+                onSuccess: () => {
+                    // Then move to the selected departure
+                    moveBooking.mutate(
+                        { id: bookingId, newTourId: tour.tourId, newDate: targetDeparture.date },
+                        {
+                            onSuccess: () => {
+                                success('Booking transferred to public departure');
+                                onClose();
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    };
+
+    const handleMoveToAnotherDeparture = () => {
+        if (!selectedTransferDepartureId || !bookingId || !tour) return;
+
+        const targetDeparture = availableDepartures.find((d: any) => d.departureId === selectedTransferDepartureId);
+        if (!targetDeparture) return;
+
+        // Check capacity
+        const availableSpace = targetDeparture.maxPax - (targetDeparture.currentPax || 0);
+        if (booking && booking.pax > availableSpace) {
+            alert(`Not enough capacity. Only ${availableSpace} space(s) available.`);
+            return;
+        }
+
+        if (!confirm(
+            `⚠️ This will remove you from your current group (${relatedBookings.length + 1} people)\n` +
+            `and join the departure on ${formatDateUTC(targetDeparture.date)}.\n\n` +
+            `Continue?`
+        )) return;
+
+        moveBooking.mutate(
+            { id: bookingId, newTourId: tour.tourId, newDate: targetDeparture.date },
+            {
+                onSuccess: () => {
+                    success('Booking moved to another departure');
+                    onClose();
+                }
+            }
+        );
     };
 
     const handleStatusChange = (status: string) => {
@@ -452,6 +542,9 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                             </Tabs.Trigger>
                                             <Tabs.Trigger value="actions" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors" data-testid="tab-actions">
                                                 Actions
+                                            </Tabs.Trigger>
+                                            <Tabs.Trigger value="transfer" className="py-4 text-sm font-medium text-white/60 hover:text-white data-[state=active]:text-indigo-400 data-[state=active]:border-b-2 data-[state=active]:border-indigo-400 transition-colors" data-testid="tab-transfer">
+                                                Transfer
                                             </Tabs.Trigger>
                                         </>
                                     )}
@@ -777,6 +870,135 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
                                                     </div>
                                                 </div>
                                             )}
+                                        </Tabs.Content>
+
+                                        {/* Transfer Tab */}
+                                        <Tabs.Content value="transfer" className="outline-none space-y-6">
+                                            <div className="glass-panel p-4 rounded-xl space-y-4">
+                                                <h3 className="text-white font-medium flex items-center gap-2">
+                                                    <Calendar size={18} /> Transfer Booking
+                                                </h3>
+
+                                                {isPrivateBooking ? (
+                                                    /* Private Booking: Join Public Departure */
+                                                    <div className="space-y-4">
+                                                        <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                                                            <p className="text-sm text-yellow-200 flex items-center gap-2">
+                                                                ⚠️ <strong>Join Public Departure</strong>
+                                                            </p>
+                                                            <p className="text-xs text-yellow-200/60 mt-1">
+                                                                Converting to public will move you to a shared group departure.
+                                                            </p>
+                                                        </div>
+
+                                                        {availableDepartures.length > 0 ? (
+                                                            <>
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm text-white/60">Select Public Departure:</label>
+                                                                    <select
+                                                                        className="glass-input w-full"
+                                                                        value={selectedTransferDepartureId}
+                                                                        onChange={(e) => setSelectedTransferDepartureId(e.target.value)}
+                                                                        data-testid="select-transfer-departure"
+                                                                    >
+                                                                        <option value="" className="bg-slate-900 text-white">Choose a departure...</option>
+                                                                        {availableDepartures.map((d: any) => {
+                                                                            const availableSpace = d.maxPax - (d.currentPax || 0);
+                                                                            return (
+                                                                                <option key={d.departureId} value={d.departureId} className="bg-slate-900 text-white">
+                                                                                    {formatDateUTC(d.date)} - {availableSpace} spaces available
+                                                                                </option>
+                                                                            );
+                                                                        })}
+                                                                    </select>
+                                                                </div>
+
+                                                                <div className="flex justify-end">
+                                                                    <LiquidButton
+                                                                        size="sm"
+                                                                        onClick={handleJoinPublicDeparture}
+                                                                        isLoading={convertType.isPending || moveBooking.isPending}
+                                                                        disabled={!selectedTransferDepartureId}
+                                                                        data-testid="btn-join-public"
+                                                                    >
+                                                                        Join Public Departure
+                                                                    </LiquidButton>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <p className="text-sm text-white/40">
+                                                                No available public departures for this tour.
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    /* Public Booking: Move to Another Departure */
+                                                    <div className="space-y-4">
+                                                        <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                                                            <p className="text-sm text-blue-200 flex items-center gap-2">
+                                                                ℹ️ <strong>Move to Another Departure</strong>
+                                                            </p>
+                                                            <p className="text-xs text-blue-200/60 mt-1">
+                                                                This will remove you from the current group and join a different departure.
+                                                            </p>
+                                                        </div>
+
+                                                        {relatedBookings.length > 0 && (
+                                                            <div className="p-3 bg-slate-800/50 rounded-lg border border-white/10">
+                                                                <p className="text-sm text-white/60 mb-2">Current Group ({relatedBookings.length + 1} people):</p>
+                                                                <div className="space-y-1">
+                                                                    <p className="text-xs text-white/80">• {booking.customer.name} (You) - {booking.pax} pax</p>
+                                                                    {relatedBookings.map((b: Booking) => (
+                                                                        <p key={b.bookingId} className="text-xs text-white/60">
+                                                                            • {b.customer.name} - {b.pax} pax
+                                                                        </p>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {availableDepartures.length > 0 ? (
+                                                            <>
+                                                                <div className="space-y-2">
+                                                                    <label className="text-sm text-white/60">Select Destination Departure:</label>
+                                                                    <select
+                                                                        className="glass-input w-full"
+                                                                        value={selectedTransferDepartureId}
+                                                                        onChange={(e) => setSelectedTransferDepartureId(e.target.value)}
+                                                                        data-testid="select-transfer-departure"
+                                                                    >
+                                                                        <option value="" className="bg-slate-900 text-white">Choose a departure...</option>
+                                                                        {availableDepartures.map((d: any) => {
+                                                                            const availableSpace = d.maxPax - (d.currentPax || 0);
+                                                                            return (
+                                                                                <option key={d.departureId} value={d.departureId} className="bg-slate-900 text-white">
+                                                                                    {formatDateUTC(d.date)} - {availableSpace} spaces available ({d.currentPax}/{d.maxPax})
+                                                                                </option>
+                                                                            );
+                                                                        })}
+                                                                    </select>
+                                                                </div>
+
+                                                                <div className="flex justify-end">
+                                                                    <LiquidButton
+                                                                        size="sm"
+                                                                        onClick={handleMoveToAnotherDeparture}
+                                                                        isLoading={moveBooking.isPending}
+                                                                        disabled={!selectedTransferDepartureId}
+                                                                        data-testid="btn-move-departure"
+                                                                    >
+                                                                        Move to Departure
+                                                                    </LiquidButton>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <p className="text-sm text-white/40">
+                                                                No other available public departures for this tour.
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </Tabs.Content>
                                     </>
                                 )}
