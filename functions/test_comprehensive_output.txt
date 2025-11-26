@@ -1,9 +1,0 @@
-
-🧪 COMPREHENSIVE BACKEND TESTING
-
-Testing booking type field + capacity management
-
-
-📝 TEST 1: Create Tour
-
-❌ Test suite error: { error: "Missing or invalid 'shortDescription' (requires es/en)" }
