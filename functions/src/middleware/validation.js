@@ -10,12 +10,16 @@ const { DEPARTURE_TYPES } = require("../constants");
 exports.validateBooking = (req, res, next) => {
   const { tourId, date, pax, customer, type, departureId } = req.body;
 
-  if (!tourId || typeof tourId !== "string") {
-    return res.status(400).json({ error: "Invalid or missing 'tourId'" });
-  }
+  // For join booking (departureId provided), tourId and date are not required
+  // For create booking, they are required
+  if (!departureId) {
+    if (!tourId || typeof tourId !== "string") {
+      return res.status(400).json({ error: "Invalid or missing 'tourId'" });
+    }
 
-  if (!date || isNaN(new Date(date).getTime())) {
-    return res.status(400).json({ error: "Invalid or missing 'date'" });
+    if (!date || isNaN(new Date(date).getTime())) {
+      return res.status(400).json({ error: "Invalid or missing 'date'" });
+    }
   }
 
   if (!pax || typeof pax !== "number" || pax <= 0) {

@@ -47,6 +47,7 @@ adminRouter.put("/departures/:id/tour", departuresController.updateDepartureTour
 adminRouter.get("/bookings", bookingsController.getBookings);
 adminRouter.get("/bookings/:id", bookingsController.getBooking);
 adminRouter.post("/bookings", validateBooking, bookingsController.createBooking);
+adminRouter.post("/bookings/join", validateBooking, bookingsController.joinBooking); // NEW: Join existing departure
 adminRouter.put("/bookings/:id/status", bookingsController.updateBookingStatus);
 adminRouter.put("/bookings/:id/pax", bookingsController.updateBookingPax);
 adminRouter.put("/bookings/:id/details", bookingsController.updateBookingDetails);

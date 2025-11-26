@@ -5,7 +5,13 @@ export const bookingsService = {
     getAll: () => api.get<Booking[]>(endpoints.admin.bookings),
     getByDeparture: (departureId: string) =>
         api.get<Booking[]>(endpoints.admin.bookings, { params: { departureId } }),
-    create: (data: any) => api.post(endpoints.admin.bookings, data),
+    create: (data: any) => {
+        // If departureId is provided, use join endpoint, otherwise use create endpoint
+        if (data.departureId) {
+            return api.post(endpoints.admin.joinBooking, data);
+        }
+        return api.post(endpoints.admin.bookings, data);
+    },
     updateStatus: (id: string, status: string) =>
         api.put(endpoints.admin.bookingStatus(id), { status }),
     updatePax: (id: string, pax: number) =>

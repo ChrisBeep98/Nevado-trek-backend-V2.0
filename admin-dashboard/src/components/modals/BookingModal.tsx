@@ -69,20 +69,21 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
         enabled: !!bookingId
     });
 
-    // Fetch departure info
+    // Fetch departure info - use departureId prop OR booking.departureId
+    const actualDepartureId = departureId || booking?.departureId;
     const { data: departure, isLoading: isLoadingDeparture } = useQuery({
-        queryKey: ['departure', booking?.departureId],
+        queryKey: ['departure', actualDepartureId],
         queryFn: async () => {
-            if (!booking?.departureId) return null;
+            if (!actualDepartureId) return null;
             try {
-                const res = await api.get(endpoints.admin.departure(booking.departureId));
+                const res = await api.get(endpoints.admin.departure(actualDepartureId));
                 return res.data;
             } catch (error) {
                 console.error("Failed to fetch departure", error);
                 return null;
             }
         },
-        enabled: !!booking?.departureId
+        enabled: !!actualDepartureId
     });
 
     // Fetch tour info
@@ -173,23 +174,45 @@ export function BookingModal({ isOpen, onClose, bookingId, departureId }: Bookin
             }
             onClose();
         } else {
+            // Creating NEW booking
             if (departureId) {
                 // Add to existing departure
-                createBooking.mutate({
-                    departureId,
-                    ...data,
-                    date: new Date().toISOString(), // Ignored by backend for existing departure join? Or maybe used?
-                    type: 'public' // Default
-                }, { onSuccess: onClose });
+                const bookingPayload = {
+                    departureId: departureId,
+                    customer: {
+                        name: data.customer.name,
+                        email: data.customer.email,
+                        phone: data.customer.phone,
+                        document: data.customer.document,
+                        note: data.customer.note || ''
+                    },
+                    pax: data.pax,
+                    date: new Date().toISOString(),
+                    type: 'public'
+                };
+
+                createBooking.mutate(bookingPayload, {
+                    onSuccess: () => {
+                        onClose();
+                    }
+                });
             } else if (newTourId && newDate) {
                 // Create NEW booking (and departure)
-                console.log('Submitting new booking:', { tourId: newTourId, date: newDate, type: newType, ...data });
-                createBooking.mutate({
+                const bookingPayload = {
                     tourId: newTourId,
                     date: new Date(newDate).toISOString(),
                     type: newType,
-                    ...data
-                }, {
+                    customer: {
+                        name: data.customer.name,
+                        email: data.customer.email,
+                        phone: data.customer.phone,
+                        document: data.customer.document,
+                        note: data.customer.note || ''
+                    },
+                    pax: data.pax
+                };
+
+                createBooking.mutate(bookingPayload, {
                     onSuccess: onClose,
                     onError: (error) => {
                         console.error('Failed to create booking:', error);
