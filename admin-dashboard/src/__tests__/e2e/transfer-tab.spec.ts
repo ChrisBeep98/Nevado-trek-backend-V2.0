@@ -52,7 +52,8 @@ test.describe('Transfer Tab', () => {
             has: page.locator('.bg-purple-500\\/10')
         }).first();
 
-        if await (privateDeparture.isVisible()) {
+        const isPrivateVisible = await privateDeparture.isVisible();
+        if (isPrivateVisible) {
             await privateDeparture.click();
             await expect(page.locator('text=Departure Details')).toBeVisible();
 
