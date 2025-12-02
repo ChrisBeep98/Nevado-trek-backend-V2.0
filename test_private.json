@@ -1,0 +1,11 @@
+{
+  "tourId": "Au3wVFDw6Y2YlEtSlLoS",
+  "date": "2025-12-20",
+  "customer": {
+    "name": "Private Test",
+    "email": "private@test.com",
+    "phone": "+573009876543",
+    "document": "987654321"
+  },
+  "pax": 4
+}

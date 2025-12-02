@@ -1,0 +1,10 @@
+{
+  "departureId": "wHeL7YEtpqTZfhTDxEtL",
+  "customer": {
+    "name": "Test User",
+    "email": "test@test.com",
+    "phone": "+573001234567",
+    "document": "123456789"
+  },
+  "pax": 2
+}

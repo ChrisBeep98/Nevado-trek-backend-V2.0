@@ -646,9 +646,17 @@ exports.moveBooking = async (req, res) => {
       let targetDepRef;
       let targetDepData;
 
+      // Create start and end of day for range query (UTC)
+      const startOfDay = new Date(targetDate);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(targetDate);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
       const existing = await db.collection(COLLECTIONS.DEPARTURES)
         .where("tourId", "==", newTourId)
-        .where("date", "==", targetDate)
+        .where("date", ">=", startOfDay)
+        .where("date", "<=", endOfDay)
         .where("type", "==", DEPARTURE_TYPES.PUBLIC)
         .where("status", "==", DEPARTURE_STATUS.OPEN)
         .get();

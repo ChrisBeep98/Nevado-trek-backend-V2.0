@@ -67,6 +67,9 @@ publicRouter.get("/tours", async (req, res) => {
     const db = admin.firestore();
     const snapshot = await db.collection("tours").where("isActive", "==", true).get();
     const tours = snapshot.docs.map((doc) => ({ tourId: doc.id, ...doc.data() }));
+    
+    // Cache for 5 minutes (browser) / 10 minutes (CDN)
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
     res.json(tours);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -83,6 +86,9 @@ publicRouter.get("/departures", async (req, res) => {
       .where("date", ">=", new Date())
       .get();
     const deps = snapshot.docs.map((doc) => ({ departureId: doc.id, ...doc.data() }));
+    
+    // Cache for 5 minutes (browser) / 10 minutes (CDN)
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
     res.json(deps);
   } catch (error) {
     res.status(500).json({ error: error.message });
