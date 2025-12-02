@@ -3,6 +3,7 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 // Initialize Admin SDK first
 admin.initializeApp();
@@ -61,6 +62,29 @@ app.use("/admin", adminRouter);
 // --- Public Routes ---
 const publicRouter = express.Router();
 
+// Rate Limiting for Public Booking Endpoints
+// Prevents spam attacks while allowing legitimate users
+// Whitelist: localhost + developer IP (45.162.79.5)
+const bookingRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 booking requests per windowMs
+  skip: (req) => {
+    // Whitelist: Always allow these IPs (no rate limit)
+    const whitelistedIPs = [
+      "127.0.0.1",      // localhost IPv4
+      "::1",            // localhost IPv6
+      "::ffff:127.0.0.1", // localhost IPv6-mapped IPv4
+      "45.162.79.5"     // Developer IP (for testing)
+    ];
+    return whitelistedIPs.includes(req.ip);
+  },
+  message: {
+    error: "Demasiados intentos de reserva. Por favor intenta de nuevo en 15 minutos."
+  },
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false // Disable `X-RateLimit-*` headers
+});
+
 // Public Tours (Active only)
 publicRouter.get("/tours", async (req, res) => {
   try {
@@ -95,11 +119,11 @@ publicRouter.get("/departures", async (req, res) => {
   }
 });
 
-// Public Booking - Join Existing Departure
-publicRouter.post("/bookings/join", validateBooking, bookingsController.joinBooking);
+// Public Booking - Join Existing Departure (WITH RATE LIMITING)
+publicRouter.post("/bookings/join", bookingRateLimiter, validateBooking, bookingsController.joinBooking);
 
-// Public Booking - Create Private Departure
-publicRouter.post("/bookings/private", validateBooking, bookingsController.createPrivateBooking);
+// Public Booking - Create Private Departure (WITH RATE LIMITING)
+publicRouter.post("/bookings/private", bookingRateLimiter, validateBooking, bookingsController.createPrivateBooking);
 
 app.use("/public", publicRouter);
 
