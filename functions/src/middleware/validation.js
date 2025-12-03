@@ -115,6 +115,12 @@ exports.validateTour = (req, res, next) => {
     return res.status(400).json({ error: "Missing or invalid 'shortDescription' (requires es/en)" });
   }
 
+  // 3.5. Subtitle (Bilingual, optional)
+  const { subtitle } = req.body;
+  if (subtitle && !isBilingual(subtitle)) {
+    return res.status(400).json({ error: "Invalid 'subtitle' (requires es/en if provided)" });
+  }
+
   // 4. Pricing Tiers (Array of 4)
   if (isCreate || pricingTiers) {
     if (!Array.isArray(pricingTiers) || pricingTiers.length !== 4) {

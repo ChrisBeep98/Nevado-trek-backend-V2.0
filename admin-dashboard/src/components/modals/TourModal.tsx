@@ -18,6 +18,7 @@ const tourSchema = z.object({
     name: bilingualSchema,
     description: bilingualSchema,
     shortDescription: bilingualSchema.optional(),
+    subtitle: bilingualSchema.optional(),
     isActive: z.boolean(),
     type: z.enum(['multi-day', 'single-day']),
     totalDays: z.number().min(1),
@@ -79,6 +80,7 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
             ],
             name: { es: '', en: '' },
             description: { es: '', en: '' },
+            subtitle: { es: '', en: '' },
             difficulty: 'Medium',
             location: { es: '', en: '' },
             temperature: 15,
@@ -140,6 +142,7 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                 ],
                 name: { es: '', en: '' },
                 description: { es: '', en: '' },
+                subtitle: { es: '', en: '' },
                 difficulty: 'Medium',
                 location: { es: '', en: '' },
                 temperature: 15,
@@ -291,6 +294,31 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                                                 data-testid="input-short-desc-en"
                                             />
                                             <p className="text-white/40 text-xs">Recommended: 150-200 characters</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-white/60 text-sm">Subtitle (ES) <span className="text-white/40">- Optional</span></label>
+                                            <input
+                                                {...register('subtitle.es')}
+                                                className="glass-input w-full"
+                                                placeholder="Subtítulo corto para el tour..."
+                                                maxLength={100}
+                                                data-testid="input-subtitle-es"
+                                            />
+                                            <p className="text-white/40 text-xs">Máximo: 100 caracteres</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-white/60 text-sm">Subtitle (EN) <span className="text-white/40">- Optional</span></label>
+                                            <input
+                                                {...register('subtitle.en')}
+                                                className="glass-input w-full"
+                                                placeholder="Short subtitle for the tour..."
+                                                maxLength={100}
+                                                data-testid="input-subtitle-en"
+                                            />
+                                            <p className="text-white/40 text-xs">Maximum: 100 characters</p>
                                         </div>
                                     </div>
 
