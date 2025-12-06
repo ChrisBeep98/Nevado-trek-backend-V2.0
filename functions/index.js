@@ -100,7 +100,7 @@ publicRouter.get("/tours", async (req, res) => {
   }
 });
 
-// Public Departures (Open Public ones)
+// Public Departures (Open Public ones with available spots)
 publicRouter.get("/departures", async (req, res) => {
   try {
     const db = admin.firestore();
@@ -109,7 +109,11 @@ publicRouter.get("/departures", async (req, res) => {
       .where("status", "==", "open")
       .where("date", ">=", new Date())
       .get();
-    const deps = snapshot.docs.map((doc) => ({ departureId: doc.id, ...doc.data() }));
+    
+    // Filter out full departures (currentPax >= maxPax)
+    const deps = snapshot.docs
+      .map((doc) => ({ departureId: doc.id, ...doc.data() }))
+      .filter((dep) => dep.currentPax < dep.maxPax);
     
     // Cache for 30 seconds (browser) / 60 seconds (CDN)
     // Shorter cache to ensure currentPax updates are visible quickly after bookings
