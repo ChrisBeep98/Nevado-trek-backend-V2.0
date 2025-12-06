@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const { COLLECTIONS, DEPARTURE_TYPES, DEPARTURE_STATUS } = require("../constants");
+const { parseToNoonUTC } = require("../utils/dateUtils");
 
 const db = admin.firestore();
 
@@ -23,7 +24,7 @@ exports.createDeparture = async (req, res) => {
 
     const newDeparture = {
       tourId,
-      date: new Date(date), // Ensure date object
+      date: parseToNoonUTC(date), // Use noon UTC to avoid timezone issues
       type: type || DEPARTURE_TYPES.PRIVATE,
       status: DEPARTURE_STATUS.OPEN,
       maxPax: maxPax || (type === DEPARTURE_TYPES.PUBLIC ? 8 : 8), // FIXED: Both default to 8

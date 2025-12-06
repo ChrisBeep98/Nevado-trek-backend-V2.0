@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const { COLLECTIONS, BOOKING_STATUS, DEPARTURE_TYPES, DEPARTURE_STATUS } = require("../constants");
+const { parseToNoonUTC } = require("../utils/dateUtils");
 
 const db = admin.firestore();
 
@@ -13,7 +14,7 @@ const db = admin.firestore();
 exports.createBooking = async (req, res) => {
   try {
     const { tourId, date, pax, customer, type } = req.body;
-    const bookingDate = new Date(date);
+    const bookingDate = parseToNoonUTC(date);
 
     if (!type || !Object.values(DEPARTURE_TYPES).includes(type)) {
       return res.status(400).json({ error: "Invalid 'type'. Must be 'private' or 'public'" });
@@ -186,7 +187,7 @@ exports.joinBooking = async (req, res) => {
 exports.createPrivateBooking = async (req, res) => {
   try {
     const { tourId, date, pax, customer } = req.body;
-    const bookingDate = new Date(date);
+    const bookingDate = parseToNoonUTC(date);
 
     let departureId;
     let bookingId;
