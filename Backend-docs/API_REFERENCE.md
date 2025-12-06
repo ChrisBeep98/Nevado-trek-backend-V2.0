@@ -254,6 +254,12 @@ Request a new private departure.
 
 ## Recent Changes
 
+### December 5, 2025 - Cache Optimization for Real-time Updates
+- ✅ **GET /public/departures**: Reduced cache TTL from 5min to 30sec (browser) and 10min to 60sec (CDN)
+  - Ensures `currentPax` updates are visible quickly after bookings
+  - Frontend can force cache bypass with `?t=Date.now()` query parameter
+- ✅ **Documentation**: Added `CACHE_BYPASS_FRONTEND_GUIDE.md` for frontend implementation
+
 ### November 22, 2025 - Ghost Departure Fix \u0026 Logic Refinement
 - ✅ **POST /admin/bookings/:id/move**: Updated to use `{newTourId, newDate}` instead of `newDepartureId`
   - Finds/creates target departure automatically
@@ -293,7 +299,7 @@ Request a new private departure.
 
 ---
 
-**Document Version**: 2.3.0  
-**Last Updated**: November 22, 2025  
+**Document Version**: 2.4.0  
+**Last Updated**: December 5, 2025  
 **Status**: ✅ All endpoints verified & documented  
-**Next Review**: December 2025
+**Next Review**: January 2026

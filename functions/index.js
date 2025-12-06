@@ -111,8 +111,9 @@ publicRouter.get("/departures", async (req, res) => {
       .get();
     const deps = snapshot.docs.map((doc) => ({ departureId: doc.id, ...doc.data() }));
     
-    // Cache for 5 minutes (browser) / 10 minutes (CDN)
-    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+    // Cache for 30 seconds (browser) / 60 seconds (CDN)
+    // Shorter cache to ensure currentPax updates are visible quickly after bookings
+    res.set('Cache-Control', 'public, max-age=30, s-maxage=60');
     res.json(deps);
   } catch (error) {
     res.status(500).json({ error: error.message });
