@@ -9,6 +9,11 @@ All admin endpoints require the `X-Admin-Secret-Key` header:
 X-Admin-Secret-Key: ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7
 ```
 
+## Date Handling (Timezones)
+⚠️ **CRITICAL RULE**: All dates sent to the API must be parsed to **Noon UTC** (12:00 PM UTC) to avoid timezone shifts.
+- **Input**: Use the utility `parseToNoonUTC(dateString)` (or equivalent logic) before sending updates.
+- **Reason**: Clients in UTC-5 (Colombia) sending midnight dates often result in the previous day in UTC. Setting the time to 12:00 UTC ensures the date remains correct regardless of western hemisphere offsets.
+
 ---
 
 ## Admin Endpoints (19)

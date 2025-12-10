@@ -307,7 +307,7 @@ export function firestoreTimestampToDate(timestamp: any): Date {
 ```typescript
 // lib/api.ts
 const API_BASE_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
-const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
+const ADMIN_KEY = process.env.ADMIN_SECRET_KEY;
 ```
 
 ### Endpoints Coverage: 19/19 ✅ 100%
@@ -430,7 +430,7 @@ npx playwright show-report  # View test results
 **Última Actualización**: Noviembre 21, 2025  
 **Versión**: 2.1.0  
 **Backend URL**: `https://api-wgfhwjbpva-uc.a.run.app`  
-**Admin Key**: `ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
+**Admin Key**: `[REDACTED_FOR_SECURITY]`
 
 ---
 

@@ -269,7 +269,7 @@ npx playwright test --ui
 
 ### Prerequisites
 - Backend must be running at `https://api-wgfhwjbpva-uc.a.run.app`
-- Valid admin key: `ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
+- Valid admin key: `[REDACTED_FOR_SECURITY]` (See .env)
 - Database should have:
   - At least 1 tour
   - At least 1 departure

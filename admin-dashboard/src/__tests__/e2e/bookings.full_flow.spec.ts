@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
+const ADMIN_KEY = process.env.ADMIN_SECRET_KEY || '';
 
 test.describe('Booking Logic Full Flow', () => {
 

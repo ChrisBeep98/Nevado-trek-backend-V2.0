@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URL = 'https://api-wgfhwjbpva-uc.a.run.app';
-const ADMIN_KEY = 'ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7';
+const ADMIN_KEY = process.env.ADMIN_SECRET_KEY || 'your_admin_key_here';
 
 const api = axios.create({
     baseURL: API_URL,

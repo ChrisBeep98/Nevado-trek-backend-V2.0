@@ -4,6 +4,12 @@
 
 ## Principios Fundamentales
 
+### 0. Variables de Entorno y Seguridad
+**NUNCA** hardcodear credenciales en el código de los tests.
+- Usar `.env` localmente (`.env.example` como plantilla).
+- Acceder mediante `process.env.ADMIN_SECRET_KEY`.
+- Los tests fallarán si estas variables no están configuradas en el entorno local.
+
 ### 1. Especificidad en Selectores
 
 Los selectores deben ser lo más específicos posible para evitar ambigüedades.
