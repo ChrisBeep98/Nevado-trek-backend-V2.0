@@ -52,7 +52,7 @@ const tourSchema = z.object({
     images: z.array(z.string().url()).default([])
 });
 
-type TourFormValues = z.infer<typeof tourSchema>;
+export type TourFormValues = z.infer<typeof tourSchema>;
 
 interface TourModalProps {
     isOpen: boolean;
@@ -63,11 +63,11 @@ interface TourModalProps {
 export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
     const { data: tour } = useTour(tourId);
     const { createTour, updateTour, isCreating, isUpdating } = useTours();
-    const { error: showError, success: showSuccess } = useToast();
+    const { error: showError } = useToast();
     const [activeTab, setActiveTab] = useState('basic');
 
     const { register, control, handleSubmit, reset, formState: { errors } } = useForm<TourFormValues>({
-        resolver: zodResolver(tourSchema),
+        resolver: zodResolver(tourSchema) as any,
         defaultValues: {
             isActive: true,
             type: 'multi-day',
@@ -229,7 +229,7 @@ export function TourModal({ isOpen, onClose, tourId }: TourModalProps) {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmit(onSubmit as any)} className="flex-1 overflow-hidden flex flex-col">
                         <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
                             <div className="px-6 border-b border-white/10">
                                 <Tabs.List className="flex gap-6 overflow-x-auto">
