@@ -1,18 +1,14 @@
 # Frontend Comprehensive Documentation - Nevado Trek Admin Dashboard
 
-**Last Updated**: November 25, 2025  
-**Status**: 🟢 **Fully Functional - Production Ready**  
+**Last Updated**: December 19, 2025  
+**Status**: 🟢 **Fully Functional - Production Ready (v2.0)**  
 **Test Coverage**: 92% E2E (13/14 tests passing)
 
 ---
 
 ## 📊 Executive Summary
 
-Admin dashboard completamente funcional con todas las features implementadas: calendario interactivo, gestión de tours/departures/bookings, modal enhancements (cancellation warning, convert to public, add booking to existing departure), y validación de capacidad.
-
-**Stack**: React + TypeScript + Vite + TailwindCSS + React Query + Radix UI  
-**Backend Integration**: Firebase Functions (v2.6)  
-**Deployment**: Vite Dev Server (auto-refresh)
+Admin dashboard robusto y visualmente pulido. Mejoras recientes centradas en la consistencia de datos (límite de 8 pax), UX de gestión de reservas (filtros refactorizados y timestamps detallados) y UI de tours (previsualización de imágenes reales).
 
 ---
 
@@ -21,16 +17,76 @@ Admin dashboard completamente funcional con todas las features implementadas: ca
 ### Stack Tecnológico
 
 ```
-├── React 18 - UI Library
+├── React 19 - UI Library (Latest)
 ├── TypeScript - Type Safety  
-├── Vite - Build Tool & Dev Server
-├── TailwindCSS - Styling
+├── Vite 7 - Build Tool & Dev Server (Fastest)
+├── TailwindCSS 4 - Styling (Modern JIT)
 ├── React Query (TanStack Query) - Server State Management
 ├── React Hook Form + Zod - Form Management & Validation
-├── Radix UI - Headless Components (Dialog, Tabs, etc.)
+├── Radix UI - Headless Components
 ├── Lucide React - Icon Library
-├── Playwright - E2E Testing
-└── Vitest - Unit Testing
+└── FullCalendar - Calendar Engine
+```
+
+---
+
+## 🎯 Recent Enhancements (December 2025)
+
+### 1. Data Integrity & Capacity
+- **Límite de 8 Pax**: Se ha forzado el límite de capacidad de 8 personas en todo el frontend para coincidir con la lógica del backend.
+  - `Home.tsx`: Valor inicial predeterminado cambiado de 10 a 8.
+  - `DepartureModal.tsx`: Validación de esquema Zod (`.max(8)`) y atributo `max="8"` en el input HTML.
+  - `TourModal.tsx`: Los tiers de precios ahora terminan explícitamente en el rango de 8 personas.
+
+### 2. Bookings UI/UX (Refactor)
+- **Orden Cronológico**: La lista de reservas ahora se ordena automáticamente por fecha de creación descendente (lo más nuevo arriba).
+- **Timestamps Detallados**: La columna "Created" ahora muestra tanto la fecha como la hora exacta (HH:mm) para un seguimiento preciso de los leads.
+- **Filtros Refactorizados**: 
+  - Diseño "Pill" integrado para búsqueda y estado.
+  - Etiquetas (Labels) alineadas y consistentes.
+  - Dropdown de estado personalizado con icono `ChevronDown` y limpieza de estilos nativos.
+
+### 3. Tours Visuals
+- **Imagen Principal**: Las tarjetas de tours en el grid principal ahora muestran la primera imagen real del tour en lugar de un icono genérico.
+- **Hover Effects**: Efecto de zoom suave y gradiente dinámico al pasar el ratón por las tarjetas de tours.
+- **Fallbacks**: Sistema de respaldo (placeholder) si el tour no tiene imágenes cargadas.
+
+---
+
+## 🎨 Componentes Principales
+
+### 1. Calendar View (`Home.tsx` + `DepartureModal.tsx`)
+
+**Funcionalidad**:
+- Vista mensual de departures con FullCalendar.
+- **Límite de 8 Pax**: Garantizado en la creación de nuevas salidas.
+- Color-coding: Private (purple), Public (blue), Full (red).
+
+### 2. Booking Management (`Bookings.tsx`)
+
+**Mejoras UX**:
+- Búsqueda instantánea por Nombre, Email o ID.
+- Filtrado por estado con UI minimalista.
+- Visualización de hora de llegada de la reserva.
+- Orden automático por fecha de creación.
+
+### 3. Tour Management (`Tours.tsx` + `TourModal`)
+
+**Visualización**:
+- Grid con imágenes reales de los tours.
+- Badge de estado (Active/Inactive) sobre la imagen.
+- Información rápida de duración y precio "Desde".
+
+---
+
+## 🚀 Despliegue
+
+### Estrategia de Subtree
+El proyecto se despliega en Vercel mediante la sincronización del directorio `admin-dashboard` con el repositorio remoto `admin-remote`.
+
+**Comando de Despliegue**:
+```bash
+git subtree push --prefix admin-dashboard admin-remote main
 ```
 
 ### Estructura de Directorios
