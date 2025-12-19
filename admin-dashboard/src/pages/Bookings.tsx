@@ -3,7 +3,7 @@ import { useBookings } from '../hooks/useBookings';
 import { GlassCard } from '../components/ui/GlassCard';
 import { LiquidButton } from '../components/ui/LiquidButton';
 import { BookingModal } from '../components/modals/BookingModal';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { firestoreTimestampToDate } from '../utils/dates';
 
@@ -22,6 +22,10 @@ export default function Bookings() {
             b.bookingId.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter ? b.status === statusFilter : true;
         return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+        const dateA = firestoreTimestampToDate(a.createdAt).getTime();
+        const dateB = firestoreTimestampToDate(b.createdAt).getTime();
+        return dateB - dateA;
     });
 
     const handleEdit = (id: string) => {
@@ -36,34 +40,50 @@ export default function Bookings() {
 
     return (
         <div className="flex flex-col gap-6 h-full">
-            <div className="flex items-center justify-between shrink-0">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
                 <h2 className="text-2xl font-bold text-white">Bookings</h2>
-                <div className="flex gap-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search bookings..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="glass-input pl-10 w-64"
-                            data-testid="search-bookings-input"
-                        />
+                
+                <div className="flex flex-wrap items-center gap-4 bg-white/5 p-2 rounded-xl border border-white/10">
+                    {/* Search Field */}
+                    <div className="flex items-center gap-2 px-3 border-r border-white/10">
+                        <label className="text-[10px] uppercase tracking-wider text-white/40 font-bold whitespace-nowrap">Search:</label>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                            <input
+                                type="text"
+                                placeholder="Name, email or ID..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="bg-transparent border-none text-sm text-white placeholder-white/20 focus:outline-none w-48 py-1.5 pl-8"
+                                data-testid="search-bookings-input"
+                            />
+                        </div>
                     </div>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="glass-input"
-                        data-testid="status-filter-select"
-                    >
-                        <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="paid">Paid</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
-                    <LiquidButton onClick={handleNew} data-testid="new-booking-button">
-                        <Plus size={18} />
+
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2 px-3">
+                        <label className="text-[10px] uppercase tracking-wider text-white/40 font-bold whitespace-nowrap">Status:</label>
+                        <div className="relative">
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="appearance-none bg-transparent border-none text-sm text-white focus:outline-none pr-8 py-1.5 cursor-pointer [&>option]:bg-slate-900"
+                                data-testid="status-filter-select"
+                            >
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" size={14} />
+                        </div>
+                    </div>
+
+                    <div className="h-8 w-[1px] bg-white/10 mx-1 hidden md:block" />
+
+                    <LiquidButton onClick={handleNew} size="sm" className="h-9 px-4" data-testid="new-booking-button">
+                        <Plus size={16} />
                         <span>New Booking</span>
                     </LiquidButton>
                 </div>
@@ -121,7 +141,12 @@ export default function Bookings() {
                                             </span>
                                         </td>
                                         <td className="py-3 px-4 text-white/60 text-sm">
-                                            {format(firestoreTimestampToDate(booking.createdAt), 'MMM d, yyyy')}
+                                            <div className="text-white/80">
+                                                {format(firestoreTimestampToDate(booking.createdAt), 'MMM d, yyyy')}
+                                            </div>
+                                            <div className="text-[10px] opacity-60">
+                                                {format(firestoreTimestampToDate(booking.createdAt), 'HH:mm')}
+                                            </div>
                                         </td>
                                         <td className="py-3 px-4 text-right">
                                             <LiquidButton variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
