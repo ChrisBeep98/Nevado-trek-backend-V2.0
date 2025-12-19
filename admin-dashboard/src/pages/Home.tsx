@@ -41,7 +41,7 @@ export default function Home() {
             departureId: '',
             tourId: '',
             date: new Date().toISOString(), // Will be converted to YYYY-MM-DD in modal
-            maxPax: 10,
+            maxPax: 8,
             currentPax: 0,
             type: 'public',
             status: 'open',

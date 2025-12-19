@@ -21,7 +21,7 @@ interface DepartureModalProps {
 
 const editSchema = z.object({
     date: z.string().min(1),
-    maxPax: z.number().min(1),
+    maxPax: z.number().min(1).max(8),
     tourId: z.string().min(1),
     type: z.enum(['public', 'private']).optional(),
     price: z.number().min(0).optional()
@@ -266,6 +266,7 @@ export function DepartureModal({ isOpen, onClose, departure }: DepartureModalPro
                                                     {...register('maxPax', { valueAsNumber: true })}
                                                     className="glass-input w-full"
                                                     data-testid="input-max-pax"
+                                                    max="8"
                                                 />
                                             </div>
                                         </div>
