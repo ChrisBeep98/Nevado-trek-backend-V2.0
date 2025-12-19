@@ -53,13 +53,22 @@ export default function Tours() {
                         data-testid={`tour-card-${tour.tourId}`}
                     >
                         <div className="h-40 bg-white/5 relative overflow-hidden">
-                            {/* Placeholder for image */}
-                            <div className="absolute inset-0 flex items-center justify-center text-white/20">
-                                <Map size={40} />
-                            </div>
-                            <div className="absolute top-4 right-4 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md text-xs text-white border border-white/10">
+                            {/* Tour Image */}
+                            {tour.images && tour.images.length > 0 ? (
+                                <img 
+                                    src={tour.images[0]} 
+                                    alt={tour.name?.en} 
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                                    <Map size={40} />
+                                </div>
+                            )}
+                            <div className="absolute top-4 right-4 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md text-xs text-white border border-white/10 z-10">
                                 {tour.isActive ? 'Active' : 'Inactive'}
                             </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <div className="p-6 flex-1 flex flex-col gap-4">
                             <div>
