@@ -100,6 +100,48 @@ publicRouter.get("/tours", async (req, res) => {
   }
 });
 
+// Optimized Tours Listing for Cards (Lightweight)
+publicRouter.get("/tours/listing", async (req, res) => {
+  try {
+    const db = admin.firestore();
+    const snapshot = await db.collection("tours")
+      .where("isActive", "==", true)
+      .select(
+        "name",
+        "shortDescription",
+        "altitude",
+        "difficulty",
+        "totalDays",
+        "pricingTiers",
+        "images",
+        "isActive"
+      )
+      .get();
+
+    const listings = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        tourId: doc.id,
+        name: data.name,
+        shortDescription: data.shortDescription,
+        altitude: data.altitude,
+        difficulty: data.difficulty,
+        totalDays: data.totalDays,
+        pricingTiers: data.pricingTiers,
+        images: data.images && data.images.length > 0 ? [data.images[0]] : [],
+        isActive: data.isActive
+      };
+    });
+
+    // Cache for 5 minutes (browser) / 10 minutes (CDN)
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+    res.json(listings);
+  } catch (error) {
+    console.error("Error fetching tours listing:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Public Departures (Open Public ones with available spots)
 publicRouter.get("/departures", async (req, res) => {
   try {

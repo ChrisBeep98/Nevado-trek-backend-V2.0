@@ -23,6 +23,7 @@ api.interceptors.request.use((config) => {
 export const endpoints = {
     public: {
         tours: '/public/tours',
+        toursListing: '/public/tours/listing',
         departures: '/public/departures',
         joinBooking: '/public/bookings/join',
         createPrivate: '/public/bookings/private',

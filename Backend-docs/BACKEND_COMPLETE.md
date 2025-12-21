@@ -239,8 +239,12 @@ POST   /admin/bookings/:id/discount
 #### Tours
 ```
 GET  /public/tours
-     → Get active tours only
+     → Get active tours only (Full details)
      Returns: Array of active tour objects
+
+GET  /public/tours/listing  ⭐ NEW
+     → Get active tours only (Lightweight summary)
+     Returns: Optimized array for listing cards
 ```
 
 #### Departures

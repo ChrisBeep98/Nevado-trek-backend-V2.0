@@ -17,6 +17,27 @@ El backend se despliega directamente desde la raíz a Firebase Cloud Functions.
 firebase deploy --only functions
 ```
 
+#### Configuración de Dominio Personalizado (API)
+Actualmente la API se accede vía la URL predeterminada de Google Cloud Run: `https://api-wgfhwjbpva-uc.a.run.app`. 
+
+Si deseas usar un dominio personalizado (ej. `api.nevado-trek.com`):
+1.  **Firebase Hosting**: Se recomienda usar Firebase Hosting como "proxy" para las funciones.
+2.  **Configuración en `firebase.json`**:
+    ```json
+    {
+      "hosting": {
+        "rewrites": [
+          {
+            "source": "/api/**",
+            "function": "api"
+          }
+        ]
+      }
+    }
+    ```
+3.  **Dominio**: Conectar el dominio `nevado-trek.com` en la consola de Firebase (Hosting -> Custom Domain).
+4.  **Resultado**: La API será accesible en `https://nevado-trek.com/api/public/...`.
+
 ### Frontend (Vercel)
 El Admin Dashboard se despliega en **Vercel** usando una estrategia de **Git Subtree**.
 

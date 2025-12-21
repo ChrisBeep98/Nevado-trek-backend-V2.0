@@ -203,11 +203,18 @@ Get dashboard statistics.
 
 ## Public Endpoints (4)
 
-### Tours (1 endpoint)
+### Tours (2 endpoints)
 
 #### GET /public/tours
-List all active tours.
+List all active tours (Full details).
 - **Response**: `{ tours: Tour[] }` (only `isActive: true`)
+
+#### GET /public/tours/listing
+**NEW** - List all active tours (Lightweight).
+- **Purpose**: Optimized for listing pages/cards.
+- **Payload Reduction**: ~65% smaller than `/public/tours`.
+- **Response**: `TourListing[]`
+- **Fields included**: `tourId`, `name`, `shortDescription`, `altitude`, `difficulty`, `totalDays`, `pricingTiers`, `images` (First one only), `isActive`.
 
 ---
 
