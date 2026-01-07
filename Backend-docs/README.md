@@ -1,90 +1,67 @@
 # Backend Documentation - Index
 
-**Last Updated**: November 25, 2025
+**Last Updated**: January 7, 2026  
+**Project Status**: 🟢 PRODUCTION READY
 
-Esta carpeta contiene toda la documentación del backend de Nevado Trek V2.0.
+Esta carpeta contiene toda la documentación técnica del backend de Nevado Trek V2.6.
 
 ---
 
 ## 📚 Documentos Disponibles
 
 ### 1. [backend_status.md](./backend_status.md)
-**Estado actual del backend**
-- Cambios recientes (v2.4 - Nov 25, 2025)
-- Bugs corregidos
-- Testing completo (41/41 tests passing)
-- Deployment y migración
-- Schemas de datos (Booking, Departure)
+**Estado real y verificado**
+- Mantenimiento reciente (Jan 7, 2026 - Restauración API)
+- Versión actual: **v2.6.0**
+- Testing de producción (100% OK)
+- Registro de cambios (maxPax=8, Join Admin, etc.)
 
-### 2. [FIREBASE_PROJECT.md](./FIREBASE_PROJECT.md) 🆕
-**Configuración de Firebase y Emuladores**
-- **Información del proyecto Firebase** (nevadotrektest01 = Producción)
-- Cómo usar los emuladores correctamente
-- Proceso de deployment
-- URLs y configuraciones
-- Errores comunes a evitar
+### 2. [API_REFERENCE.md](./API_REFERENCE.md) 🆕
+**Referencia técnica de endpoints**
+- Definición de 27 endpoints (Admin y Públicos)
+- Formatos de Request/Response
+- Reglas de manejo de fechas (ISO Strings & Noon UTC)
+- Autenticación administrativa
 
-> [!IMPORTANT]
-> **Leer este documento primero** si vas a trabajar con Firebase o emuladores para evitar confusiones sobre qué proyecto usar.
+### 3. [PUBLIC_API_FRONTEND_GUIDE.md](./PUBLIC_API_FRONTEND_GUIDE.md) 🆕
+**Guía específica para el Frontend**
+- Endpoints optimizados para el sitio web
+- Estrategia de **Cache Bypass** con `?t=Date.now()`
+- Ejemplos de uso en JavaScript/TypeScript
 
-### 3. [API_REFERENCE.md](./API_REFERENCE.md)
-**Referencia completa de endpoints**
-- 23 endpoints documentados
-- Admin endpoints (19)
-- Public endpoints (4)
-- Request/Response examples
-- Authentication
+### 4. [FIREBASE_PROJECT.md](./FIREBASE_PROJECT.md)
+**Configuración de Firebase**
+- Proyecto: `nevadotrektest01` (Producción)
+- Guía de emuladores y deployment
 
 ---
 
 ## 🎯 Quick Start
 
-### Para Testing Local
+### Verificar Salud de Producción
 ```bash
-cd "D:\Nevado Trek Development\nevado-trek-backend\functions"
-firebase emulators:start --project nevadotrektest01
+# Ejecuta un test rápido de conectividad
+node functions/test_prod_simple.js
 ```
 
-### Para Deployment
+### Desplegar Cambios
 ```bash
-cd "D:\Nevado Trek Development\nevado-trek-backend"
-firebase deploy --only functions
-```
-
-### Para Verificar Producción
-```bash
-cd "D:\Nevado Trek Development\nevado-trek-backend\functions"
-node test_prod_simple.js
+# Desde la raíz del proyecto
+firebase deploy --only functions:api
 ```
 
 ---
 
-## 📊 Estado General
+## 📊 Estado del Sistema
 
 | Componente | Estado | Detalles |
 |------------|--------|----------|
-| **Backend v2.4** | ✅ Deployed | Production verified |
-| **Tests** | ✅ 41/41 | All passing |
-| **API** | ✅ Live | https://api-wgfhwjbpva-uc.a.run.app |
-| **Firebase** | ✅ Active | nevadotrektest01 |
+| **Backend v2.6** | ✅ Deployed | Jan 7 Restoration Complete |
+| **API Pública** | ✅ Live | https://api-wgfhwjbpva-uc.a.run.app |
+| **Facturación** | ✅ Active | Google Cloud Billing OK |
+| **Docs** | ✅ Sync | Sincronizado con v2.6 |
 
 ---
 
-## 🔍 Cambios Más Recientes (v2.4)
-
-1. ✅ Private Departure maxPax = 8
-2. ✅ Irreversible Cancellation Logic  
-3. ✅ Private Departure Auto-Cancellation
-4. ✅ Public Slot Release on Cancel
-
-Ver [backend_status.md](./backend_status.md) para detalles completos.
-
----
-
-## ⚠️ Importante: Proyecto Firebase
-
-**Producción = `nevadotrektest01`**
-
-A pesar del nombre "test", este ES el proyecto de producción que sirve la API en `https://api-wgfhwjbpva-uc.a.run.app`.
-
-Ver [FIREBASE_PROJECT.md](./FIREBASE_PROJECT.md) para más detalles.
+## ⚠️ Nota sobre Fechas
+Recordar siempre la regla **Noon UTC (12:00 PM)** para evitar que las fechas en Colombia (UTC-5) aparezcan como el día anterior en la base de datos.

@@ -1,0 +1,125 @@
+Fetching tours...
+
+Found 8 tours.
+
+================================================================================
+TOUR #1: Nevado del Tolima (Nevado del Tolima)
+ID: Au3wVFDw6Y2YlEtSlLoS
+Active: YES
+Type: multi-day | Days: 4
+Difficulty: extreme
+Location: Parque Nacional Natural Los Nevados
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $1.480.000 COP / $478 USD
+   - 2-2 pax: $620.000 COP / $550 USD
+   - 3-3 pax: $620.000 COP / $550 USD
+   - 4-8 pax: $420.000 COP / $450 USD
+Itinerary: 1 days defined.
+--------------------------------------------------------------------------------
+TOUR #2: Páramo Trek (Paramo Trek)
+ID: CoOdCUSmd5veX1zRN0ut
+Active: YES
+Type: multi-day | Days: 2
+Difficulty: challenging
+Location: Salento
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $550.000 COP / $145 USD
+   - 2-2 pax: $620.000 COP / $550 USD
+   - 3-3 pax: $620.000 COP / $550 USD
+   - 4-8 pax: $420.000 COP / $450 USD
+Itinerary: 1 days defined.
+--------------------------------------------------------------------------------
+TOUR #3: Ruta Tapir (Tapir Route)
+ID: GqnHKJt5fQ4MpapSeq0r
+Active: YES
+Type: multi-day | Days: 3
+Difficulty: challenging
+Location: Andes
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $990.000 COP / $260 USD
+   - 2-2 pax: $620.000 COP / $550 USD
+   - 3-3 pax: $620.000 COP / $550 USD
+   - 4-8 pax: $420.000 COP / $450 USD
+Itinerary: 4 days defined.
+--------------------------------------------------------------------------------
+TOUR #4: Paramillo del Quindío (Paramillo del Quindío)
+ID: ONitksK15sinq78pRZYf
+Active: YES
+Type: multi-day | Days: 3
+Difficulty: challenging
+Location: Quindío
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $880.000 COP / $233 USD
+   - 2-2 pax: $620.000 COP / $550 USD
+   - 3-3 pax: $620.000 COP / $550 USD
+   - 4-8 pax: $420.000 COP / $450 USD
+Itinerary: 2 days defined.
+--------------------------------------------------------------------------------
+TOUR #5: Valle de Cocora (Cocora Valley)
+ID: PXs66XnvyVtcw9Frg5ai
+Active: YES
+Type: single-day | Days: 1
+Difficulty: moderate
+Location: Salento
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $300.000 COP / $80 USD
+   - 2-2 pax: $200.000 COP / $60 USD
+   - 3-3 pax: $180.000 COP / $50 USD
+   - 4-8 pax: $150.000 COP / $40 USD
+Itinerary: 1 days defined.
+--------------------------------------------------------------------------------
+TOUR #6: La Carbonera (La Carbonera)
+ID: WMqIKugakaBN0eVxOyFe
+Active: YES
+Type: single-day | Days: 1
+Difficulty: moderate
+Location: Tolima/Quindío
+Images: 10 total
+   Preview: https://res.cloudinary.com/nevado-trek/image/uploa...
+Pricing Tiers:
+   - 1-1 pax: $310.000 COP / $82 USD
+   - 2-2 pax: $250.000 COP / $70 USD
+   - 3-3 pax: $220.000 COP / $60 USD
+   - 4-8 pax: $200.000 COP / $50 USD
+Itinerary: 2 days defined.
+--------------------------------------------------------------------------------
+TOUR #7: Expedición Nevado Santa Isabel (Nevado Santa Isabel Expedition)
+ID: a79FWh8UfdYvh5T0Lfzi
+Active: YES
+Type: multi-day | Days: 3
+Difficulty: Difficult
+Location: Parque Nacional Los Nevados, Tolima, Colombia
+Images: 10 total
+   Preview: https://images.unsplash.com/photo-1483728642387-6c...
+Pricing Tiers:
+   - 1-1 pax: $800.000 COP / $333 USD
+   - 2-2 pax: $600.000 COP / $33 USD
+   - 3-3 pax: $430.000 COP / $33 USD
+   - 4-8 pax: $400.000 COP / $333 USD
+Itinerary: 3 days defined.
+--------------------------------------------------------------------------------
+TOUR #8: Circuito Sierra Nevada del Cocuy (Cocuy Mountain Range Circuit)
+ID: ofgXJqCHYw6prX5n9jTU
+Active: YES
+Type: multi-day | Days: 6
+Difficulty: Very Difficult
+Location: Parque Nacional El Cocuy, Boyacá, Colombia
+Images: 8 total
+   Preview: https://images.unsplash.com/photo-1486870591958-9b...
+Pricing Tiers:
+   - 1-1 pax: $2.400.000 COP / $600 USD
+   - 2-2 pax: $1.800.000 COP / $450 USD
+   - 3-3 pax: $1.500.000 COP / $375 USD
+   - 4-8 pax: $1.350.000 COP / $340 USD
+Itinerary: 6 days defined.
+--------------------------------------------------------------------------------

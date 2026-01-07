@@ -24,28 +24,28 @@ async function testEndpoints() {
         'Content-Type': 'application/json'
     };
 
-    console.log('\n=== Testing GET /admin/stats ===');
-    try {
-        const response = await fetch(`${API_BASE_URL}/admin/stats`, { headers });
-        console.log(`Status: ${response.status}`);
-        const data = await response.json();
-        console.log('Response:', JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
+    // console.log('\n=== Testing GET /admin/stats ===');
+    // try {
+    //     const response = await fetch(`${API_BASE_URL}/admin/stats`, { headers });
+    //     console.log(`Status: ${response.status}`);
+    //     const data = await response.json();
+    //     console.log('Response:', JSON.stringify(data, null, 2));
+    // } catch (error) {
+    //     console.error('Error:', error.message);
+    // }
 
-    console.log('\n=== Testing GET /admin/bookings ===');
-    try {
-        const response = await fetch(`${API_BASE_URL}/admin/bookings`, { headers });
-        console.log(`Status: ${response.status}`);
-        const data = await response.json();
-        console.log(`Response: ${data.length} bookings found`);
-        if (data.length > 0) {
-            console.log('First booking:', JSON.stringify(data[0], null, 2));
-        }
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
+    // console.log('\n=== Testing GET /admin/bookings ===');
+    // try {
+    //     const response = await fetch(`${API_BASE_URL}/admin/bookings`, { headers });
+    //     console.log(`Status: ${response.status}`);
+    //     const data = await response.json();
+    //     console.log(`Response: ${data.length} bookings found`);
+    //     if (data.length > 0) {
+    //         console.log('First booking:', JSON.stringify(data[0], null, 2));
+    //     }
+    // } catch (error) {
+    //     console.error('Error:', error.message);
+    // }
 
     console.log('\n=== Testing GET /admin/tours ===');
     try {
@@ -53,19 +53,24 @@ async function testEndpoints() {
         console.log(`Status: ${response.status}`);
         const data = await response.json();
         console.log(`Response: ${data.length} tours found`);
+        data.forEach(tour => {
+            console.log(`- [${tour.isActive ? 'ACTIVE' : 'INACTIVE'}] ${tour.name.en} (${tour.name.es})`);
+            console.log(`  Subtitle: ${tour.subtitle ? `${tour.subtitle.en} / ${tour.subtitle.es}` : 'NONE'}`);
+             console.log(`  ID: ${tour.tourId}`);
+        });
     } catch (error) {
         console.error('Error:', error.message);
     }
 
-    console.log('\n=== Testing GET /admin/departures ===');
-    try {
-        const response = await fetch(`${API_BASE_URL}/admin/departures`, { headers });
-        console.log(`Status: ${response.status}`);
-        const data = await response.json();
-        console.log(`Response: ${data.length} departures found`);
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
+    // console.log('\n=== Testing GET /admin/departures ===');
+    // try {
+    //     const response = await fetch(`${API_BASE_URL}/admin/departures`, { headers });
+    //     console.log(`Status: ${response.status}`);
+    //     const data = await response.json();
+    //     console.log(`Response: ${data.length} departures found`);
+    // } catch (error) {
+    //     console.error('Error:', error.message);
+    // }
 }
 
 testEndpoints();
