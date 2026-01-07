@@ -1,4 +1,4 @@
-# API Reference - Nevado Trek Backend V2.0
+# API Reference - Nevado Trek Backend V2.6.0
 
 ## Base URL
 **Production**: `https://api-wgfhwjbpva-uc.a.run.app`
@@ -13,10 +13,11 @@ X-Admin-Secret-Key: ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH
 ⚠️ **CRITICAL RULE**: All dates sent to the API must be parsed to **Noon UTC** (12:00 PM UTC) to avoid timezone shifts.
 - **Input**: Use the utility `parseToNoonUTC(dateString)` (or equivalent logic) before sending updates.
 - **Reason**: Clients in UTC-5 (Colombia) sending midnight dates often result in the previous day in UTC. Setting the time to 12:00 UTC ensures the date remains correct regardless of western hemisphere offsets.
+- **Output**: Most date fields are returned as **ISO Strings** for standard frontend processing.
 
 ---
 
-## Admin Endpoints (19)
+## Admin Endpoints (20)
 
 ### Tours (5 endpoints)
 
@@ -106,7 +107,7 @@ Delete a departure (only if no bookings).
 
 ---
 
-### Bookings (8 endpoints)
+### Bookings (9 endpoints)
 
 #### GET /admin/bookings
 List all bookings with optional filtering.
@@ -114,7 +115,7 @@ List all bookings with optional filtering.
 - **Response**: `{ bookings: Booking[] }`
 
 #### GET /admin/bookings/:id
-**NEW** - Get a specific booking by ID.
+Get a specific booking by ID.
 - **Response**: `{ booking: Booking }`
 - **Use Case**: Used by BookingModal to fetch existing booking data
 
@@ -138,11 +139,25 @@ Create a new booking (always creates new departure).
   ```
 - **Response**: `{ bookingId: string, departureId: string, booking: Booking }`
 
+#### POST /admin/bookings/join ⭐ NEW (v2.5)
+Admin joins a customer to an existing public departure.
+- **Body**: 
+  ```json
+  {
+    "departureId": "string",
+    "customer": { ... },
+    "pax": number
+  }
+  ```
+- **Response**: `{ success: true, bookingId: string, departureId: string }`
+- **Logic**: Validates capacity and public status.
+
 #### PUT /admin/bookings/:id/status
 Update booking status.
 - **Body**: `{ status: "pending" | "confirmed" | "paid" | "cancelled" }`
 - **Response**: `{ message: "Status updated", booking: Booking }`
 - **Side Effect**: Updates `currentPax` on departure (with safeguard to prevent negative values)
+- **CRITICAL**: Cancellation is **irreversible**.
 
 #### PUT /admin/bookings/:id/pax
 Update booking pax count.
@@ -157,7 +172,7 @@ Update customer details.
 
 #### POST /admin/bookings/:id/discount
 Apply a discount to a booking.
-- **Body**: `{ discountAmount: number, discountReason: string }`
+- **Body**: `{ discountAmount?: number, newFinalPrice?: number, reason: string }`
 - **Response**: `{ message: "Discount applied", booking: Booking }`
 
 #### POST /admin/bookings/:id/move
@@ -167,7 +182,6 @@ Move booking to a different departure.
 - **Side Effects**: 
   - Atomically updates `currentPax` on both old and new departures
   - **Auto-cleanup**: If old departure becomes empty (`currentPax = 0`), it is automatically deleted
-- **Use Case**: Move booking between departures (e.g., change date/tour for private booking)
 
 #### POST /admin/bookings/:id/convert-type
 Convert booking type (and potentially split/join departure).
@@ -178,7 +192,6 @@ Convert booking type (and potentially split/join departure).
   - **Public→Private**: Splits booking to new private departure if multiple bookings exist
 - **Auto-cleanup**: 
   - If source departure becomes empty after conversion, it is automatically deleted
-  - Prevents "ghost departures" (empty departures polluting the database)
 
 ---
 
@@ -189,13 +202,10 @@ Get dashboard statistics.
 - **Response**: 
   ```json
   {
-    "totalTours": number,
-    "activeTours": number,
-    "totalDepartures": number,
-    "upcomingDepartures": number,
-    "totalBookings": number,
-    "confirmedBookings": number,
-    "totalRevenue": number
+    "totalActiveBookings": number,
+    "upcomingDeparturesCount": number,
+    "next7Days": number,
+    "timestamp": "ISO Date String"
   }
   ```
 
@@ -210,7 +220,7 @@ List all active tours (Full details).
 - **Response**: `{ tours: Tour[] }` (only `isActive: true`)
 
 #### GET /public/tours/listing
-**NEW** - List all active tours (Lightweight).
+List all active tours (Lightweight).
 - **Purpose**: Optimized for listing pages/cards.
 - **Payload Reduction**: ~65% smaller than `/public/tours`.
 - **Response**: `TourListing[]`
@@ -235,13 +245,7 @@ Join an existing public departure.
   ```json
   {
     "departureId": "string",
-    "customer": {
-      "name": "string",
-      "email": "string",
-      "phone": "+1234567890",
-      "document": "string",
-      "note"?: "string"
-    },
+    "customer": { ... },
     "pax": number
   }
   ```
@@ -266,34 +270,18 @@ Request a new private departure.
 
 ## Recent Changes
 
-### December 5, 2025 - Cache Optimization for Real-time Updates
-- ✅ **GET /public/departures**: Reduced cache TTL from 5min to 30sec (browser) and 10min to 60sec (CDN)
-  - Ensures `currentPax` updates are visible quickly after bookings
-  - Frontend can force cache bypass with `?t=Date.now()` query parameter
-- ✅ **Documentation**: Added `CACHE_BYPASS_FRONTEND_GUIDE.md` for frontend implementation
+### January 7, 2026 - Maintenance
+- 🟢 **Billing Reactivated**: Restored production API after billing suspension.
+- ✅ **API Health**: Verified all public and admin endpoints operational.
 
-### November 22, 2025 - Ghost Departure Fix \u0026 Logic Refinement
-- ✅ **POST /admin/bookings/:id/move**: Updated to use `{newTourId, newDate}` instead of `newDepartureId`
-  - Finds/creates target departure automatically
-  - Implements ghost departure auto-cleanup
-- ✅ **POST /admin/bookings/:id/convert-type**: Updated body to use `targetType` instead of `newType`
-  - Implements ghost departure auto-cleanup for both directions
-- ✅ **Ghost Departure Prevention**: All endpoints that modify departure occupancy now include:
-  - Automatic deletion of departures when `currentPax` reaches 0
-  - Prevents database pollution with empty departures
-- ✅ **Comprehensive Testing**: 18/18 tests passing on both emulators and live production
+### November 25, 2025 - Admin Join & Validation (v2.6)
+- ✅ **POST /admin/bookings/join**: Added official admin endpoint to join existing departures.
+- ✅ **Validation Fix**: `tourId` and `date` are now optional in `validateBooking` when `departureId` is provided.
+- ✅ **Stats Endpoint**: Added `timestamp` property to response for real-time verification.
 
-### November 21, 2025 - Evening Update  
-- ✅ **GET /admin/departures/:id**: Added endpoint to fetch single departure details
-- ✅ **GET /admin/bookings/:id**: Added endpoint to fetch single booking details
-- ✅ **POST /admin/departures/:id/update-date**: Clarified use cases for Public vs Private
-- ✅ **POST /admin/departures/:id/update-tour**: Clarified use cases for Public vs Private
-- ✅ **Negative Capacity Prevention**: Added `Math.max(0, ...)` safeguards
-
-### Deployment
-- ✅ All 26 endpoints deployed to production  
-- ✅ Backend URL: `https://api-wgfhwjbpva-uc.a.run.app`
-- ✅ Integration tests: 100% passing (18/18)
+### December 5, 2025 - Cache Optimization
+- ✅ **GET /public/departures**: Reduced cache TTL to 30sec (browser) / 60sec (CDN).
+- ✅ **Documentation**: Added `CACHE_BYPASS_FRONTEND_GUIDE.md`.
 
 ---
 
@@ -301,17 +289,16 @@ Request a new private departure.
 
 | Category | Admin | Public | Total |
 |----------|-------|--------|-------|
-| Tours | 5 | 1 | 6 |
-| Departures | 8 | 1 | 9 |
-| Bookings | 8 | 2 | 10 |
+| Tours | 5 | 2 | 7 |
+| Departures | 7 | 1 | 8 |
+| Bookings | 9 | 2 | 11 |
 | Stats | 1 | 0 | 1 |
-| **Total** | **22** | **4** | **26** |
+| **Total** | **22** | **5** | **27** |
 
 **Status**: ✅ All endpoints operational (100%)
 
 ---
 
-**Document Version**: 2.4.0  
-**Last Updated**: December 5, 2025  
-**Status**: ✅ All endpoints verified & documented  
-**Next Review**: January 2026
+**Document Version**: 2.6.0  
+**Last Updated**: January 7, 2026  
+**Status**: ✅ Deployed & Synchronized with Codebase

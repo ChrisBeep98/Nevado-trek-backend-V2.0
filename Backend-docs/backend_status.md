@@ -1,6 +1,6 @@
-# Backend Status - Nevado Trek V2.0
+# Backend Status - Nevado Trek V2.6
 
-**Last Updated**: November 25, 2025  
+**Last Updated**: January 7, 2026  
 **Version**: v2.6  
 **Status**: 🟢 **Fully Deployed & Verified on Production**
 
@@ -11,8 +11,17 @@
 El backend está **100% funcional y verificado en producción** con todos los features implementados incluyendo join booking para admin. Sistema completamente testeado con capacidad de 8 pax para todos los departures.
 
 **Production Version**: v2.6  
-**Key Feature**: Admin Join Booking Endpoint  
+**Key Feature**: Admin Join Booking Endpoint & Real-time Stats  
 **maxPax**: 8 para todos los departures (public y private)
+
+---
+
+## 🆕 Latest Maintenance (Jan 7, 2026)
+
+### 🎯 API Restoration
+**Status**: ✅ Solved  
+**Description**: Reactivated billing for project `nevadotrektest01`. Forced redeployment of the `api` function to clear 503 Service Unavailable errors.  
+**Verification**: All public and admin endpoints tested and responding with 200 OK.
 
 ---
 
@@ -63,37 +72,6 @@ adminRouter.post("/bookings/join", validateBooking, bookingsController.joinBooki
 
 ---
 
-## 🔧 Previous Changes (v2.4, Nov 25, 2025)
-
-### Change #1: Private Departure maxPax = 8
-**Ubicaciones**:
-- `functions/src/controllers/bookings.controller.js:42`
-- `functions/src/controllers/bookings.controller.js:212`
-- `functions/src/controllers/departures.controller.js:29`
-
-**Cambio**: Cambiado `maxPax` de `99` a `8` para private departures  
-**Estado**: ✅ Implementado
-
-### Change #2: Irreversible Cancellation Logic
-**Ubicación**: `functions/src/controllers/bookings.controller.js:301-303`
-
-**Cambio**: Una vez cancelled, booking NO puede reactivarse  
-**Estado**: ✅ Implementado
-
-### Change #3: Private Departure Cancellation Sync
-**Ubicación**: `functions/src/controllers/bookings.controller.js:308-317`
-
-**Cambio**: Cancelar private booking cancela el departure  
-**Estado**: ✅ Implementado
-
-### Change #4: Public Departure Slot Release
-**Ubicación**: `functions/src/controllers/bookings.controller.js:308-311`
-
-**Cambio**: Cancelar public booking libera capacidad  
-**Estado**: ✅ Implementado
-
----
-
 ## 📡 API Endpoints - Admin Routes
 
 ### Bookings
@@ -133,101 +111,10 @@ DELETE /admin/tours/:id  - Delete tour
 
 ---
 
-## 🔐 Request/Response Examples
-
-### Join Existing Departure (NEW)
-**Endpoint**: `POST /admin/bookings/join`  
-**Headers**: `X-Admin-Secret-Key: <admin_key>`
-
-**Request Body**:
-```json
-{
-  "departureId": "DAVtZXHf3P0tzhQsBLRv",
-  "customer": {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "phone": "+1234567890",
-    "document": "PASSPORT123",
-    "note": "Optional note"
-  },
-  "pax": 2,
-  "date": "2025-12-01T00:00:00.000Z",
-  "type": "public"
-}
-```
-
-**Response** (201):
-```json
-{
-  "success": true,
-  "booking": {
-    "bookingId": "BK_xyz123",
-    "departureId": "DAVtZXHf3P0tzhQsBLRv",
-    "customer": { ... },
-    "pax": 2,
-    "status": "pending",
-    "originalPrice": 1000000,
-    "finalPrice": 1000000,
-    "type": "public",
-    "createdAt": "2025-11-25T..."
-  }
-}
-```
-
-**Validation**:
-- ✅ `departureId` required
-- ✅ `customer` object required (name, email, phone, document)
-- ✅ `pax` > 0 required
-- ❌ `tourId` NOT required (departure already exists)
-- ❌ `date` NOT required (uses departure's date)
-
-### Create New Booking (Original)
-**Endpoint**: `POST /admin/bookings`  
-**Headers**: `X-Admin-Secret-Key: <admin_key>`
-
-**Request Body**:
-```json
-{
-  "tourId": "TOUR_rainbowmountain",
-  "date": "2025-12-15T00:00:00.000Z",
-  "type": "private",
-  "customer": {
-    "name": "Jane Smith",
-    "email": "jane@example.com",
-    "phone": "+9876543210",
-    "document": "ID456789"
-  },
-  "pax": 4
-}
-```
-
-**Response** (201):
-```json
-{
-  "success": true,
-  "booking": {
-    "bookingId": "BK_abc789",
-    "departureId": "DEP_new123",
-    ...
-  },
-  "departure": {
-    "departureId": "DEP_new123",
-    "tourId": "TOUR_rainbowmountain",
-    "date": "2025-12-15T00:00:00.000Z",
-    "type": "private",
-    "maxPax": 8,
-    "currentPax": 4,
-    "status": "open"
-  }
-}
-```
-
----
-
 ## 🧪 Testing Status
 
 **Local Emulator Tests**: ✅ 41/41 passing (100%)  
-**Production Verification**: ✅ All endpoints verified
+**Production Verification**: ✅ All endpoints verified (Jan 7, 2026)
 
 **Test Coverage**:
 - ✅ Create booking (new departure)
@@ -272,65 +159,13 @@ DELETE /admin/tours/:id  - Delete tour
 }
 ```
 
-### Departure Document
-```javascript
-{
-  tourId: string,
-  date: timestamp,
-  type: 'public' | 'private',
-  status: 'open' | 'closed' | 'cancelled',
-  maxPax: 8,                  // FIXED at 8 for all types
-  currentPax: number,         // Calculated from bookings
-  pricingSnapshot: [{         // Snapshot from tour at creation
-    minPax: number,
-    maxPax: number,
-    priceCOP: number
-  }],
-  createdAt: timestamp,
-  updatedAt?: timestamp
-}
-```
-
----
-
-## 🔄 Business Logic
-
-### Join Booking Flow (NEW - v2.5)
-1. Admin calls `POST /admin/bookings/join` with `departureId`
-2. Validation skips `tourId`/`date` requirements (departure exists)
-3. Backend validates:
-   - Departure exists
-   - Departure is PUBLIC and OPEN
-   - Sufficient capacity available
-4. Create booking in existing departure
-5. Update `currentPax` count
-6. Return booking object
-
-### Create Booking Flow (Original)
-1. Admin calls `POST /admin/bookings` with `tourId`, `date`, `type`
-2. Validation requires `tourId` and `date`
-3. Backend ALWAYS creates NEW departure
-4. Create booking in new departure
-5. Return both booking and departure objects
-
-### Cancellation Logic
-**Private Booking**:
-- Set booking status = 'cancelled'
-- Set departure status = 'cancelled'
-- Irreversible (cannot reactivate)
-
-**Public Booking**:
-- Set booking status = 'cancelled'
-- Decrement departure `currentPax`
-- Departure stays 'open'
-- Irreversible (cannot reactivate)
-
 ---
 
 ## 🚀 Deployment History
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
+| Maint | Jan 7, 2026 | Billing Reactivation & 503 Fix | ✅ Active |
 | v2.6 | Nov 25, 2025 | Fix validation for join booking | ✅ Deployed |
 | v2.5 | Nov 25, 2025 | Add admin join booking endpoint | ✅ Deployed |
 | v2.4 | Nov 25, 2025 | maxPax=8, irreversible cancellation | ✅ Deployed |
@@ -342,13 +177,7 @@ DELETE /admin/tours/:id  - Delete tour
 
 ## 📝 Notes
 
-- **Function URL**: https://us-central1-nevadotrektest01.cloudfunctions.net/api
+- **Function URL**: https://api-wgfhwjbpva-uc.a.run.app
 - **Firestore Project**: nevadotrektest01
 - **Region**: us-central1
 - **Runtime**: Node.js 22 (2nd Gen)
-
-**Key Differences Between Endpoints**:
-- `/admin/bookings` (POST) → Creates NEW departure
-- `/admin/bookings/join` (POST) → Joins EXISTING departure
-
-Both use same validation middleware with conditional logic based on `departureId` presence.
