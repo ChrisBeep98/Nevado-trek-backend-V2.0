@@ -18,6 +18,15 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ## 🆕 Latest Maintenance (Jan 14, 2026)
 
+### 💳 Bold Payments Integration
+**Status**: ✅ Deployed to Staging  
+**Description**: Implemented secure backend logic for Bold payment button.  
+**Details**:
+- **Endpoint**: `POST /public/payments/init`
+- **Features**: Integrity Signature (SHA256), Reference Generation, Status Validation.
+- **Keys**: Configured Sandbox keys in Staging environment.
+- **Verification**: Verified with `test_payments_bold.js` script.
+
 ### 🎯 Staging Environment Setup
 **Status**: ✅ Complete  
 **Description**: Established a dedicated staging environment to facilitate Admin Dashboard development without risking production data.  

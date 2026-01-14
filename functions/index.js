@@ -15,6 +15,7 @@ const toursController = require("./src/controllers/tours.controller");
 const departuresController = require("./src/controllers/departures.controller");
 const bookingsController = require("./src/controllers/bookings.controller");
 const adminController = require("./src/controllers/admin.controller");
+const paymentsController = require("./src/controllers/payments.controller");
 
 const app = express();
 app.use(cors({ origin: true }));
@@ -171,6 +172,9 @@ publicRouter.post("/bookings/join", bookingRateLimiter, validateBooking, booking
 
 // Public Booking - Create Private Departure (WITH RATE LIMITING)
 publicRouter.post("/bookings/private", bookingRateLimiter, validateBooking, bookingsController.createPrivateBooking);
+
+// Public Payment - Initialize Bold Payment
+publicRouter.post("/payments/init", paymentsController.initPayment);
 
 app.use("/public", publicRouter);
 

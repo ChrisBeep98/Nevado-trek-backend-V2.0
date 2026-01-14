@@ -266,9 +266,33 @@ Request a new private departure.
 - **Response**: `{ bookingId: string, departureId: string, booking: Booking }`
 - **Side Effect**: Creates new private departure
 
+### Payments (1 endpoint)
+
+#### POST /public/payments/init
+Initialize a payment with Bold (Gateway).
+- **Body**: `{ bookingId: "string" }`
+- **Response**: 
+  ```json
+  {
+    "paymentReference": "NTK-{bookingId}-{timestamp}",
+    "amount": number,
+    "currency": "COP",
+    "apiKey": "string (Public Identity Key)",
+    "integritySignature": "string (SHA256 Hash)",
+    "redirectionUrl": "string",
+    "description": "string",
+    "tax": 0
+  }
+  ```
+- **Security**: Validates booking status (not cancelled/paid) and calculates secure integrity hash using backend secret.
+
 ---
 
 ## Recent Changes
+
+### January 14, 2026 - Staging & Payments
+- 🧪 **Staging Environment**: Launched `nevado-trek-backend-03`.
+- 💳 **Bold Integration**: Added `/public/payments/init` endpoint with secure hash generation.
 
 ### January 7, 2026 - Maintenance
 - 🟢 **Billing Reactivated**: Restored production API after billing suspension.
