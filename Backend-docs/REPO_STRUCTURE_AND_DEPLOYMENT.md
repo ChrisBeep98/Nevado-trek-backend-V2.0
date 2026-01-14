@@ -12,8 +12,27 @@ Este repositorio opera como un **Monorepo Híbrido** que contiene tanto el Backe
 ## 🚀 Estrategia de Despliegue
 
 ### Backend (Firebase)
-El backend se despliega directamente desde la raíz a Firebase Cloud Functions.
+
+Operamos con una estrategia de **Doble Entorno** para garantizar la estabilidad de producción.
+
+#### 1. Entornos Disponibles
+
+| Entorno | Alias CLI | Project ID | Uso |
+|---------|-----------|------------|-----|
+| **Staging** | `staging` | `nevado-trek-backend-03` | Pruebas, desarrollo de nuevas features, integración frontend. |
+| **Producción** | `prod` | `nevadotrektest01` | **SOLO** código verificado y estable. Clientes reales. |
+
+#### 2. Comandos de Despliegue
+
+**Desplegar a Staging (Recomendado para Dev)**
 ```bash
+firebase use staging
+firebase deploy --only functions
+```
+
+**Desplegar a Producción (Solo Releases)**
+```bash
+firebase use prod
 firebase deploy --only functions
 ```
 

@@ -26,9 +26,15 @@
 
 ## 🔌 ENDPOINTS QUICK REF
 
-**Base URL**: `https://us-central1-nevadotrektest01.cloudfunctions.net/api`
+### Production 🟢
+**Base URL**: `https://us-central1-nevadotrektest01.cloudfunctions.net/api`  
+**Admin Key**: `ntk_admin_prod_key_...` (See Secret Manager)
 
-### Admin (Auth Required: `X-Admin-Secret-Key: nevadotrek2025`)
+### Staging 🧪
+**Base URL**: `https://us-central1-nevado-trek-backend-03.cloudfunctions.net/api`  
+**Admin Key**: `ntk_admin_staging_key_2026_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
+
+### Admin (Auth Required: `X-Admin-Secret-Key`)
 ```
 Dashboard:        GET   /admin/stats
 Tours:            CRUD  /admin/tours

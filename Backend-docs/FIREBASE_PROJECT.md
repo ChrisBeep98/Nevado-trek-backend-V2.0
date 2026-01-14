@@ -6,7 +6,7 @@
 
 ## 🔥 Firebase Project Information
 
-### Production Project
+### Production Project 🟢
 - **Project ID**: `nevadotrektest01`
 - **Project Name**: Nevado Trek Test 01
 - **Status**: Production/Live
@@ -16,13 +16,22 @@
 > [!IMPORTANT]
 > **`nevadotrektest01` IS THE PRODUCTION PROJECT** - Despite the "test" in the name, this is the live production environment that serves the actual API.
 
+### Staging Project 🧪
+- **Project ID**: `nevado-trek-backend-03`
+- **Project Name**: nevado-trek-staging
+- **Status**: Pre-Production / Testing
+- **API URL**: `https://us-central1-nevado-trek-backend-03.cloudfunctions.net/api`
+- **Admin Key**: `ntk_admin_staging_key_2026_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
+
 ### Project Configuration File
 **Location**: `D:\Nevado Trek Development\nevado-trek-backend\.firebaserc`
 
 ```json
 {
   "projects": {
-    "default": "nevadotrektest01"
+    "default": "nevadotrektest01",
+    "prod": "nevadotrektest01",
+    "staging": "nevado-trek-backend-03"
   }
 }
 ```
@@ -32,8 +41,9 @@
 # See which project is active
 firebase use
 
-# Output:
-# Active Project: nevadotrektest01
+# Switch environments
+firebase use staging
+firebase use prod
 ```
 
 ---

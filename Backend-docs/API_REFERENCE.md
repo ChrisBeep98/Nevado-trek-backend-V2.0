@@ -1,13 +1,13 @@
 # API Reference - Nevado Trek Backend V2.6.0
 
 ## Base URL
-**Production**: `https://api-wgfhwjbpva-uc.a.run.app`
+- **Production**: `https://api-wgfhwjbpva-uc.a.run.app` (Project: `nevadotrektest01`)
+- **Staging**: `https://us-central1-nevado-trek-backend-03.cloudfunctions.net/api` (Project: `nevado-trek-backend-03`)
 
 ## Authentication
-All admin endpoints require the `X-Admin-Secret-Key` header:
-```
-X-Admin-Secret-Key: ntk_admin_prod_key_2025_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7
-```
+All admin endpoints require the `X-Admin-Secret-Key` header. Keys differ by environment:
+- **Production**: `ntk_admin_prod_key_...` (See Secret Manager)
+- **Staging**: `ntk_admin_staging_key_2026_x8K9mP3nR7wE5vJ2hQ9zY4cA6bL8sD1fG5jH3mN0pX7`
 
 ## Date Handling (Timezones)
 ⚠️ **CRITICAL RULE**: All dates sent to the API must be parsed to **Noon UTC** (12:00 PM UTC) to avoid timezone shifts.

@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "nevadotrektest01"
+    "default": "nevadotrektest01",
+    "prod": "nevadotrektest01",
+    "staging": "nevado-trek-backend-03"
   }
 }

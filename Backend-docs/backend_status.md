@@ -16,9 +16,18 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ---
 
-## 🆕 Latest Maintenance (Jan 7, 2026)
+## 🆕 Latest Maintenance (Jan 14, 2026)
 
-### 🎯 API Restoration
+### 🎯 Staging Environment Setup
+**Status**: ✅ Complete  
+**Description**: Established a dedicated staging environment to facilitate Admin Dashboard development without risking production data.  
+**Details**:
+- **Project**: `nevado-trek-backend-03` (Alias: `staging`)
+- **Plan**: Upgraded to Blaze (Pay-as-you-go)
+- **Configuration**: Added `.env.nevado-trek-backend-03` with distinct Admin Key.
+- **Verification**: API endpoints responding correctly.
+
+### 🎯 API Restoration (Jan 7, 2026)
 **Status**: ✅ Solved  
 **Description**: Reactivated billing for project `nevadotrektest01`. Forced redeployment of the `api` function to clear 503 Service Unavailable errors.  
 **Verification**: All public and admin endpoints tested and responding with 200 OK.
