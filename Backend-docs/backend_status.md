@@ -18,6 +18,14 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ## 🆕 Latest Maintenance (Jan 14, 2026)
 
+### 💳 Bold Payments Integration & Webhook
+**Status**: ✅ Deployed to Staging & Configured in Bold  
+**Description**: Full payment lifecycle integration.
+**Details**:
+- **Endpoints**: `POST /init` (Signature generation) and `POST /webhook` (Status sync).
+- **Data Model**: Added `paymentInfo` object to bookings for detailed tracking.
+- **Verification**: Backend logic verified; webhook URL registered in Bold Dashboard.
+
 ### 🏥 Staging Health Check
 **Status**: ✅ Verified  
 **Description**: Full cycle testing performed on Staging environment.  
@@ -26,15 +34,6 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 - **Integrity**: Firestore Indexes for complex queries deployed and active.
 - **Payments**: Bold integration verified end-to-end.
 - **Logic**: Move booking / Swap departure logic confirmed working.
-
-### 💳 Bold Payments Integration
-**Status**: ✅ Deployed to Staging  
-**Description**: Implemented secure backend logic for Bold payment button.  
-**Details**:
-- **Endpoint**: `POST /public/payments/init`
-- **Features**: Integrity Signature (SHA256), Reference Generation, Status Validation.
-- **Keys**: Configured Sandbox keys in Staging environment.
-- **Verification**: Verified with `test_payments_bold.js` script.
 
 ### 🎯 Staging Environment Setup
 **Status**: ✅ Complete  

@@ -176,6 +176,9 @@ publicRouter.post("/bookings/private", bookingRateLimiter, validateBooking, book
 // Public Payment - Initialize Bold Payment
 publicRouter.post("/payments/init", paymentsController.initPayment);
 
+// Public Payment - Webhook (Bold calls this)
+publicRouter.post("/payments/webhook", paymentsController.webhookHandler);
+
 app.use("/public", publicRouter);
 
 // Export the API

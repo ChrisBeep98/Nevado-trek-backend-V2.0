@@ -286,15 +286,23 @@ Initialize a payment with Bold (Gateway).
   ```
 - **Security**: Validates booking status (not cancelled/paid) and calculates secure integrity hash using backend secret.
 
+#### POST /public/payments/webhook
+Bold Webhook endpoint for automated payment notifications.
+- **Payload**: Standard Bold Webhook JSON.
+- **Logic**: 
+  - Extracts `bookingId` from the payment reference.
+  - Maps Bold status (APPROVED, FAILED, etc.) to system status.
+  - Updates `paymentInfo` object in Firestore.
+  - Sets main booking `status` to `"paid"` upon success.
+
 ---
 
 ## Recent Changes
 
 ### January 14, 2026 - Staging & Payments
 - 🧪 **Staging Environment**: Launched `nevado-trek-backend-03`.
-- 💳 **Bold Integration**: Added `/public/payments/init` endpoint with secure hash generation.
-
-### January 7, 2026 - Maintenance
+- 💳 **Bold Integration**: Added `/public/payments/init` and `/public/payments/webhook` endpoints.
+- 📦 **Data Mirroring**: Cloned production tours to staging database.
 - 🟢 **Billing Reactivated**: Restored production API after billing suspension.
 - ✅ **API Health**: Verified all public and admin endpoints operational.
 
