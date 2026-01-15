@@ -72,89 +72,82 @@ exports.initPayment = async (req, res) => {
 exports.webhookHandler = async (req, res) => {
   try {
     const payload = req.body;
-    const signature = req.headers["bold-signature"] || req.headers["x-signature"]; // Check documentation for exact header name
+    const headers = req.headers;
 
-    console.log("🔔 Bold Webhook received:", JSON.stringify(payload));
+    console.log(`🔔 [WEBHOOK] Processing notification for reference: ${payload.data?.metadata?.reference || "unknown"}`);
 
-    // 1. Extract Data
-    // Payload structure depends on Bold version. Usually contains 'payment_status' and 'reference'
-    // Bold Example Payload: { "status": "APPROVED", "reference": "NTK-...", "tx_id": "...", ... }
-    const { payment_status, reference, tx_id, payment_method } = payload;
-
-    if (!reference || !payment_status) {
-        console.warn("⚠️ Invalid webhook payload: Missing reference or status");
-        return res.status(400).json({ error: "Invalid payload" });
+    if (!payload.data || !payload.type) {
+        console.warn("⚠️ [WEBHOOK ABORT] Invalid payload structure");
+        return res.status(400).json({ error: "Invalid payload structure" });
     }
 
-    // 2. Parse Reference to get Booking ID
-    // Format: NTK-{bookingId}-{timestamp}
+    const eventType = payload.type;
+    const paymentData = payload.data;
+    const reference = paymentData.metadata?.reference || paymentData.reference;
+
+    if (!reference) {
+        console.warn("⚠️ [WEBHOOK ABORT] No reference found");
+        return res.status(200).json({ message: "Ignored: No reference" });
+    }
+
+    // Parse Reference: NTK-{bookingId}-{timestamp}
     const parts = reference.split("-");
     if (parts.length < 3 || parts[0] !== "NTK") {
-        console.warn("⚠️ Unknown reference format:", reference);
         return res.status(200).json({ message: "Ignored: Not a Nevado Trek reference" });
     }
     const bookingId = parts[1];
 
-    // 3. Map Bold Status to System Status
+    // Map Status
     let paymentInfoStatus = "processing";
-    let bookingStatus = null; // Only update main status if definitive
+    let bookingStatus = null; 
 
-    switch (String(payment_status).toUpperCase()) {
-        case "APPROVED":
-        case "PAID":
-        case "SUCCEEDED":
+    switch (eventType) {
+        case "SALE_APPROVED":
             paymentInfoStatus = "paid";
             bookingStatus = "paid";
             break;
-        case "REJECTED":
-        case "FAILED":
-        case "DECLINED":
+        case "SALE_REJECTED":
             paymentInfoStatus = "failed";
-            // We do NOT cancel the booking automatically on failure, user can retry
             break;
-        case "VOIDED":
+        case "VOID_APPROVED":
             paymentInfoStatus = "voided";
+            bookingStatus = "cancelled";
             break;
         default:
-            paymentInfoStatus = "processing";
+            return res.status(200).json({ message: "Event type ignored" });
     }
 
-    // 4. Update Firestore
+    // Update Firestore
     const db = admin.firestore();
     const bookingRef = db.collection("bookings").doc(bookingId);
 
-    // Prepare update object
     const updateData = {
         "paymentInfo.status": paymentInfoStatus,
         "paymentInfo.provider": "bold",
-        "paymentInfo.transactionId": tx_id || "unknown",
+        "paymentInfo.transactionId": paymentData.payment_id || "unknown",
         "paymentInfo.reference": reference,
+        "paymentInfo.amountPaid": paymentData.amount?.total || paymentData.amount?.total_amount || 0, // 💰 Added amount
+        "paymentInfo.currency": paymentData.amount?.currency || "COP",
         "paymentInfo.lastUpdate": new Date(),
-        "updatedAt": new Date() // Standard audit field
+        "updatedAt": new Date()
     };
 
-    if (payment_method) {
-        updateData["paymentInfo.paymentMethod"] = payment_method;
+    if (paymentData.payment_method) {
+        updateData["paymentInfo.paymentMethod"] = paymentData.payment_method;
     }
 
     if (paymentInfoStatus === "paid") {
         updateData["paymentInfo.paidAt"] = new Date();
-    }
-
-    // Only update the main booking status if the payment was successful
-    if (bookingStatus) {
-        updateData.status = bookingStatus;
+        updateData.status = "paid";
     }
 
     await bookingRef.update(updateData);
-    console.log(`✅ Booking ${bookingId} updated. Payment Status: ${paymentInfoStatus}`);
+    console.log(`✅ [WEBHOOK SUCCESS] Booking ${bookingId} updated to ${paymentInfoStatus}. Amount: ${updateData["paymentInfo.amountPaid"]}`);
 
-    // 5. Respond to Bold (Always 200 to verify receipt)
     res.status(200).json({ received: true });
 
   } catch (error) {
-    console.error("❌ Error processing webhook:", error);
-    // Return 500 so Bold retries later if it was a system error
+    console.error("❌ [WEBHOOK ERROR]:", error.message);
     res.status(500).json({ error: error.message });
   }
 };

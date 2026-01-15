@@ -288,11 +288,11 @@ Initialize a payment with Bold (Gateway).
 
 #### POST /public/payments/webhook
 Bold Webhook endpoint for automated payment notifications.
-- **Payload**: Standard Bold Webhook JSON.
+- **Payload**: Standard Bold Webhook JSON (CloudEvents format).
 - **Logic**: 
   - Extracts `bookingId` from the payment reference.
-  - Maps Bold status (APPROVED, FAILED, etc.) to system status.
-  - Updates `paymentInfo` object in Firestore.
+  - Maps Bold status (SALE_APPROVED, SALE_REJECTED, etc.) to system status.
+  - Updates `paymentInfo` object in Firestore with status and **amount paid**.
   - Sets main booking `status` to `"paid"` upon success.
 
 ---

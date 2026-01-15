@@ -18,8 +18,13 @@ const adminController = require("./src/controllers/admin.controller");
 const paymentsController = require("./src/controllers/payments.controller");
 
 const app = express();
+// Enable trust proxy for Cloud Functions / Google Load Balancer
+// Setting to 1 is standard for GCF/Cloud Run to trust the immediate LB
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Add support for urlencoded bodies
 
 // --- Admin Routes (Protected) ---
 const adminRouter = express.Router();
