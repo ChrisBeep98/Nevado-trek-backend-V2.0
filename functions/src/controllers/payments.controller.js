@@ -126,7 +126,7 @@ exports.webhookHandler = async (req, res) => {
         "paymentInfo.provider": "bold",
         "paymentInfo.transactionId": paymentData.payment_id || "unknown",
         "paymentInfo.reference": reference,
-        "paymentInfo.amountPaid": paymentData.amount?.total || paymentData.amount?.total_amount || 0, // 💰 Added amount
+        "paymentInfo.amountPaid": paymentData.amount?.total || paymentData.amount?.total_amount || 0, // 💰 Exact amount from gateway
         "paymentInfo.currency": paymentData.amount?.currency || "COP",
         "paymentInfo.lastUpdate": new Date(),
         "updatedAt": new Date()

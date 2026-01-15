@@ -26,6 +26,7 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 - **Data Model**: Added `paymentInfo` object to bookings for detailed tracking (Status, Amount, Currency).
 - **Verification**: Backend logic verified; webhook URL registered in Bold Dashboard.
 - **Robustness**: Implemented CloudEvents parsing and `trust proxy` for Google Cloud compatibility.
+- **Sandbox Note**: Bold Sandbox simulation button may send `amount: 0`. This is expected behavior in test mode; Production will send real amounts.
 
 ### 🏥 Staging Health Check
 **Status**: ✅ Verified  
