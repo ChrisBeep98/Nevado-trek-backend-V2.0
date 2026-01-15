@@ -18,6 +18,15 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ## 🆕 Latest Maintenance (Jan 14, 2026)
 
+### 🏥 Staging Health Check
+**Status**: ✅ Verified  
+**Description**: Full cycle testing performed on Staging environment.  
+**Results**:
+- **Data**: 14 tours active (mirrored from Prod).
+- **Integrity**: Firestore Indexes for complex queries deployed and active.
+- **Payments**: Bold integration verified end-to-end.
+- **Logic**: Move booking / Swap departure logic confirmed working.
+
 ### 💳 Bold Payments Integration
 **Status**: ✅ Deployed to Staging  
 **Description**: Implemented secure backend logic for Bold payment button.  
