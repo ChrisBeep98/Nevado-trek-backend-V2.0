@@ -184,6 +184,9 @@ publicRouter.post("/payments/init", paymentsController.initPayment);
 // Public Payment - Webhook (Bold calls this)
 publicRouter.post("/payments/webhook", paymentsController.webhookHandler);
 
+// Public Booking - Check Status (For Polling)
+publicRouter.get("/bookings/:bookingId", bookingsController.getBookingStatus);
+
 app.use("/public", publicRouter);
 
 // Export the API

@@ -28,6 +28,15 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 - **Robustness**: Implemented CloudEvents parsing and `trust proxy` for Google Cloud compatibility.
 - **Sandbox Note**: Bold Sandbox simulation button may send `amount: 0`. This is expected behavior in test mode; Production will send real amounts.
 
+### 🔌 Booking Status Endpoint (Jan 15, 2026)
+**Status**: ✅ Deployed to Staging  
+**Description**: Public endpoint for frontend polling during payment process.  
+**Details**:
+- **Endpoint**: `GET /public/bookings/:id`
+- **Privacy**: No PII returned (only status fields).
+- **Function**: Maps internal states (`paid` -> `confirmed`, `approved`) for frontend consumption.
+- **Limiters**: No rate limit applied (designed for frequent polling).
+
 ### 🏥 Staging Health Check
 **Status**: ✅ Verified  
 **Description**: Full cycle testing performed on Staging environment.  

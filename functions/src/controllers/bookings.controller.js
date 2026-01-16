@@ -827,5 +827,40 @@ exports.getBooking = async (req, res) => {
   }
 };
 
+/**
+ * Public: Get basic booking status for polling (No PII)
+ * GET /public/bookings/:bookingId
+ */
+exports.getBookingStatus = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const db = admin.firestore();
 
+    const bookingSnap = await db.collection("bookings").doc(bookingId).get();
 
+    if (!bookingSnap.exists) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    const booking = bookingSnap.data();
+
+    // Mapping internal payment info to public status
+    let paymentStatus = "pending";
+    if (booking.paymentInfo?.status === "paid") {
+      paymentStatus = "approved";
+    } else if (booking.paymentInfo?.status === "failed") {
+      paymentStatus = "rejected";
+    }
+
+    // Response strictly limited to non-PII data
+    res.json({
+      bookingId: bookingId,
+      status: booking.status === "paid" ? "confirmed" : booking.status,
+      paymentStatus: paymentStatus
+    });
+
+  } catch (error) {
+    console.error("Error fetching booking status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

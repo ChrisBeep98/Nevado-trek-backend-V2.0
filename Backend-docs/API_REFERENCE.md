@@ -266,6 +266,19 @@ Request a new private departure.
 - **Response**: `{ bookingId: string, departureId: string, booking: Booking }`
 - **Side Effect**: Creates new private departure
 
+#### GET /public/bookings/:id
+Check booking status (polling endpoint for Payment Gateway).
+- **Response**: 
+  ```json
+  {
+    "bookingId": "string",
+    "status": "pending" | "confirmed" | "cancelled",
+    "paymentStatus": "pending" | "approved" | "rejected"
+  }
+  ```
+- **Privacy**: **NO PII returned**. Only status fields.
+- **Security**: Publicly accessible (no rate limit for polling).
+
 ### Payments (1 endpoint)
 
 #### POST /public/payments/init
@@ -323,9 +336,10 @@ Bold Webhook endpoint for automated payment notifications.
 |----------|-------|--------|-------|
 | Tours | 5 | 2 | 7 |
 | Departures | 7 | 1 | 8 |
-| Bookings | 9 | 2 | 11 |
+| Bookings | 9 | 3 | 12 |
+| Payments | 0 | 2 | 2 |
 | Stats | 1 | 0 | 1 |
-| **Total** | **22** | **5** | **27** |
+| **Total** | **22** | **8** | **30** |
 
 **Status**: ✅ All endpoints operational (100%)
 

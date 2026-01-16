@@ -23,6 +23,7 @@
 3. `GET /public/departures` - Salidas públicas disponibles con cupos.
 4. `POST /public/bookings/join` - Unirse a una salida existente.
 5. `POST /public/bookings/private` - Solicitar nueva salida privada.
+6. `GET /public/bookings/:id` - Consultar estado de reserva (Polling).
 
 ---
 
@@ -111,6 +112,32 @@
 }
 ```
 *Regla de Oro: Enviar la fecha en formato YYYY-MM-DD. El servidor la normalizará a Noon UTC.*
+
+---
+
+## 📖 Endpoint 6: GET /public/bookings/:id (Polling Status)
+
+**Propósito:** Permite al Frontend consultar periódicamente (cada 5 seg) el estado de una reserva mientras el usuario está en la pasarela de pagos.
+
+**URL:** `GET /public/bookings/:bookingId`
+
+### Response Format
+```json
+{
+  "bookingId": "B7GsNokzJNWWJ7XiR9pi",
+  "status": "confirmed",       // Mapeado desde 'paid' interno
+  "paymentStatus": "approved"  // Mapeado desde 'paid' en paymentInfo
+}
+```
+
+**Estados Mapeados:**
+| Backend (Internal) | Frontend (Public Response) | Significado |
+|-------------------|----------------------------|-------------|
+| `paymentInfo.status: "paid"` | `paymentStatus: "approved"` | Pago exitoso confirmado por Bold |
+| `paymentInfo.status: "failed"` | `paymentStatus: "rejected"` | Pago rechazado |
+| `booking.status: "paid"` | `status: "confirmed"` | Reserva confirmada y pagada |
+
+**Nota de Seguridad:** Este endpoint **NO** devuelve información personal (PII) del cliente. Solo IDs y estados.
 
 ---
 
