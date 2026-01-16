@@ -273,10 +273,11 @@ Check booking status (polling endpoint for Payment Gateway).
   {
     "bookingId": "string",
     "status": "pending" | "confirmed" | "cancelled",
-    "paymentStatus": "pending" | "approved" | "rejected"
+    "paymentStatus": "pending" | "approved" | "rejected",
+    "paymentRef": "string"
   }
   ```
-- **Privacy**: **NO PII returned**. Only status fields.
+- **Privacy**: **NO PII returned**. Only status fields and reference.
 - **Security**: Publicly accessible (no rate limit for polling).
 
 ### Payments (1 endpoint)

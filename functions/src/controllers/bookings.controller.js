@@ -856,7 +856,8 @@ exports.getBookingStatus = async (req, res) => {
     res.json({
       bookingId: bookingId,
       status: booking.status === "paid" ? "confirmed" : booking.status,
-      paymentStatus: paymentStatus
+      paymentStatus: paymentStatus,
+      paymentRef: booking.paymentInfo?.reference || null
     });
 
   } catch (error) {

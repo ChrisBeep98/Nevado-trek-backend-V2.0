@@ -126,7 +126,8 @@
 {
   "bookingId": "B7GsNokzJNWWJ7XiR9pi",
   "status": "confirmed",       // Mapeado desde 'paid' interno
-  "paymentStatus": "approved"  // Mapeado desde 'paid' en paymentInfo
+  "paymentStatus": "approved", // Mapeado desde 'paid' en paymentInfo
+  "paymentRef": "NTK-B7GsNokzJNWWJ7XiR9pi-1705600000000" // Referencia única de pago
 }
 ```
 

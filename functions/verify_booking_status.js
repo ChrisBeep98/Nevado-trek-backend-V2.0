@@ -33,9 +33,15 @@ async function testBookingStatus() {
 
     // Verify fields
     if (!statusRes.data.bookingId || !statusRes.data.status || !statusRes.data.paymentStatus) {
-      console.error('❌ Missing fields in response!');
+      console.error('❌ Missing standard fields in response!');
     } else {
-      console.log('✅ Structure verified.');
+      console.log('✅ Standard fields verified.');
+    }
+
+    if (statusRes.data.paymentRef === undefined) {
+       console.error('❌ Missing paymentRef field!');
+    } else {
+       console.log(`✅ paymentRef field present: ${statusRes.data.paymentRef}`);
     }
 
     // 3. Test 404
