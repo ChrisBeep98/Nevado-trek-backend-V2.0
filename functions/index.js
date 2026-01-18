@@ -27,6 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Add support for urlencoded bodies
 
 const { defineSecret } = require("firebase-functions/params");
+const { onRequest } = require("firebase-functions/v2/https");
 const telegramBotToken = defineSecret("TELEGRAM_BOT_TOKEN");
 const telegramChatId = defineSecret("TELEGRAM_CHAT_ID");
 
@@ -194,8 +195,4 @@ publicRouter.get("/bookings/:bookingId", bookingsController.getBookingStatus);
 app.use("/public", publicRouter);
 
 // Export the API
-exports.api = functions
-  .runWith({
-    secrets: [telegramBotToken, telegramChatId],
-  })
-  .https.onRequest(app);
+exports.api = onRequest({ secrets: [telegramBotToken, telegramChatId] }, app);
