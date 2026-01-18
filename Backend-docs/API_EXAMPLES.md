@@ -985,6 +985,18 @@ Resultado: Base de datos limpia, sin departures vacíos
 3. ✅ currentPax + pax <= maxPax?
 4. ✅ Date no es pasado?
 
+### Problem: "API Returns 500 Internal Server Error on Staging"
+
+**Posible Causa 1: Falta de Índices en Firestore**
+Si el log muestra: `FAILED_PRECONDITION: The query requires an index.`
+*   **Contexto**: Sucede al crear un entorno nuevo (e.g., Staging) donde los índices compuestos no existen automáticamente.
+*   **Solución**: Abrir el link que proporciona el error en los logs y hacer clic en "Crear Índice". Se requieren índices para `departures` filtrando por `status`, `type` y `date`.
+
+**Posible Causa 2: ReferenceError en Código**
+Si el log muestra: `pricePerPax is not defined`
+*   **Causa**: Bug en `bookings.controller.js` (v2.6) donde se intentaba usar una variable definida dentro de una transacción (`db.runTransaction`) fuera de su scope para enviar notificaciones.
+*   **Solución**: Mover la declaración `let pricePerPax;` al inicio de la función, fuera de la transacción.
+
 ### Problem: "Convert type no funciona"
 
 **Para Public → Private**:

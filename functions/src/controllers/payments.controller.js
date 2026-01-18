@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 const { defineString } = require("firebase-functions/params");
+const { sendTelegramAlert } = require("../utils/notifications");
 
 // Define parameters
 const boldApiKey = defineString("BOLD_API_KEY");
@@ -139,6 +140,32 @@ exports.webhookHandler = async (req, res) => {
     if (paymentInfoStatus === "paid") {
         updateData["paymentInfo.paidAt"] = new Date();
         updateData.status = "paid";
+
+        // Fetch booking data for richer notification
+        try {
+            const bookingSnap = await bookingRef.get();
+            const bookingData = bookingSnap.data();
+            const customerName = bookingData?.customer?.name || "Desconocido";
+
+            // 🔔 Notify Admin (Telegram)
+            const paymentMsg = `🤑 <b>PAGO RECIBIDO (Bold)</b>\n\n` +
+              `👤 <b>Cliente:</b> ${customerName}\n` +
+              `🆔 <b>Booking ID:</b> <code>${bookingId}</code>\n` +
+              `🧾 <b>Ref Pago:</b> <code>${reference}</code>\n` +
+              `💰 <b>Monto:</b> $${(updateData["paymentInfo.amountPaid"] || 0).toLocaleString()}\n` +
+              `💳 <b>Método:</b> ${updateData["paymentInfo.paymentMethod"] || 'N/A'}\n` +
+              `✅ <b>Estado:</b> APROBADO`;
+            
+            sendTelegramAlert(paymentMsg).catch(console.error);
+        } catch (err) {
+            console.error("Error fetching booking details for notification:", err);
+            // Fallback notification if fetch fails
+             const fallbackMsg = `🤑 <b>PAGO RECIBIDO (Bold)</b>\n\n` +
+              `🆔 <b>Ref:</b> <code>${reference}</code>\n` +
+              `💰 <b>Monto:</b> $${(updateData["paymentInfo.amountPaid"] || 0).toLocaleString()}\n` +
+              `✅ <b>Estado:</b> APROBADO`;
+             sendTelegramAlert(fallbackMsg).catch(console.error);
+        }
     }
 
     await bookingRef.update(updateData);

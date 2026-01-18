@@ -16,7 +16,25 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ---
 
-## 🆕 Latest Maintenance (Jan 14, 2026)
+## 🆕 Latest Maintenance (Jan 18, 2026)
+
+### 📢 Telegram Notifications System (v2.7.0)
+**Status**: ✅ Deployed to Staging  
+**Description**: Real-time alerts for Admin.  
+**Details**:
+- **Integration**: Direct Telegram Bot API via `axios`.
+- **Triggers**: New Bookings (All types) & Approved Payments.
+- **Enrichment**: Alerts include Tour Name and Customer Name.
+- **Configuration**: Uses `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` via Secrets.
+
+### 🐛 Staging Environment Fixes
+**Status**: ✅ Solved  
+**Description**: Stabilized the `nevado-trek-backend-03` environment.  
+**Fixes**:
+1.  **Missing Indexes (Error 500)**: Created missing Firestore Composite Indexes for `public/departures` and `admin/stats`.
+    -   Index: `departures` [status + type + date]
+    -   Index: `departures` [status + tourId + type + date]
+2.  **Code Bug (Error 500)**: Fixed `ReferenceError: pricePerPax is not defined` in `bookings.controller.js`. The variable was defined inside a transaction scope but accessed outside it for notifications. Moved declaration to top scope.
 
 ### 💳 Bold Payments Integration & Webhook
 **Status**: ✅ Deployed to Staging & Configured in Bold  

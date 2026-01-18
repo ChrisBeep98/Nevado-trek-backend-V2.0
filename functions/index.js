@@ -26,6 +26,10 @@ app.use(cors({ origin: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Add support for urlencoded bodies
 
+const { defineSecret } = require("firebase-functions/params");
+const telegramBotToken = defineSecret("TELEGRAM_BOT_TOKEN");
+const telegramChatId = defineSecret("TELEGRAM_CHAT_ID");
+
 // --- Admin Routes (Protected) ---
 const adminRouter = express.Router();
 adminRouter.use(validateAdminKey);
@@ -190,4 +194,8 @@ publicRouter.get("/bookings/:bookingId", bookingsController.getBookingStatus);
 app.use("/public", publicRouter);
 
 // Export the API
-exports.api = functions.https.onRequest(app);
+exports.api = functions
+  .runWith({
+    secrets: [telegramBotToken, telegramChatId],
+  })
+  .https.onRequest(app);

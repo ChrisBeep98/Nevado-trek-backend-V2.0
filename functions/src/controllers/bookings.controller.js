@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const { COLLECTIONS, BOOKING_STATUS, DEPARTURE_TYPES, DEPARTURE_STATUS } = require("../constants");
 const { parseToNoonUTC } = require("../utils/dateUtils");
+const { sendTelegramAlert } = require("../utils/notifications");
 
 const db = admin.firestore();
 
@@ -22,6 +23,8 @@ exports.createBooking = async (req, res) => {
 
     let departureId;
     let bookingId;
+    let pricePerPax;
+    let tourName;
 
     await db.runTransaction(async (t) => {
       // 1. Get Tour for pricing snapshot
@@ -33,6 +36,7 @@ exports.createBooking = async (req, res) => {
       }
 
       const tourData = tourDoc.data();
+      tourName = tourData.name?.es || tourData.name?.en || "Tour Desconocido";
 
       // 2. Create NEW Departure (Admin ALWAYS creates new)
       const newDepData = {
@@ -58,7 +62,7 @@ exports.createBooking = async (req, res) => {
         throw new Error(`Invalid pax count (${pax}) for pricing tiers`);
       }
 
-      const pricePerPax = tier.priceCOP;
+      pricePerPax = tier.priceCOP;
 
       // 4. Create Booking
       const newBooking = {
@@ -76,6 +80,19 @@ exports.createBooking = async (req, res) => {
       t.set(bookingRef, newBooking);
       bookingId = bookingRef.id;
     });
+
+    // 🔔 Notify Admin (Telegram)
+    const alertMsg = `👮‍♂️ <b>Nueva Reserva (Admin)</b>\n\n` +
+      `👤 <b>Cliente:</b> ${customer.name}\n` +
+      `🏔 <b>Tour:</b> ${tourName}\n` +
+      `📞 <b>Tel:</b> ${customer.phone}\n` +
+      `📅 <b>Fecha:</b> ${date}\n` +
+      `👥 <b>Pax:</b> ${pax}\n` +
+      `💰 <b>Total:</b> $${(pricePerPax * pax).toLocaleString()} (Pendiente)\n` +
+      `🆔 <b>ID:</b> <code>${bookingId}</code>`;
+
+    // Note: We don't await this so the client doesn't wait
+    sendTelegramAlert(alertMsg).catch(console.error);
 
     return res.status(201).json({
       success: true,
@@ -104,6 +121,8 @@ exports.joinBooking = async (req, res) => {
     }
 
     let bookingId;
+    let pricePerPax;
+    let tourName;
 
     await db.runTransaction(async (t) => {
       // 1. Get Departure
@@ -115,6 +134,16 @@ exports.joinBooking = async (req, res) => {
       }
 
       const depData = depDoc.data();
+
+      // 1.1 Fetch Tour Name (for notification)
+      const tourRef = db.collection(COLLECTIONS.TOURS).doc(depData.tourId);
+      const tourDoc = await t.get(tourRef);
+      if (tourDoc.exists) {
+        const tourData = tourDoc.data();
+        tourName = tourData.name?.es || tourData.name?.en || "Tour Desconocido";
+      } else {
+        tourName = "Tour Desconocido";
+      }
 
       // 2. Validate Departure is Public and Open
       if (depData.type !== DEPARTURE_TYPES.PUBLIC) {
@@ -140,7 +169,7 @@ exports.joinBooking = async (req, res) => {
         throw new Error(`Invalid pax count (${pax}) for pricing tiers`);
       }
 
-      const pricePerPax = tier.priceCOP;
+      pricePerPax = tier.priceCOP;
 
       // 5. Create Booking
       const newBooking = {
@@ -165,6 +194,18 @@ exports.joinBooking = async (req, res) => {
         updatedAt: new Date(),
       });
     });
+
+    // 🔔 Notify Admin (Telegram)
+    const alertMsg = `🚀 <b>Nueva Reserva (Public Join)</b>\n\n` +
+      `👤 <b>Cliente:</b> ${customer.name}\n` +
+      `🏔 <b>Tour:</b> ${tourName}\n` +
+      `📞 <b>Tel:</b> ${customer.phone}\n` +
+      `📅 <b>Fecha:</b> ${new Date(date || Date.now()).toISOString().split('T')[0]}\n` + // Date might be missing in join, careful
+      `👥 <b>Pax:</b> ${pax}\n` +
+      `💰 <b>Total:</b> $${(pricePerPax * pax).toLocaleString()} (Pendiente)\n` +
+      `🆔 <b>ID:</b> <code>${bookingId}</code>`;
+
+    sendTelegramAlert(alertMsg).catch(console.error);
 
     return res.status(201).json({
       success: true,
@@ -191,6 +232,8 @@ exports.createPrivateBooking = async (req, res) => {
 
     let departureId;
     let bookingId;
+    let pricePerPax;
+    let tourName;
 
     await db.runTransaction(async (t) => {
       // 1. Get Tour for pricing
@@ -202,6 +245,7 @@ exports.createPrivateBooking = async (req, res) => {
       }
 
       const tourData = tourDoc.data();
+      tourName = tourData.name?.es || tourData.name?.en || "Tour Desconocido";
 
       // 2. Create NEW Private Departure
       const newDepData = {
@@ -227,7 +271,7 @@ exports.createPrivateBooking = async (req, res) => {
         throw new Error(`Invalid pax count (${pax}) for pricing tiers`);
       }
 
-      const pricePerPax = tier.priceCOP;
+      pricePerPax = tier.priceCOP;
 
       // 4. Create Booking
       const newBooking = {
@@ -244,6 +288,18 @@ exports.createPrivateBooking = async (req, res) => {
       t.set(bookingRef, newBooking);
       bookingId = bookingRef.id;
     });
+
+    // 🔔 Notify Admin (Telegram)
+    const alertMsg = `💎 <b>Nueva Reserva (Privada)</b>\n\n` +
+      `👤 <b>Cliente:</b> ${customer.name}\n` +
+      `🏔 <b>Tour:</b> ${tourName}\n` +
+      `📞 <b>Tel:</b> ${customer.phone}\n` +
+      `📅 <b>Fecha:</b> ${date}\n` +
+      `👥 <b>Pax:</b> ${pax}\n` +
+      `💰 <b>Total:</b> $${(pricePerPax * pax).toLocaleString()} (Pendiente)\n` +
+      `🆔 <b>ID:</b> <code>${bookingId}</code>`;
+
+    sendTelegramAlert(alertMsg).catch(console.error);
 
     return res.status(201).json({
       success: true,
