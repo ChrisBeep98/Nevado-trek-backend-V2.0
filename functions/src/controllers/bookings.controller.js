@@ -902,10 +902,16 @@ exports.getBookingStatus = async (req, res) => {
 
     // Mapping internal payment info to public status
     let paymentStatus = "pending";
-    if (booking.paymentInfo?.status === "paid") {
+    const internalPaymentStatus = booking.paymentInfo?.status;
+
+    if (internalPaymentStatus === "paid") {
       paymentStatus = "approved";
-    } else if (booking.paymentInfo?.status === "failed") {
+    } else if (internalPaymentStatus === "failed") {
       paymentStatus = "rejected";
+    } else if (internalPaymentStatus === "expired") {
+      paymentStatus = "expired";
+    } else if (internalPaymentStatus === "voided") {
+      paymentStatus = "voided";
     }
 
     // Response strictly limited to non-PII data

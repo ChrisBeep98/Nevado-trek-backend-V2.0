@@ -107,18 +107,36 @@ exports.webhookHandler = async (req, res) => {
     // Map Status
     let paymentInfoStatus = "processing";
     let bookingStatus = null; 
+    let notificationEmoji = "ℹ️";
+    let statusText = "PROCESANDO";
 
     switch (eventType) {
         case "SALE_APPROVED":
             paymentInfoStatus = "paid";
             bookingStatus = "paid";
+            notificationEmoji = "🤑";
+            statusText = "APROBADO";
             break;
         case "SALE_REJECTED":
             paymentInfoStatus = "failed";
+            notificationEmoji = "❌";
+            statusText = "RECHAZADO";
+            break;
+        case "SALE_FAILED":
+            paymentInfoStatus = "failed";
+            notificationEmoji = "⚠️";
+            statusText = "ERROR TÉCNICO";
+            break;
+        case "SALE_EXPIRED":
+            paymentInfoStatus = "expired";
+            notificationEmoji = "⏳";
+            statusText = "EXPIRADO";
             break;
         case "VOID_APPROVED":
             paymentInfoStatus = "voided";
             bookingStatus = "cancelled";
+            notificationEmoji = "🚫";
+            statusText = "ANULADO";
             break;
         default:
             return res.status(200).json({ message: "Event type ignored" });
@@ -133,7 +151,7 @@ exports.webhookHandler = async (req, res) => {
         "paymentInfo.provider": "bold",
         "paymentInfo.transactionId": paymentData.payment_id || "unknown",
         "paymentInfo.reference": reference,
-        "paymentInfo.amountPaid": paymentData.amount?.total || paymentData.amount?.total_amount || 0, // 💰 Exact amount from gateway
+        "paymentInfo.amountPaid": paymentData.amount?.total || paymentData.amount?.total_amount || 0,
         "paymentInfo.currency": paymentData.amount?.currency || "COP",
         "paymentInfo.lastUpdate": new Date(),
         "updatedAt": new Date()
@@ -143,39 +161,35 @@ exports.webhookHandler = async (req, res) => {
         updateData["paymentInfo.paymentMethod"] = paymentData.payment_method;
     }
 
-    if (paymentInfoStatus === "paid") {
-        updateData["paymentInfo.paidAt"] = new Date();
-        updateData.status = "paid";
-
-        // Fetch booking data for richer notification
-        try {
-            const bookingSnap = await bookingRef.get();
-            const bookingData = bookingSnap.data();
-            const customerName = bookingData?.customer?.name || "Desconocido";
-
-            // 🔔 Notify Admin (Telegram)
-            const paymentMsg = `🤑 <b>PAGO RECIBIDO (Bold)</b>\n\n` +
-              `👤 <b>Cliente:</b> ${customerName}\n` +
-              `🆔 <b>Booking ID:</b> <code>${bookingId}</code>\n` +
-              `🧾 <b>Ref Pago:</b> <code>${reference}</code>\n` +
-              `💰 <b>Monto:</b> $${(updateData["paymentInfo.amountPaid"] || 0).toLocaleString()}\n` +
-              `💳 <b>Método:</b> ${updateData["paymentInfo.paymentMethod"] || 'N/A'}\n` +
-              `✅ <b>Estado:</b> APROBADO`;
-            
-            sendTelegramAlert(paymentMsg).catch(console.error);
-        } catch (err) {
-            console.error("Error fetching booking details for notification:", err);
-            // Fallback notification if fetch fails
-             const fallbackMsg = `🤑 <b>PAGO RECIBIDO (Bold)</b>\n\n` +
-              `🆔 <b>Ref:</b> <code>${reference}</code>\n` +
-              `💰 <b>Monto:</b> $${(updateData["paymentInfo.amountPaid"] || 0).toLocaleString()}\n` +
-              `✅ <b>Estado:</b> APROBADO`;
-             sendTelegramAlert(fallbackMsg).catch(console.error);
+    if (bookingStatus) {
+        updateData.status = bookingStatus;
+        if (bookingStatus === "paid") {
+            updateData["paymentInfo.paidAt"] = new Date();
         }
     }
 
     await bookingRef.update(updateData);
-    console.log(`✅ [WEBHOOK SUCCESS] Booking ${bookingId} updated to ${paymentInfoStatus}. Amount: ${updateData["paymentInfo.amountPaid"]}`);
+
+    // 🔔 Notify Admin (Telegram) - For all critical statuses
+    try {
+        const bookingSnap = await bookingRef.get();
+        const bookingData = bookingSnap.data();
+        const customerName = bookingData?.customer?.name || "Desconocido";
+
+        const paymentMsg = `${notificationEmoji} <b>ACTUALIZACIÓN DE PAGO (Bold)</b>\n\n` +
+          `👤 <b>Cliente:</b> ${customerName}\n` +
+          `🆔 <b>Booking ID:</b> <code>${bookingId}</code>\n` +
+          `🧾 <b>Ref Pago:</b> <code>${reference}</code>\n` +
+          `💰 <b>Monto:</b> $${(updateData["paymentInfo.amountPaid"] || 0).toLocaleString()}\n` +
+          `💳 <b>Método:</b> ${updateData["paymentInfo.paymentMethod"] || 'N/A'}\n` +
+          `📢 <b>Estado:</b> ${statusText}`;
+        
+        sendTelegramAlert(paymentMsg).catch(console.error);
+    } catch (err) {
+        console.error("Error sending notification:", err);
+    }
+
+    console.log(`✅ [WEBHOOK SUCCESS] Booking ${bookingId} updated to ${paymentInfoStatus}.`);
 
     res.status(200).json({ received: true });
 

@@ -273,10 +273,15 @@ Check booking status (polling endpoint for Payment Gateway).
   {
     "bookingId": "string",
     "status": "pending" | "confirmed" | "cancelled",
-    "paymentStatus": "pending" | "approved" | "rejected",
+    "paymentStatus": "pending" | "approved" | "rejected" | "expired" | "voided",
     "paymentRef": "string"
   }
   ```
+- **Mapping (paymentStatus)**:
+  - `approved`: Payment successful (Bold SALE_APPROVED).
+  - `rejected`: Payment declined (Bold SALE_REJECTED or SALE_FAILED).
+  - `expired`: User failed to complete payment in time (Bold SALE_EXPIRED).
+  - `voided`: Transaction was voided (Bold VOID_APPROVED).
 - **Privacy**: **NO PII returned**. Only status fields and reference.
 - **Security**: Publicly accessible (no rate limit for polling).
 
