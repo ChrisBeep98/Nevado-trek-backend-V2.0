@@ -18,6 +18,14 @@ El backend está **100% funcional y verificado en producción** con todos los fe
 
 ## 🆕 Latest Maintenance (Jan 18, 2026)
 
+### 🚨 Hotfix: Secrets Overlap Resolution (v2.7.1)
+**Status**: ✅ Deployed to Staging (Jan 18, 2026)
+**Description**: Resolved deployment conflict "Secret environment variable overlaps non secret environment variable".
+**Details**:
+- **Root Cause**: Legacy Cloud Run configuration conflicted with new `defineSecret` bindings.
+- **Workaround**: Temporarily switched Telegram config to standard `process.env` variables (removing `defineSecret` binding) to allow successful deployment.
+- **Impact**: Backend is fully operational. Notifications rely on existing environment variables.
+
 ### 📢 Telegram Notifications System (v2.7.0)
 **Status**: ✅ Deployed to Staging  
 **Description**: Real-time alerts for Admin.  
@@ -220,6 +228,7 @@ DELETE /admin/tours/:id  - Delete tour
 
 | Version | Date | Changes | Status |
 |---------|------|---------|--------|
+| v2.7.1 | Jan 18, 2026 | Hotfix: Cloud Run secrets overlap workaround | ✅ Deployed (Staging) |
 | Maint | Jan 7, 2026 | Billing Reactivation & 503 Fix | ✅ Active |
 | v2.6 | Nov 25, 2025 | Fix validation for join booking | ✅ Deployed |
 | v2.5 | Nov 25, 2025 | Add admin join booking endpoint | ✅ Deployed |

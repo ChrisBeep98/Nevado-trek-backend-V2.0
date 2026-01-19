@@ -28,8 +28,9 @@ app.use(express.urlencoded({ extended: true })); // Add support for urlencoded b
 
 const { defineSecret } = require("firebase-functions/params");
 const { onRequest } = require("firebase-functions/v2/https");
-const telegramBotToken = defineSecret("TELEGRAM_BOT_TOKEN");
-const telegramChatId = defineSecret("TELEGRAM_CHAT_ID");
+// Secrets temporarily disabled due to Cloud Run conflict
+// const telegramBotToken = defineSecret("TELEGRAM_BOT_TOKEN");
+// const telegramChatId = defineSecret("TELEGRAM_CHAT_ID");
 
 // --- Admin Routes (Protected) ---
 const adminRouter = express.Router();
@@ -195,4 +196,4 @@ publicRouter.get("/bookings/:bookingId", bookingsController.getBookingStatus);
 app.use("/public", publicRouter);
 
 // Export the API
-exports.api = onRequest({ secrets: [telegramBotToken, telegramChatId] }, app);
+exports.api = onRequest({ /* secrets: [telegramBotToken, telegramChatId] */ }, app);
