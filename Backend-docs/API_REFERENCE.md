@@ -1,4 +1,4 @@
-# API Reference - Nevado Trek Backend V2.6.0
+# API Reference - Nevado Trek Backend V2.7.2
 
 ## Base URL
 - **Production**: `https://api-wgfhwjbpva-uc.a.run.app` (Project: `nevadotrektest01`)
@@ -283,21 +283,22 @@ Check booking status (polling endpoint for Payment Gateway).
 ### Payments (1 endpoint)
 
 #### POST /public/payments/init
-Initialize a payment with Bold (Gateway).
+Initialize a payment with Bold (Gateway) for a deposit.
 - **Body**: `{ bookingId: "string" }`
 - **Response**: 
   ```json
   {
     "paymentReference": "NTK-{bookingId}-{timestamp}",
-    "amount": number,
+    "amount": number, // 30% Deposit + 5% Tax on deposit
     "currency": "COP",
     "apiKey": "string (Public Identity Key)",
     "integritySignature": "string (SHA256 Hash)",
     "redirectionUrl": "string",
-    "description": "string",
-    "tax": 0
+    "description": "string (Reserva Nevado Trek - Depósito 30%)",
+    "tax": number // 5% Tax amount
   }
   ```
+- **Logic**: Calculates a **30% deposit** based on `booking.finalPrice` and adds a **5% transactional tax** on top of that deposit.
 - **Security**: Validates booking status (not cancelled/paid) and calculates secure integrity hash using backend secret.
 
 #### POST /public/payments/webhook
@@ -312,6 +313,11 @@ Bold Webhook endpoint for automated payment notifications.
 ---
 
 ## Recent Changes
+
+### January 19, 2026 - Bold Deposit Logic (v2.7.2)
+- 💳 **Partial Payments**: Updated `/public/payments/init` to charge only a **30% deposit + 5% tax**.
+- 🔐 **Integrity Fixed**: Signature generation now uses the partial amount.
+- 🧪 **Verified**: Verified on Staging environment.
 
 ### January 14, 2026 - Staging & Payments
 - 🧪 **Staging Environment**: Launched `nevado-trek-backend-03`.
@@ -346,6 +352,6 @@ Bold Webhook endpoint for automated payment notifications.
 
 ---
 
-**Document Version**: 2.6.0  
-**Last Updated**: January 7, 2026  
-**Status**: ✅ Deployed & Synchronized with Codebase
+**Document Version**: 2.7.2  
+**Last Updated**: January 19, 2026  
+**Status**: ✅ Deployed & Synchronized with Codebase (Staging)

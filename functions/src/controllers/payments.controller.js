@@ -41,7 +41,13 @@ exports.initPayment = async (req, res) => {
     // Prepare Payment Data
     const timestamp = Date.now();
     const paymentReference = `NTK-${bookingId}-${timestamp}`;
-    const amount = booking.finalPrice || booking.originalPrice;
+    
+    // Calculate 30% Deposit + 5% Tax logic
+    const totalBookingValue = booking.finalPrice || booking.originalPrice;
+    const depositBase = Math.round(totalBookingValue * 0.30); // 30% Base Deposit
+    const tax = Math.round(depositBase * 0.05); // 5% Tax on the deposit
+    const amount = depositBase + tax; // Total amount to charge in Bold (Deposit + Tax)
+    
     const currency = "COP";
 
     // --- INTEGRITY SIGNATURE GENERATION ---
@@ -56,8 +62,8 @@ exports.initPayment = async (req, res) => {
       apiKey: boldApiKey.value(),
       integritySignature,
       redirectionUrl: "https://nevado-trek.com/payment-result",
-      description: `Reserva Nevado Trek - ${bookingId}`,
-      tax: 0,
+      description: `Reserva Nevado Trek (Depósito 30%) - ${bookingId}`,
+      tax: tax,
     });
 
   } catch (error) {

@@ -1,18 +1,31 @@
-# Backend Status - Nevado Trek V2.6
+# Backend Status - Nevado Trek V2.7.2
 
-**Last Updated**: January 7, 2026  
-**Version**: v2.6  
-**Status**: 🟢 **Fully Deployed & Verified on Production**
+**Last Updated**: January 19, 2026  
+**Version**: v2.7.2  
+**Status**: 🟢 **Fully Deployed & Verified on Staging**
 
 ---
 
 ## 📊 Executive Summary
 
-El backend está **100% funcional y verificado en producción** con todos los features implementados incluyendo join booking para admin. Sistema completamente testeado con capacidad de 8 pax para todos los departures.
+El backend está **100% funcional y verificado en Staging** con la nueva lógica de pagos Bold (Depósito 30% + 5% Tax). El sistema de producción se mantiene en v2.6 hasta la próxima ventana de despliegue verificada.
 
-**Production Version**: v2.6  
-**Key Feature**: Admin Join Booking Endpoint & Real-time Stats  
+**Staging Version**: v2.7.2  
+**Key Feature**: 30% Deposit + 5% Transactional Tax for Bold Payments  
 **maxPax**: 8 para todos los departures (public y private)
+
+---
+
+## 🆕 Latest Maintenance (Jan 19, 2026)
+
+### 💳 Bold Payment Deposit Logic (v2.7.2)
+**Status**: ✅ Deployed to Staging (Jan 19, 2026)
+**Description**: Updated `POST /public/payments/init` to handle partial payments (deposits).
+**Details**:
+- **Calculation**: Changed from 100% charge to **30% Deposit + 5% Tax** (calculated over the deposit).
+- **Formula**: `(booking.finalPrice * 0.30) * 1.05`.
+- **Integrity**: Signature is now generated based on the partial amount to ensure security.
+- **Verification**: Verified with `test_payment_logic.js`. Calculation results for $100k tour: $30,000 deposit + $1,500 tax = $31,500 total charge.
 
 ---
 
