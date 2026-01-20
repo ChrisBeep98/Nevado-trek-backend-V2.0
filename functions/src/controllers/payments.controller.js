@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const crypto = require("crypto");
+const axios = require("axios"); // Added axios
 const { defineString } = require("firebase-functions/params");
 const { sendTelegramAlert } = require("../utils/notifications");
 
@@ -9,8 +10,8 @@ const boldSecretKey = defineString("BOLD_SECRET_KEY");
 const boldIntegritySecret = defineString("BOLD_INTEGRITY_SECRET");
 
 /**
- * Initialize a Bold Payment for a specific booking
- * Generates the necessary signature/hash and payment reference
+ * Initialize a Bold Payment using Smart Links (API)
+ * Creates a server-to-server link to guarantee credit card availability
  */
 exports.initPayment = async (req, res) => {
   try {
@@ -38,37 +39,60 @@ exports.initPayment = async (req, res) => {
       return res.status(400).json({ error: "Booking is already paid" });
     }
 
-    // Prepare Payment Data
-    const timestamp = Date.now();
-    const paymentReference = `NTK-${bookingId}-${timestamp}`;
-    
-    // Calculate 30% Deposit + 5% Tax logic
+    // Calculate 30% Deposit + 5% Processing Fee logic
     const totalBookingValue = booking.finalPrice || booking.originalPrice;
     const depositBase = Math.round(totalBookingValue * 0.30); // 30% Base Deposit
-    const tax = Math.round(depositBase * 0.05); // 5% Tax on the deposit
-    const amount = depositBase + tax; // Total amount to charge in Bold (Deposit + Tax)
+    const processingFee = Math.round(depositBase * 0.05); // 5% Fee to cover transaction costs
+    const amountToCharge = depositBase + processingFee; // Total amount to charge in Bold
     
-    const currency = "COP";
+    // Bold API Configuration
+    const BOLD_API_URL = "https://integrations.api.bold.co/online/link/v1";
+    
+    // Use the API Key (Identity Key) for Authorization
+    // Note: In some Bold integrations, the header is "Authorization: x-api-key <KEY>"
+    const apiKey = boldApiKey.value(); 
+    
+    const payload = {
+      name: `Reserva Nevado Trek`,
+      description: `Booking ID: ${bookingId} (Depósito 30%)`,
+      amount_type: "CLOSE", // Fixed amount
+      amount: {
+        currency: "COP",
+        total_amount: amountToCharge
+      },
+      // Determine Redirect URL based on environment (staging vs prod)
+      callback_url: "https://nevado-trek.com/payment-result",
+      // Webhook URL to receive updates automatically
+      webhook_url: "https://us-central1-nevado-trek-backend-03.cloudfunctions.net/api/public/payments/webhook",
+      payer_email: booking.customer?.email || undefined
+    };
 
-    // --- INTEGRITY SIGNATURE GENERATION ---
-    // Formula: SHA256(reference + amount + currency + secret)
-    const integrityString = `${paymentReference}${amount}${currency}${boldIntegritySecret.value()}`;
-    const integritySignature = crypto.createHash("sha256").update(integrityString).digest("hex");
+    console.log(`🔗 [BOLD API] Creating Smart Link for Booking ${bookingId}. Amount: ${amountToCharge}`);
 
+    const boldResponse = await axios.post(BOLD_API_URL, payload, {
+      headers: {
+        "Authorization": `x-api-key ${apiKey}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const linkData = boldResponse.data.payload;
+    
+    // Return the hosted payment URL to the frontend
     res.json({
-      paymentReference,
-      amount,
-      currency,
-      apiKey: boldApiKey.value(),
-      integritySignature,
-      redirectionUrl: "https://nevado-trek.com/payment-result",
-      description: `Reserva Nevado Trek (Depósito 30%) - ${bookingId}`,
-      tax: tax,
+      paymentUrl: linkData.url, 
+      paymentReference: linkData.uid, // Bold's unique ID for this link
+      amount: amountToCharge,
+      currency: "COP",
+      description: payload.description
     });
 
   } catch (error) {
-    console.error("Error initializing payment:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error initializing payment (Bold API):", error.response?.data || error.message);
+    res.status(500).json({ 
+      error: "Failed to create payment link",
+      details: error.response?.data || error.message
+    });
   }
 };
 

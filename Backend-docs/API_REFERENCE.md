@@ -1,4 +1,4 @@
-# API Reference - Nevado Trek Backend V2.7.2
+# API Reference - Nevado Trek Backend V2.7.5
 
 ## Base URL
 - **Production**: `https://api-wgfhwjbpva-uc.a.run.app` (Project: `nevadotrektest01`)
@@ -288,23 +288,20 @@ Check booking status (polling endpoint for Payment Gateway).
 ### Payments (1 endpoint)
 
 #### POST /public/payments/init
-Initialize a payment with Bold (Gateway) for a deposit.
+Initialize a payment with Bold (Smart Link API).
 - **Body**: `{ bookingId: "string" }`
 - **Response**: 
   ```json
   {
-    "paymentReference": "NTK-{bookingId}-{timestamp}",
-    "amount": number, // 30% Deposit + 5% Tax on deposit
+    "paymentUrl": "https://checkout.bold.co/payment/LNK_XXXX",
+    "paymentReference": "LNK_XXXX",
+    "amount": number,
     "currency": "COP",
-    "apiKey": "string (Public Identity Key)",
-    "integritySignature": "string (SHA256 Hash)",
-    "redirectionUrl": "string",
-    "description": "string (Reserva Nevado Trek - Depósito 30%)",
-    "tax": number // 5% Tax amount
+    "description": "string"
   }
   ```
-- **Logic**: Calculates a **30% deposit** based on `booking.finalPrice` and adds a **5% transactional tax** on top of that deposit.
-- **Security**: Validates booking status (not cancelled/paid) and calculates secure integrity hash using backend secret.
+- **Logic**: Creates a server-to-server payment link via Bold's API. This link is hosted by Bold, ensuring all payment methods (Credit Cards, PSE) are correctly displayed.
+- **Frontend Action**: The frontend should perform a redirect to `paymentUrl`.
 
 #### POST /public/payments/webhook
 Bold Webhook endpoint for automated payment notifications.

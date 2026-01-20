@@ -1,22 +1,31 @@
-# Backend Status - Nevado Trek V2.7.2
+# Backend Status - Nevado Trek V2.7.5
 
 **Last Updated**: January 19, 2026  
-**Version**: v2.7.2  
+**Version**: v2.7.5  
 **Status**: 🟢 **Fully Deployed & Verified on Staging**
 
 ---
 
 ## 📊 Executive Summary
 
-El backend está **100% funcional y verificado en Staging** con la nueva lógica de pagos Bold (Depósito 30% + 5% Tax). El sistema de producción se mantiene en v2.6 hasta la próxima ventana de despliegue verificada.
+El backend está **100% funcional y verificado en Staging** con la integración de **Bold Smart Links (API)**. Esta modalidad reemplaza al widget/botón para garantizar la disponibilidad de todos los métodos de pago.
 
-**Staging Version**: v2.7.2  
-**Key Feature**: 30% Deposit + 5% Transactional Tax for Bold Payments  
+**Staging Version**: v2.7.5  
+**Key Feature**: Bold Smart Link API Integration & Universal Payment Support  
 **maxPax**: 8 para todos los departures (public y private)
 
 ---
 
 ## 🆕 Latest Maintenance (Jan 19, 2026)
+
+### 💳 Bold Smart Link Integration (v2.7.5)
+**Status**: ✅ Deployed to Staging (Jan 19, 2026)
+**Description**: Migrated from Checkout Widget to Server-to-Server API.
+**Details**:
+- **Mechanism**: The backend calls Bold API to generate a hosted payment URL.
+- **Compatibility**: Guaranteed availability of Credit Cards, PSE, and Nequi (hosted on Bold's domain).
+- **Cleanup**: Removed client-side integrity signature generation.
+- **Webhooks**: Integrated with Sandbox webhook for real-time status updates.
 
 ### 💳 Bold Payment Deposit Logic (v2.7.2)
 **Status**: ✅ Deployed to Staging (Jan 19, 2026)
