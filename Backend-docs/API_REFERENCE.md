@@ -1,7 +1,7 @@
 # API Reference - Nevado Trek Backend V2.7.5
 
 ## Base URL
-- **Production**: `https://api-wgfhwjbpva-uc.a.run.app` (Project: `nevadotrektest01`)
+- **Production (LIVE)**: `https://api-wgfhwjbpva-uc.a.run.app` (Project: `nevadotrektest01`)
 - **Staging**: `https://us-central1-nevado-trek-backend-03.cloudfunctions.net/api` (Project: `nevado-trek-backend-03`)
 
 ## Authentication
@@ -316,15 +316,16 @@ Bold Webhook endpoint for automated payment notifications.
 
 ## Recent Changes
 
+### January 19, 2026 - Production Release (v2.7.5)
+- 🚀 **Live Deployment**: System updated to production environment.
+- 💳 **Universal Payments**: Smart Links integration enabled for all production bookings.
+- 🔐 **Credentials**: Production keys configured.
+
 ### January 19, 2026 - Bold Smart Links (v2.7.5)
 - 💳 **Smart Links**: Replaced widget signature logic with server-to-server Bold API calls (`/online/link/v1`).
 - 🔐 **Reliability**: Guarantees Credit Card availability by using Bold's hosted checkout.
 - 📉 **Deposit Logic**: Automatically calculates 30% Deposit + 5% Fee for the link amount.
 - 🔔 **Notifications**: Enhanced Telegram alerts for all payment states (Success, Fail, Expire).
-
-### January 14, 2026 - Staging & Payments
-- 🧪 **Staging Environment**: Launched `nevado-trek-backend-03`.
-- 💳 **Bold Integration**: Added `/public/payments/init` and `/public/payments/webhook` endpoints.
 
 ---
 
@@ -345,4 +346,4 @@ Bold Webhook endpoint for automated payment notifications.
 
 **Document Version**: 2.7.5  
 **Last Updated**: January 19, 2026  
-**Status**: ✅ Deployed & Synchronized with Codebase (Staging)
+**Status**: ✅ LIVE (Production)
