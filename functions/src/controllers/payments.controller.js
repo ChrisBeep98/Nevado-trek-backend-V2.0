@@ -60,6 +60,8 @@ exports.initPayment = async (req, res) => {
         currency: "COP",
         total_amount: amountToCharge
       },
+      // Pass our internal reference so the Webhook can identify the booking
+      reference: `NTK-${bookingId}-${Date.now()}`, 
       // Determine Redirect URL based on environment (staging vs prod)
       callback_url: "https://nevado-trek.com/payment-result",
       // Webhook URL to receive updates automatically

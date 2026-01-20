@@ -307,35 +307,24 @@ Initialize a payment with Bold (Smart Link API).
 Bold Webhook endpoint for automated payment notifications.
 - **Payload**: Standard Bold Webhook JSON (CloudEvents format).
 - **Logic**: 
-  - Extracts `bookingId` from the payment reference.
-  - Maps Bold status (SALE_APPROVED, SALE_REJECTED, etc.) to system status.
+  - Extracts `bookingId` from the internal reference logic.
   - Updates `paymentInfo` object in Firestore with status and **amount paid**.
   - Sets main booking `status` to `"paid"` upon success.
+  - Sends comprehensive alerts to Telegram (Approved, Rejected, Expired, Voided).
 
 ---
 
 ## Recent Changes
 
-### January 19, 2026 - Bold Deposit Logic (v2.7.2)
-- 💳 **Partial Payments**: Updated `/public/payments/init` to charge only a **30% deposit + 5% tax**.
-- 🔐 **Integrity Fixed**: Signature generation now uses the partial amount.
-- 🧪 **Verified**: Verified on Staging environment.
+### January 19, 2026 - Bold Smart Links (v2.7.5)
+- 💳 **Smart Links**: Replaced widget signature logic with server-to-server Bold API calls (`/online/link/v1`).
+- 🔐 **Reliability**: Guarantees Credit Card availability by using Bold's hosted checkout.
+- 📉 **Deposit Logic**: Automatically calculates 30% Deposit + 5% Fee for the link amount.
+- 🔔 **Notifications**: Enhanced Telegram alerts for all payment states (Success, Fail, Expire).
 
 ### January 14, 2026 - Staging & Payments
 - 🧪 **Staging Environment**: Launched `nevado-trek-backend-03`.
 - 💳 **Bold Integration**: Added `/public/payments/init` and `/public/payments/webhook` endpoints.
-- 📦 **Data Mirroring**: Cloned production tours to staging database.
-- 🟢 **Billing Reactivated**: Restored production API after billing suspension.
-- ✅ **API Health**: Verified all public and admin endpoints operational.
-
-### November 25, 2025 - Admin Join & Validation (v2.6)
-- ✅ **POST /admin/bookings/join**: Added official admin endpoint to join existing departures.
-- ✅ **Validation Fix**: `tourId` and `date` are now optional in `validateBooking` when `departureId` is provided.
-- ✅ **Stats Endpoint**: Added `timestamp` property to response for real-time verification.
-
-### December 5, 2025 - Cache Optimization
-- ✅ **GET /public/departures**: Reduced cache TTL to 30sec (browser) / 60sec (CDN).
-- ✅ **Documentation**: Added `CACHE_BYPASS_FRONTEND_GUIDE.md`.
 
 ---
 
@@ -354,6 +343,6 @@ Bold Webhook endpoint for automated payment notifications.
 
 ---
 
-**Document Version**: 2.7.2  
+**Document Version**: 2.7.5  
 **Last Updated**: January 19, 2026  
 **Status**: ✅ Deployed & Synchronized with Codebase (Staging)
